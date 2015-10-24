@@ -83,7 +83,7 @@ href="/blog/feed/atom" />
   <span class="post_prose">
     
   
-<p id="p1">This is part 3 of a series of posts on my Lisp compiler written in F#. Previous entries: <a href="/blog/2009/05/lisp-compiler-in-f-introduction.html">Introduction</a>, <a href="/blog/2009/05/lisp-compiler-in-f-parsing-with-fslex-and-fsyacc.html">Parsing with fslex and fsyacc</a> | <a href="http://github.com/timrobinson/fsharp-lisp/tree/master">Browse the full source of the compiler on GitHub</a></p>
+<p id="p1">This is part 3 of a series of posts on my Lisp compiler written in F#. Previous entries: <a href="/blog/2009/05/lisp-compiler-in-f-introduction.html">Introduction</a>, <a href="/blog/2009/05/lisp-compiler-in-f-parsing-with-fslex-and-fsyacc.html">Parsing with fslex and fsyacc</a> | <a href="http://github.com/1tgr/fsharp-lisp/tree/master">Browse the full source of the compiler on GitHub</a></p>
 <p id="p2">Thanks to <em>fslex</em>, <em>fsyacc</em> and the <code>LispVal</code> type, we've ended up with an expression tree that represents our program. To summarise, we've turned this:</p>
 
 <div class="pygments_murphy"><pre>(define (fact n) (if (= n 0) 1 (* n (fact (- n 1)))))
@@ -141,7 +141,7 @@ href="/blog/feed/atom" />
   <li>Emit IL opcodes that implement the expression tree</li>
 </ol>
 <p id="p6">First, a couple of pattern matching functions to recognise the built-in forms. Strictly speaking, we could write a code generator which recognises the built-in forms directly, but turning them into first-class expression tree nodes early on will hopefully make it easier to apply compiler optimisations, which I hope to add at some point.</p>
-<p class="alt" id="p7"><a href="http://github.com/timrobinson/fsharp-lisp/blob/b13a8c59066040b7c007b0a4bea28a7fc2163fc1/Core/CodeGenerator.fs">CodeGenerator.fs</a></p>
+<p class="alt" id="p7"><a href="http://github.com/1tgr/fsharp-lisp/blob/b13a8c59066040b7c007b0a4bea28a7fc2163fc1/Core/CodeGenerator.fs">CodeGenerator.fs</a></p>
 
 <div class="pygments_murphy"><pre><span class="o">//</span> <span class="nc">Turn</span> <span class="n">a</span> <span class="nc">LispVal</span> <span class="n">into</span> <span class="n">a</span> <span class="k">function</span> <span class="ow">or</span> <span class="n">variable</span> <span class="n">name</span>
 <span class="k">let</span> <span class="n">extractAtom</span> <span class="o">=</span> <span class="k">function</span>
@@ -425,7 +425,7 @@ href="/blog/feed/atom" />
   <div id="links">
   <h3>About Tim</h3>
   <ul>
-      <li><img src="/site_img/icon-github.png" width="16" height="16" alt="Github" valign="middle"/> Github - <a href="https://github.com/timrobinson/">timrobinson</a></li> 
+      <li><img src="/site_img/icon-github.png" width="16" height="16" alt="Github" valign="middle"/> Github - <a href="https://github.com/1tgr/">timrobinson</a></li> 
       <li><img src="/site_img/icon-twitter.png" width="16" height="16" alt="Twitter" valign="middle"/> Twitter - <a href="http://twitter.com/1tgr">@1tgr</a></li> 
   </ul>
   </div>

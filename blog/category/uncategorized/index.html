@@ -158,9 +158,9 @@ Originally uploaded by <a href="http://www.flickr.com/people/tim-robinson/">Tim 
   </small>
   <span class="post_prose">
     
-  <p id="p1"><a href="http://github.com/timrobinson/smallpt-haskell">Browse the full source of the ray tracer on GitHub</a></p>
+  <p id="p1"><a href="http://github.com/1tgr/smallpt-haskell">Browse the full source of the ray tracer on GitHub</a></p>
 <p id="p2">A few weeks back I came across the <a href="http://kevinbeason.com/smallpt/">smallpt ray tracer</a> by Kevin Beason. smallpt is a global illumination renderer written in 99 lines of C++. Since it uses a <a href="http://en.wikipedia.org/wiki/Monte_Carlo_method">Monte Carlo</a> technique to randomly cast rays and average the results, the longer you can leave it running, the better the image will look. Kevin's code uses OpenMP to split calculations across more than one CPU core.</p>
-<p id="p3"><a href="http://github.com/timrobinson/smallpt-haskell/raw/master/1024-768-4000spp.png"><img alt="Sample smallpt image" src="http://www.partario.com/blog/2010/03/07/1024-768-4000spp.png" width="540" height="405" class="mt-image-none" style=""/></a></p>
+<p id="p3"><a href="http://github.com/1tgr/smallpt-haskell/raw/master/1024-768-4000spp.png"><img alt="Sample smallpt image" src="http://www.partario.com/blog/2010/03/07/1024-768-4000spp.png" width="540" height="405" class="mt-image-none" style=""/></a></p>
 <p id="p4">Since ray tracing is the sort of mathsy task that Haskell excels at, I wanted to see how what a Haskell port of Kevin's code looked like. That code itself isn't the subject of this article, because what I wanted to write about instead are the techniques you can use to distribute Haskell code across multiple cores. These techniques range from <code>parMap</code> (which is almost transparent to the program, but provides little control over where the code runs) to brute-force distribution of work across several machines.</p>
 <h3>parMap</h3>
 <p id="p5">One of the things I love about Haskell is that its pure functional nature makes it straightforward to parallelise code within a single machine. You can normally take any code implemented in terms of <code>map</code> and parallelise it with <code>parMap</code>, from the <a href="http://hackage.haskell.org/packages/archive/parallel/latest/doc/html/Control-Parallel-Strategies.html">Control.Parallel.Strategies</a> module. <code>parMap</code> will use lightweight threads provided by the runtime to apply a function to each element in a list in parallel.</p>
@@ -180,7 +180,7 @@ Originally uploaded by <a href="http://www.flickr.com/people/tim-robinson/">Tim 
 <h3>Brute force</h3>
 <p id="p11">The previous two techniques rely on the multi-threading capabilities of the Haskell runtime. They know nothing of what's happening outside of a single Haskell process, which limits them to the number of cores present in the machine. To go beyond that, separate instances of your program will need to communicate with each other over a network.</p>
 <p id="p12">In my Haskell port of smallpt, I used this technique to run as many instances of the program as needed: one process per core on the local machine, and one process on each of a range of instances running on Amazon EC2. The communication protocol is as simple as possible: plain text over pipes. I used <code>ssh</code> to communicate with the EC2 instances, so from the outside there's no difference between a local instance and one running on the cloud.</p>
-<p id="p13"><a href="http://github.com/timrobinson/smallpt-haskell/blob/master/Tim/Smallpt/Distribution.hs">The algorithm</a> goes as follows:</p>
+<p id="p13"><a href="http://github.com/1tgr/smallpt-haskell/blob/master/Tim/Smallpt/Distribution.hs">The algorithm</a> goes as follows:</p>
 <ol>
 <li>Establish the work you need to do. In this case, a work item is one line in the final rendered image.</li>
 <li>Split the work into tasks you can give to the worker processes. For simplicity, I'm splitting the work equally to give one task to each worker.</li>
@@ -246,7 +246,7 @@ coordinator worker =
   </small>
   <span class="post_prose">
     
-  <p id="p1"><a href="http://www.partario.com/blog/2009/10/a-spelling-corrector-in-haskell.html">My previous post</a> came up on the <a href="http://www.reddit.com/r/haskell/comments/9zowr/a_spelling_corrector_in_haskell/">Haskell Reddit</a> yesterday, and I got some great suggestions for improvements to the program, which <a href="http://github.com/timrobinson/spell-correct/blob/master/Correct.hs">I've checked into GitHub</a>.</p>
+  <p id="p1"><a href="http://www.partario.com/blog/2009/10/a-spelling-corrector-in-haskell.html">My previous post</a> came up on the <a href="http://www.reddit.com/r/haskell/comments/9zowr/a_spelling_corrector_in_haskell/">Haskell Reddit</a> yesterday, and I got some great suggestions for improvements to the program, which <a href="http://github.com/1tgr/spell-correct/blob/master/Correct.hs">I've checked into GitHub</a>.</p>
 <ul>
 <li>
 <p id="p2"><code>Map.fromListWith</code> replaces <code>List.foldl'</code> and <code>Map.insertWith'</code>. <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/containers/Data-Map.html#v%3AfromListWith"><code>fromListWith</code></a> appears to be specifically designed for aggregating values that share a common key (in .NET terminology it's the <a href="http://msdn.microsoft.com/en-us/library/bb534501.aspx"><code>GroupBy</code></a> function).</p>
@@ -464,7 +464,7 @@ import re, collections
   <div id="links">
   <h3>About Tim</h3>
   <ul>
-      <li><img src="/site_img/icon-github.png" width="16" height="16" alt="Github" valign="middle"/> Github - <a href="https://github.com/timrobinson/">timrobinson</a></li> 
+      <li><img src="/site_img/icon-github.png" width="16" height="16" alt="Github" valign="middle"/> Github - <a href="https://github.com/1tgr/">timrobinson</a></li> 
       <li><img src="/site_img/icon-twitter.png" width="16" height="16" alt="Twitter" valign="middle"/> Twitter - <a href="http://twitter.com/1tgr">@1tgr</a></li> 
   </ul>
   </div>

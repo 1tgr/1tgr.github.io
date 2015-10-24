@@ -105,7 +105,7 @@ href="/blog/feed/atom" />
 <li><code>ILBlock</code>: a record containing a list of <code>IlOpCode</code> and a mutable <code>ILBranchOpCode</code> field. Each <code>ILBlock</code> represents a basic block; that is, a node in the graph that can be linked by two or more <code>ILBranchOpCode</code>s.</li>
 </ul>
 <p id="p7">These new data structures now allow me to split the code concerned with IL generation into two parts: a large function that turns the abstract syntax tree into a graph of basic blocks, and a class that takes this graph and uses it to emit IL code through an <code>ILGenerator</code>. (Actually there are two of these classes -- <code>DynamicMethodTarget</code> and <code>MethodBuilderTarget</code> -- because there is no common base between the two classes .NET provides to instantiate an <code>ILGenerator</code>.)</p>
-<p id="p8">I won't list out the code in full, since I've submitted it to GitHub (<a href="http://github.com/timrobinson/fsharp-lisp/blob/cbabb14119c6438126bb563f4e737d5847d0827f/Core/CodeGenerator.fs">CodeGeneration.fs</a>) and because it's got broadly the same structure as <a href="http://www.partario.com/blog/2009/06/lisp-compiler-in-f-il-generation.html">the last time I posted it</a>. The difference is that most of the work is performed by a <code>makeBlock</code> function:</p>
+<p id="p8">I won't list out the code in full, since I've submitted it to GitHub (<a href="http://github.com/1tgr/fsharp-lisp/blob/cbabb14119c6438126bb563f4e737d5847d0827f/Core/CodeGenerator.fs">CodeGeneration.fs</a>) and because it's got broadly the same structure as <a href="http://www.partario.com/blog/2009/06/lisp-compiler-in-f-il-generation.html">the last time I posted it</a>. The difference is that most of the work is performed by a <code>makeBlock</code> function:</p>
 <div class="pygments_murphy"><pre><span class="k">val</span> <span class="n">makeBlock</span> <span class="o">:</span> <span class="nc">IILTarget</span> <span class="o">-&gt;</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">,</span> <span class="nc">LispVal</span><span class="o">&gt;</span> <span class="o">-&gt;</span> <span class="nc">LispVal</span> <span class="o">-&gt;</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">,</span> <span class="nc">LispVal</span><span class="o">&gt;</span> <span class="o">*</span> <span class="nc">ILBlock</span> <span class="o">*</span> <span class="nc">ILBlock</span>
 </pre></div>
 
@@ -171,7 +171,7 @@ href="/blog/feed/atom" />
 <p id="p15">By reorganising my compiler to support tail recursion I've learned that:</p>
 <ul>
 <li>Changing your data structures (in this case, implementing a control flow graph) can often make a previously difficult algorithm (tail call detection) straightforward</li>
-<li>If you haven't got any unit tests, you're not refactoring, you're just changing stuff. I've now written <a href="http://github.com/timrobinson/fsharp-lisp/blob/cbabb14119c6438126bb563f4e737d5847d0827f/Core.UnitTests/CompilerTests.fs">unit tests for the main features supported by the compiler</a>. As an aside, I think NUnit tests written in F# look nicer than their C# equivalents, although I was slightly disappointed that NUnit made me write a class with instance methods, whereas it would have been neater to have some functions for test cases defined directly inside an F# module.</li>
+<li>If you haven't got any unit tests, you're not refactoring, you're just changing stuff. I've now written <a href="http://github.com/1tgr/fsharp-lisp/blob/cbabb14119c6438126bb563f4e737d5847d0827f/Core.UnitTests/CompilerTests.fs">unit tests for the main features supported by the compiler</a>. As an aside, I think NUnit tests written in F# look nicer than their C# equivalents, although I was slightly disappointed that NUnit made me write a class with instance methods, whereas it would have been neater to have some functions for test cases defined directly inside an F# module.</li>
 <li>Writing a blog post on a topic before attempting it is a great way to get your thoughts clear in your head before starting</li>
 </ul>
 <p id="p16">What I might look at next is some more sophisticated algorithms over the control flow graph. Once you have a graph you make available a whole field of algorithms to use on your data. I haven't looked at it yet in detail, but I like Steve Horsfield's <a href="http://stevehorsfield.wordpress.com/2009/07/27/f-a-data-structure-for-modelling-directional-graphs/">data structure for modelling directional graphs</a>.</p>
@@ -191,7 +191,7 @@ href="/blog/feed/atom" />
   <div id="links">
   <h3>About Tim</h3>
   <ul>
-      <li><img src="/site_img/icon-github.png" width="16" height="16" alt="Github" valign="middle"/> Github - <a href="https://github.com/timrobinson/">timrobinson</a></li> 
+      <li><img src="/site_img/icon-github.png" width="16" height="16" alt="Github" valign="middle"/> Github - <a href="https://github.com/1tgr/">timrobinson</a></li> 
       <li><img src="/site_img/icon-twitter.png" width="16" height="16" alt="Twitter" valign="middle"/> Twitter - <a href="http://twitter.com/1tgr">@1tgr</a></li> 
   </ul>
   </div>

@@ -83,7 +83,7 @@ href="/blog/feed/atom" />
   <span class="post_prose">
     
   
-<p id="p1">This is part 4 of a series of posts on my Lisp compiler written in F#. Previous entries: <a href="/blog/2009/05/lisp-compiler-in-f-introduction.html">Introduction</a>, <a href="/blog/2009/05/lisp-compiler-in-f-parsing-with-fslex-and-fsyacc.html">Parsing with fslex and fsyacc</a>, <a href="/blog/2009/06/lisp-compiler-in-f-expression-trees-and-net-methods.html">Expression trees and .NET methods</a> | <a href="http://github.com/timrobinson/fsharp-lisp/tree/master">Browse the full source of the compiler on GitHub</a></p>
+<p id="p1">This is part 4 of a series of posts on my Lisp compiler written in F#. Previous entries: <a href="/blog/2009/05/lisp-compiler-in-f-introduction.html">Introduction</a>, <a href="/blog/2009/05/lisp-compiler-in-f-parsing-with-fslex-and-fsyacc.html">Parsing with fslex and fsyacc</a>, <a href="/blog/2009/06/lisp-compiler-in-f-expression-trees-and-net-methods.html">Expression trees and .NET methods</a> | <a href="http://github.com/1tgr/fsharp-lisp/tree/master">Browse the full source of the compiler on GitHub</a></p>
 <p id="p2">What we've done up to this point is:</p>
 <ul>
   <li>Taken a string representing a Lisp program and turned it into an F# data structure representing a list of <a href="http://en.wikipedia.org/wiki/S_expression">s-expressions</a></li>
@@ -120,7 +120,7 @@ ret
 
 
 
-<p id="p7">For the purposes of this blog post, we're going to simplify the code generation even further, and use the <code>DynamicMethod</code> class, which allows us to generate a stream of IL opcodes in memory, then execute them, without having to write a full assembly file to disk. (The code on GitHub demonstrates both approaches -- see <a href="http://github.com/timrobinson/fsharp-lisp/blob/b13a8c59066040b7c007b0a4bea28a7fc2163fc1/Core/Compiler.fs">Compiler.fs</a> for the code that writes an assembly file.)</p>
+<p id="p7">For the purposes of this blog post, we're going to simplify the code generation even further, and use the <code>DynamicMethod</code> class, which allows us to generate a stream of IL opcodes in memory, then execute them, without having to write a full assembly file to disk. (The code on GitHub demonstrates both approaches -- see <a href="http://github.com/1tgr/fsharp-lisp/blob/b13a8c59066040b7c007b0a4bea28a7fc2163fc1/Core/Compiler.fs">Compiler.fs</a> for the code that writes an assembly file.)</p>
 <p id="p8">We're going to write the compile function that I talked about in the last post:</p>
 
 <div class="pygments_murphy"><pre><span class="k">let</span> <span class="k">rec</span> <span class="n">compile</span>
@@ -134,7 +134,7 @@ ret
 
 
 <p id="p9">We'll have given to us: an <code>ILGenerator</code> instance; a function that creates a new method and returns an <code>ILGenerator</code> for that method; a map containing any variables and functions declared earlier on in this function; and a <code>LispVal</code> representing the line of code we're being asked to generate IL for. We'll return a map containing all of the variables and functions originally passed to us, plus any new variables or functions we might have declared in this line of code.</p>
-<p class="alt" id="p10"><a href="http://github.com/timrobinson/fsharp-lisp/blob/b13a8c59066040b7c007b0a4bea28a7fc2163fc1/Core/CodeGenerator.fs">CodeGenerator.fs</a></p>
+<p class="alt" id="p10"><a href="http://github.com/1tgr/fsharp-lisp/blob/b13a8c59066040b7c007b0a4bea28a7fc2163fc1/Core/CodeGenerator.fs">CodeGenerator.fs</a></p>
 
 <div class="pygments_murphy"><pre><span class="k">let</span> <span class="k">rec</span> <span class="n">compile</span> <span class="o">(</span><span class="n">generator</span> <span class="o">:</span> <span class="nc">ILGenerator</span><span class="o">)</span> <span class="n">defineMethod</span> <span class="o">=</span>
 </pre></div>
@@ -560,7 +560,7 @@ ret
   <div id="links">
   <h3>About Tim</h3>
   <ul>
-      <li><img src="/site_img/icon-github.png" width="16" height="16" alt="Github" valign="middle"/> Github - <a href="https://github.com/timrobinson/">timrobinson</a></li> 
+      <li><img src="/site_img/icon-github.png" width="16" height="16" alt="Github" valign="middle"/> Github - <a href="https://github.com/1tgr/">timrobinson</a></li> 
       <li><img src="/site_img/icon-twitter.png" width="16" height="16" alt="Twitter" valign="middle"/> Twitter - <a href="http://twitter.com/1tgr">@1tgr</a></li> 
   </ul>
   </div>
