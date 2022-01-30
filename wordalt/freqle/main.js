@@ -1237,12 +1237,19 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
               }
             });
 
-            var freqs = [{}, {}, {}, {}, {}];
-            freqs.forEach(function (m, index) {
+            var freqMaps = [{}, {}, {}, {}, {}];
+            freqMaps.forEach(function (m, index) {
               Laa.forEach(function (e) {
                 var c = e[index];
                 m[c] = (m[c] || 0) + 1;
               });
+            });
+
+            var freqs = [];
+            freqMaps.forEach(function (m) {
+              var a = Object.entries(m);
+              a.sort((left, right) => right[1] - left[1]);
+              freqs.push(a);
             });
 
             this.$keyboard.replaceChildren();
@@ -1273,57 +1280,49 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
               self.$keyboard.appendChild(s)
             }
 
-            freqs.forEach(function (m, index) {
-              var c = self.solution[index];
-              var anyCorrect = self.boardState.some(bs => bs[index] === c);
-              var a = Object.entries(m);
-              a.sort((left, right) => right[1] - left[1]);
+            for (var row = 0; row < 26; row++) {
+              if (!freqs.some(function(ms) { return ms.length > row; })) {
+                break;
+              }
 
               var s = document.createElement("div");
               s.classList.add("row");
 
-              a.forEach(function (entry) {
-                var e = entry[0];
-                var a;
-                if (e >= "a" && e <= "z" || "←" === e || "↵" === e) {
-                  a = is.content.cloneNode(true).firstElementChild;
+              freqs.forEach(function (ms, column) {
+                var entry = ms[row];
+                var a = is.content.cloneNode(true).firstElementChild;
+                if (entry) {
+                  var c = self.solution[column];
+                  var anyCorrect = self.boardState.some(bs => bs[column] === c);
+                  var e = entry ? entry[0] : "";
                   a.dataset.key = e;
-                  if ("←" === e) {
-                    var t = document.createElement("game-icon");
-                    t.setAttribute("icon", "backspace");
-                    a.textContent = "";
-                    a.appendChild(t);
-                    a.classList.add("one-and-a-half");
-                  } else if ("↵" === e) {
-                    a.textContent = "enter";
-                    a.classList.add("one-and-a-half");
-                  } else {
-                    a.textContent = e;
+                  a.textContent = e;
 
-                    var state = null;
-                    if (anyCorrect && e === c) {
-                      state = "correct";
-                    } else if (anyCorrect) {
-                      state = "absent";
-                    } else if (self._letterEvaluations[e]) {
-                      state = self.solution.includes(e) && !self.boardState.some(bs => bs[index] === e) ? "present" : "absent";
-                    }
+                  var state = null;
+                  if (anyCorrect && e === c) {
+                    state = "correct";
+                  } else if (anyCorrect) {
+                    state = "absent";
+                  } else if (self._letterEvaluations[e]) {
+                    state = self.solution.includes(e) && !self.boardState.some(bs => bs[column] === e) ? "present" : "absent";
+                  }
 
-                    if (state) {
-                      a.dataset.state = state;
-                      a.classList.add("fade");
-                    }
+                  if (state) {
+                    a.dataset.state = state;
+                    a.classList.add("fade");
                   }
                 } else {
-                  a = ls.content.cloneNode(true).firstElementChild;
-                  a.classList.add(1 === e.length ? "half" : "one");
+                  a.dataset.key = "";
+                  a.textContent = "";
+                  a.dataset.state = "absent";
+                  a.classList.add("fade");
                 }
 
                 s.appendChild(a)
               });
 
               self.$keyboard.appendChild(s)
-            });
+            }
           }
         }]), t
       }(c(HTMLElement));
