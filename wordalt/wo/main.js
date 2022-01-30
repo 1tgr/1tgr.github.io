@@ -782,7 +782,7 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
       i && ka(e, i, t, n)
     }
     return e
-  }))), wa = "gameState", xa = {
+  }))), wa = "wo_gameState", xa = {
     boardState: null,
     evaluations: null,
     rowIndex: null,
