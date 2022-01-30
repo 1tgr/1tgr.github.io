@@ -1208,36 +1208,48 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
         }, {
           key: "_render", value: function () {
             var self = this;
-            var Laa = [];
-            La.forEach(function(e) {
+
+            function filter(e) {
               for (var c in self._letterEvaluations) {
                 var state = self._letterEvaluations[c];
                 if (state === "absent" && e.includes(c)) {
-                  return;
+                  return false;
                 }
 
                 if (state === "present" && !e.includes(c)) {
-                  return;
+                  return false;
                 }
 
                 if (state === "correct") {
                   if (!e.includes(c)) {
-                    return;
+                    return false;
                   }
 
                   for (var i = 0; i < 5; i++) {
                     if (e[i] === c && e[i] !== self.solution[i]) {
-                      return;
+                      return false;
                     }
                   }
                 }
               }
 
-              Laa.push(e);
+              return true;
+            }
+
+            var Laa = [];
+            La.forEach(function(e) {
+              if (filter(e)) {
+                Laa.push(e);
+              }
+            });
+
+            Ta.forEach(function(e) {
+              if (filter(e)) {
+                Laa.push(e);
+              }
             });
 
             var freqs = [{}, {}, {}, {}, {}];
-            console.log(Laa);
             freqs.forEach(function (m, index) {
               Laa.forEach(function (e) {
                 var c = e[index];
