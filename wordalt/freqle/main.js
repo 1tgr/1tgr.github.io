@@ -913,7 +913,7 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
     return a
   }
 
-  var Ya = "statistics", Ja = "fail", Ua = {
+  var Ya = "freqle_statistics", Ja = "fail", Ua = {
     currentStreak: 0,
     maxStreak: 0,
     guesses: n({1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}, Ja, 0),
