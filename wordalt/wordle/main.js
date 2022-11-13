@@ -1499,7 +1499,8 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
               }
 
               let d = "";
-              evaluations.forEach((function (evaluation, i) {
+              let candidates = La;
+              evaluations.forEach((function (evaluation, guessIndex) {
                 if (!evaluation) {
                   return;
                 }
@@ -1517,7 +1518,25 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
                   }
                 });
 
-                d += ` ||${boardState[i].toUpperCase()}||\n`;
+                const guess = boardState[guessIndex];
+                d += ` ||${guess.toUpperCase()}||`;
+                if (guessIndex + 1 < rowIndex) {
+                  candidates = candidates.filter(candidate => !evaluation.some((e, i) => {
+                    switch (e) {
+                      case "correct":
+                        // Green => reject candidate words that don't match in this position
+                        return candidate[i] !== guess[i];
+                      case "present":
+                        // Yellow => reject candidate words that do match in this position, or don't have this character somewhere
+                        return candidate[i] === guess[i] || !candidate.includes(guess[i]);
+                      case "absent":
+                        // Black => reject candidate words that have this character somewhere
+                        return candidate.includes(guess[i]);
+                    }
+                  }));
+
+                  d += ` (${candidates.length})\n`;
+                }
               }));
 
               return { text: "".concat(l, "\n\n").concat(d.trimEnd()) };
