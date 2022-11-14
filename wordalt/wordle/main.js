@@ -1500,6 +1500,7 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
 
               let d = "";
               let candidates = La;
+              const letterPresent = {};
               evaluations.forEach((function (evaluation, guessIndex) {
                 if (!evaluation) {
                   return;
@@ -1521,19 +1522,41 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
                 const guess = boardState[guessIndex];
                 d += ` ||${guess.toUpperCase()}||`;
                 if (guessIndex + 1 < rowIndex) {
-                  candidates = candidates.filter(candidate => !evaluation.some((e, i) => {
-                    switch (e) {
-                      case "correct":
-                        // Green => reject candidate words that don't match in this position
-                        return candidate[i] !== guess[i];
-                      case "present":
-                        // Yellow => reject candidate words that do match in this position, or don't have this character somewhere
-                        return candidate[i] === guess[i] || !candidate.includes(guess[i]);
-                      case "absent":
-                        // Black => reject candidate words that have this character somewhere
-                        return candidate.includes(guess[i]);
-                    }
-                  }));
+                  candidates = candidates.filter(candidate => {
+                    const reject = Array.from(guess).some((letter, i) => {
+                      switch (evaluation[i]) {
+                        case "correct":
+                          // 1. Green
+                          // 1a. Letter is definitely present
+                          letterPresent[letter] = true;
+                          // 1b. Eagerly reject candidate words that don't match in this position
+                          return candidate[i] !== letter;
+                        case "present":
+                          // 2. Yellow
+                          // 2a. Letter is definitely present
+                          letterPresent[letter] = true;
+                          // 2b. Eagerly reject candidate words that DO match in this position
+                          return candidate[i] === letter;
+                        case "absent":
+                          // 3. Black. Letter is absent only if we don't have a green or yellow match elsewhere.
+                          if (!letterPresent.hasOwnProperty(letter))
+                            letterPresent[letter] = false;
+                          return false;
+                      }
+                    }) || Object.entries(letterPresent).some(([letter, present]) => {
+                      if (present) {
+                        // We had a green or a yellow match:
+                        // reject words that don't contain this letter
+                        return !candidate.includes(letter);
+                      } else{
+                        // We had a black match, and no green or yellow match on the same letter:
+                        // reject workd that DO contain this letter
+                        return candidate.includes(letter);
+                      }
+                    });
+
+                    return !reject;
+                  });
 
                   d += ` (${candidates.length})\n`;
                 }
