@@ -1523,39 +1523,40 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
                 d += ` ||${guess.toUpperCase()}||`;
                 if (guessIndex + 1 < rowIndex) {
                   candidates = candidates.filter(candidate => {
-                    const reject = Array.from(guess).some((letter, i) => {
+                    return Array.prototype.every.call(guess, (letter, i) => {
                       switch (evaluation[i]) {
                         case "correct":
                           // 1. Green
                           // 1a. Letter is definitely present
                           letterPresent[letter] = true;
-                          // 1b. Eagerly reject candidate words that don't match in this position
-                          return candidate[i] !== letter;
+                          // 1b. Keep candidate words that match in this position
+                          return candidate[i] === letter;
                         case "present":
                           // 2. Yellow
                           // 2a. Letter is definitely present
                           letterPresent[letter] = true;
-                          // 2b. Eagerly reject candidate words that DO match in this position
-                          return candidate[i] === letter;
+                          // 2b. Keep candidate words that do NOT match in this position
+                          return candidate[i] !== letter;
                         case "absent":
-                          // 3. Black. Letter is absent only if we don't have a green or yellow match elsewhere.
+                          // 3. Black
+                          // 3a. Letter is absent only if we don't have a green or yellow match elsewhere.
                           if (!letterPresent.hasOwnProperty(letter))
                             letterPresent[letter] = false;
-                          return false;
+                          // 3b. Keep for now. We'll check letterPresent after we have had chance
+                          //     to look at every "correct" and "present" later in the guess.
+                          return true;
                       }
-                    }) || Object.entries(letterPresent).some(([letter, present]) => {
+                    }) && Object.entries(letterPresent).every(([letter, present]) => {
                       if (present) {
-                        // We had a green or a yellow match:
-                        // reject words that don't contain this letter
-                        return !candidate.includes(letter);
-                      } else{
-                        // We had a black match, and no green or yellow match on the same letter:
-                        // reject workd that DO contain this letter
+                        // We had a green or a yellow match.
+                        // Keep candidate words that contain this letter.
                         return candidate.includes(letter);
+                      } else {
+                        // We had a black match, and no green or yellow match on the same letter.
+                        // Keep candidate words that do NOT contain this letter.
+                        return !candidate.includes(letter);
                       }
                     });
-
-                    return !reject;
                   });
 
                   d += ` (${candidates.length})\n`;
