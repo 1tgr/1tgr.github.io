@@ -1542,9 +1542,11 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
                           // 3a. Letter is absent only if we don't have a green or yellow match elsewhere.
                           if (!letterPresent.hasOwnProperty(letter))
                             letterPresent[letter] = false;
-                          // 3b. Keep for now. We'll check letterPresent after we have had chance
-                          //     to look at every "correct" and "present" later in the guess.
-                          return true;
+                          // 3b. Like yellow, keep candidate words that do NOT match in this position.
+                          //     Additionally, we'll possibly reject more candidate words later,
+                          //     after we have had chance to look at every "correct" and "present"
+                          //     later in the guess.
+                          return candidate[i] !== letter;
                       }
                     }) && Object.entries(letterPresent).every(([letter, present]) => {
                       if (present) {
