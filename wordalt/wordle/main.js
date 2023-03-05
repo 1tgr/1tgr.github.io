@@ -1521,7 +1521,15 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
 
                 const guess = boardState[guessIndex];
                 d += ` ||${guess.toUpperCase()}||`;
-                if (guessIndex + 1 < rowIndex) {
+                if (guessIndex + 1 === rowIndex) {
+                  candidates = candidates.filter(s => s !== guess);
+                  if (candidates.length > 1) {
+                    d += " / " + candidates.slice(0, 15).map(s => `||${s.toUpperCase()}||`).sort().join(", ");
+                    if (candidates.length > 15) {
+                      d += "...";
+                    }
+                  }
+                } else {
                   candidates = candidates.filter(candidate => {
                     return Array.prototype.every.call(guess, (letter, i) => {
                       switch (evaluation[i]) {
