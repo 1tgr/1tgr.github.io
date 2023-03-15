@@ -1523,7 +1523,7 @@ this.wordle = this.wordle || {}, this.wordle.bundle = function (e) {
                 d += ` ||${guess.toUpperCase()}||`;
                 if (guessIndex + 1 === rowIndex) {
                   candidates = candidates.filter(s => s !== guess);
-                  if (candidates.length > 1) {
+                  if (candidates.length > 0) {
                     d += " / " + candidates.slice(0, 15).map(s => `||${s.toUpperCase()}||`).sort().join(", ");
                     if (candidates.length > 15) {
                       d += "...";
