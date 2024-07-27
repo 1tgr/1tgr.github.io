@@ -136,10 +136,10 @@
 	</div>
 
 
+	<script type="text/javascript" src="days.js"></script>
 
 	<script type="text/javascript">
-		// Get day from PHP
-		day = 137;
+		var day = Math.floor((new Date() - new Date('2024-07-27')) / 86400000);
 
 		// Activate countdown variable
 		var countdown, time;
@@ -156,8 +156,7 @@
 			// Else load todays puzzle
 			else {
 
-				// Get words from php
-				words = ["HOUR","RAGE","SLIP","EACH","ARCH","CASE","OPTED","FARMS","DRESS","THROW","PESTS","SWORD","DARKS","UPROAR","TOTALS","GENTLY","ACTIVE","MINING","UNPLUG","ISLAND","DIGNIFY","HIGHWAY","SYRINGE"];
+				words = days[day];
 
 				// Create div for each word
 				$.each(words, function(index, value) {
