@@ -65,7 +65,7 @@
 		<div class="playing hidden">
 			<!-- Save the daily words in HTML -->
 			<div class="dailywords hidden"></div>
-			<div class="mb-20"><span class="score">0</span> survived</div>
+			<div class="mb-20"><span class="attempts"></span> attempts remaining |  <span class="score">0</span> survived</div>
 			<div class="slots flex"></div>
 			<p class="message"></p>
 			<div class="letters flex mb-20"></div>
@@ -116,7 +116,7 @@
 			<div class="modalinner">
 				<div id="instructions" class="togglemodal close">x</div>
 				<h2 class="mb-20">How to play</h2>
-				<p class="mb-20">Find the hidden word.</p>
+				<p class="mb-20">Find the hidden word before.</p>
 				<p class="mb-20">Can you survive all 23 words?</p>
 				<div id="instructions" class="togglemodal button">Close</div>
 			</div>
@@ -140,12 +140,15 @@
 	<script type="text/javascript">
 		var day = Math.floor((new Date() - new Date('2024-07-27')) / 86400000);
 
+		var attempts;
+
 		// Load game
 		function loadgame(){
 			// Check if user has started todays puzzle
 			if(localStorage.getItem('23words') == day){
 				// Get load from localStorage
 				$('.container').html(localStorage.getItem('23wordsload'));
+				attempts = $('.attempts').html();
 			} 
 			// Else load todays puzzle
 			else {
@@ -212,6 +215,10 @@
 
 			// Shuffle
 			shuffle();
+
+			// Reset attempts
+			attempts = 3;
+			$('.attempts').html(attempts);
 		}
 
 
@@ -260,6 +267,12 @@
 					}
 				} else {
 					$('.message').html('Not in wordlist').show().delay(1000).fadeOut(0);
+					savegame();
+					attempts--;
+					$('.attempts').html(attempts);
+					if(attempts < 1){
+						finish();
+					}
 				}
 			} 
 		}
