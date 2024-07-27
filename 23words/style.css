@@ -1,0 +1,82 @@
+.slots{
+	background:#e9e9e9;
+	margin:auto;
+	margin-bottom: 20px;
+	border-radius: 10px;
+}
+
+.slot:empty{
+	background: #f4ede2;
+	border:solid 0px black;
+	z-index: -99;
+	position: relative;
+}
+
+.message{
+	height: 40px;
+	line-height: 40px;
+	padding-left: 10px;
+	padding-right:10px;
+	border-radius: 10px;
+	width: 100%;
+	width: fit-content;
+	margin: auto;
+	margin-top: -70px;
+	margin-bottom: 30px;
+	background: white;
+	z-index: 99;
+	position: relative;
+}
+
+.message:empty{
+	background: none;
+}
+.letter, .slot{
+	font-weight: 800;
+	text-align: center;
+	font-size: 26px;
+	background:#f5ce94;
+	display:inline-block;
+	margin:2px;
+	height:60px;
+	line-height:60px;
+	border-radius: 10px;
+	vertical-align: bottom;
+	border-bottom: 5px solid rgba(0,0,0,.1);
+	cursor: pointer;
+}
+
+.letter:empty{
+	visibility: hidden;
+}
+
+.controls div{
+	padding: 8px;
+	color: white;
+	background: black;
+	border-radius: 10px;
+	width: calc(25% - 4px);
+	margin: 2px;
+	cursor: pointer;
+}
+
+.word{
+	color:red;
+}
+
+.share, .playnow{
+	background: #58a351;
+	border-bottom: 5px solid rgba(0,0,0,.1);
+	color: white;
+	font-weight: 600;
+}
+
+.button:hover{
+	filter: invert(10%);
+}
+svg{
+	vertical-align: middle;
+}
+
+
+
