@@ -57,7 +57,7 @@
 		<div id="menu" class="togglemodal help mb-20">☰</div>
 
 		<div class="intro mt-30 hidden">
-			<p class="mb-30">Find the hidden word before time runs out.</p>
+			<p class="mb-30">Find the hidden word.</p>
 			<div id="intro" onclick="startgame()" class="button playnow">Play now!</div>
 		</div>
 
@@ -65,7 +65,7 @@
 		<div class="playing hidden">
 			<!-- Save the daily words in HTML -->
 			<div class="dailywords hidden"></div>
-			<div class="mb-20"><span class="timer"></span> seconds |  <span class="score">0</span> survived</div>
+			<div class="mb-20"><span class="score">0</span> survived</div>
 			<div class="slots flex"></div>
 			<p class="message"></p>
 			<div class="letters flex mb-20"></div>
@@ -116,7 +116,7 @@
 			<div class="modalinner">
 				<div id="instructions" class="togglemodal close">x</div>
 				<h2 class="mb-20">How to play</h2>
-				<p class="mb-20">Find the hidden word before time runs out.</p>
+				<p class="mb-20">Find the hidden word.</p>
 				<p class="mb-20">Can you survive all 23 words?</p>
 				<div id="instructions" class="togglemodal button">Close</div>
 			</div>
@@ -140,17 +140,12 @@
 	<script type="text/javascript">
 		var day = Math.floor((new Date() - new Date('2024-07-27')) / 86400000);
 
-		// Activate countdown variable
-		var countdown, time;
-
 		// Load game
 		function loadgame(){
 			// Check if user has started todays puzzle
 			if(localStorage.getItem('23words') == day){
 				// Get load from localStorage
 				$('.container').html(localStorage.getItem('23wordsload'));
-				time = $('.timer').html();
-				countdown = setInterval(timer, 1000);
 			} 
 			// Else load todays puzzle
 			else {
@@ -217,26 +212,6 @@
 
 			// Shuffle
 			shuffle();
-
-			// Reset timer
-			clearInterval(countdown);
-			time = 30;
-			$('.timer').html(time);
-			countdown = setInterval(timer, 1000);
-		}
-
-
-		// Timer function
-		function timer(){
-			if($('.modal').not('.hidden').length < 1){
-				time--;
-				$('.timer').html(time);
-				if(time < 1){
-					clearInterval(countdown);
-					finish();
-				} 
-				savegame();
-			}
 		}
 
 
@@ -369,7 +344,6 @@
 			localStorage.setItem('23wordsstatus', 'complete');
 			$('.playing').remove();
 			$('.results').removeClass('hidden');
-			clearInterval(countdown);
 			savegame();
 		}
 
