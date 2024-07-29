@@ -249,7 +249,8 @@
 
 			// Check if word is full else do nothing
 			if(word.length === $('.word').html().length){
-
+				savegame();
+				
 				// Check if word is valid else show error
 				if(allwords.includes(word)){
 					$('.message').html('Nice word!').show().delay(1000).fadeOut(0);
@@ -267,7 +268,6 @@
 					}
 				} else {
 					$('.message').html('Not in wordlist').show().delay(1000).fadeOut(0);
-					savegame();
 					attempts--;
 					$('.attempts').html(attempts);
 					if(attempts < 1){
