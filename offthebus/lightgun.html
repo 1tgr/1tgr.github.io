@@ -716,6 +716,45 @@ const DRAW={
     poly([r(-l,w,h),r(l,w,h),r(l,0,ridge),r(-l,0,ridge)],shade(roof)); poly([r(-l,-w,h),r(l,-w,h),r(l,0,ridge),r(-l,0,ridge)],roof); poly([r(l,-w,h),r(l,w,h),r(l,0,ridge)],shade(wall));
     if(u.sign){ const p=r(l,0,h*.55); cx.fillStyle='#d62828'; rr(p[0]-tw*.18,p[1]-tw*.07,tw*.36,tw*.14,3); cx.fill(); cx.fillStyle='#fff'; cx.font=`700 ${Math.max(8,tw*.1)}px system-ui`; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(u.sign,p[0],p[1]); }
     if(u.spire){ const p=r(-l*.6,0,ridge); poly([[p[0]-tw*.08,p[1]],[p[0]+tw*.08,p[1]],[p[0],p[1]-tw*.9]],'#4a4a52'); } },
+  // the Bundeswehr's anti-aircraft tank: twin cannon either side of the turret, a search radar turning on top
+  gepard(u){ const s=tw*.36,h=s*.42; shadow(u,s); const c=box(u,.62,.36,h,['#4d5638','#414a2e','#626d47']);
+    poly([c(-.2,-.1,h),c(0,-.14,h),c(.04,.04,h),c(-.16,.1,h)],'#2b2a1e'); const tz=h*.95, tc=box({x:u.x-.04,y:u.y},.32,.3,tz,['#4d5638','#3a4229','#66724a'],h);
+    cx.strokeStyle='#23281a'; cx.lineWidth=Math.max(1.5,s*.07); cx.lineCap='round';
+    for(const d of [-.19,.19]){ const a=tc(.05,d,h+tz*.6), b=tc(.6,d,h+tz*1.9); cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(b[0],b[1]); cx.stroke(); }
+    const m=tc(-.1,0,h+tz), ang=(performance.now()/700)%(2*Math.PI); cx.strokeStyle='#30362a'; cx.lineWidth=1.5; cx.beginPath(); cx.moveTo(m[0],m[1]); cx.lineTo(m[0],m[1]-s*.32); cx.stroke();
+    cx.fillStyle='#8b9180'; cx.beginPath(); cx.ellipse(m[0],m[1]-s*.4,s*.26*Math.abs(Math.cos(ang))+1.5,s*.12,0,0,7); cx.fill();
+    const f=tc(.16,0,h+tz); cx.fillStyle='#5c6450'; cx.beginPath(); cx.ellipse(f[0],f[1]-s*.06,s*.09,s*.08,0,0,7); cx.fill();
+    tag(tc(-.02,0,h+tz),u.label,tagCol(u),s); },
+  // six-wheeled armoured car with a boat-shaped nose; the NBC version sniffs for chemical agents
+  fuchs(u){ const s=tw*.34,h=s*.5; shadow(u,s); const c=box(u,.6,.3,h,['#5a6040','#4b5135','#6c7450'],s*.1);
+    poly([c(.3,-.15,s*.1),c(.3,.15,s*.1),c(.4,.15,s*.1+h*.55),c(.4,-.15,s*.1+h*.55)],'#636a47');
+    cx.fillStyle='#1d2016'; for(const dx of [-.2,0,.2]){ const w=c(dx,.15,s*.12); cx.beginPath(); cx.ellipse(w[0],w[1],s*.1,s*.13,0,0,7); cx.fill(); }
+    if(u.nbc){ cx.fillStyle='#2a2d22'; for(const d of [-.08,.08]){ const w=c(-.33,d,s*.05); cx.beginPath(); cx.arc(w[0],w[1],s*.05,0,7); cx.fill(); } const a=c(-.2,-.1,s*.1+h); cx.strokeStyle='#222'; cx.lineWidth=1; cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(a[0],a[1]-s*1.1); cx.stroke(); }
+    tag(c(0,0,s*.1+h),u.label,tagCol(u),s); },
+  // amphibious bridging rig: a hull that swims, its deck folded out to join the next one
+  m2(u){ const s=tw*.36,h=s*.32; const c=box(u,.9,u.open?.9:.42,h,['#4a5136','#3c4229','#5e6744']);
+    if(u.open){ poly([c(-.42,-.4,h),c(.42,-.4,h),c(.42,.4,h),c(-.42,.4,h)],'#7c7a68'); cx.strokeStyle='#5d5b4c'; cx.lineWidth=1; for(const d of [-.2,0,.2]){ const a=c(-.42,d,h), b=c(.42,d,h); cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(b[0],b[1]); cx.stroke(); } }
+    const k=box({x:u.x+.25,y:u.y},.22,.3,h*.9,['#4a5136','#3c4229','#2e3a3e'],h); tag(k(0,0,h*.9),u.label,tagCol(u),s); },
+  // the FV432, a box on tracks; the mortar version has a big roof hatch
+  fv432(u){ const s=tw*.33,h=s*.6; shadow(u,s); const c=box(u,.56,.32,h,['#3f4b2c','#34401f','#56653b']); poly([c(-.18,-.1,h),c(.08,-.1,h),c(.08,.1,h),c(-.18,.1,h)],'#262c1a');
+    tag(c(0,0,h),u.label,tagCol(u),s*.8); },
+  // the Hermann Monument: sandstone plinth, green copper figure, sword raised
+  monument(u){ const s=tw*.7,[sx,sy]=iso(u.x,u.y); cx.fillStyle='rgba(0,0,0,.16)'; cx.beginPath(); cx.ellipse(sx,sy,s*.75,s*.32,0,0,7); cx.fill();
+    const pw=s*.7, ph=s*1.05, cu='#5f9e8a', cd='#4c8371';   // round sandstone plinth with columns, a shallow dome, then the figure
+    cx.fillStyle='#cdbf9e'; cx.fillRect(sx-pw/2,sy-ph,pw,ph); cx.fillStyle='#b3a585'; cx.fillRect(sx+pw*.1,sy-ph,pw*.4,ph);
+    cx.fillStyle='#8f8268'; for(const k of [-.32,-.12,.08,.28]) cx.fillRect(sx+pw*k,sy-ph*.82,pw*.06,ph*.62);
+    cx.fillStyle='#d8cba9'; cx.beginPath(); cx.ellipse(sx,sy-ph,pw*.55,s*.1,0,0,7); cx.fill(); cx.beginPath(); cx.ellipse(sx,sy-ph-s*.06,pw*.32,s*.12,0,Math.PI,0); cx.fill();
+    const b=sy-ph-s*.12, fh=s*1.25; cx.fillStyle=cu;
+    cx.beginPath(); cx.moveTo(sx-s*.17,b); cx.lineTo(sx+s*.17,b); cx.lineTo(sx+s*.09,b-fh*.72); cx.lineTo(sx-s*.09,b-fh*.72); cx.closePath(); cx.fill();
+    cx.fillStyle=cd; cx.beginPath(); cx.moveTo(sx,b); cx.lineTo(sx+s*.17,b); cx.lineTo(sx+s*.09,b-fh*.72); cx.lineTo(sx,b-fh*.72); cx.closePath(); cx.fill();
+    cx.fillStyle=cu; cx.beginPath(); cx.arc(sx,b-fh*.8,s*.07,0,7); cx.fill(); cx.beginPath(); cx.moveTo(sx-s*.1,b-fh*.84); cx.lineTo(sx-s*.03,b-fh*.86); cx.lineTo(sx-s*.06,b-fh*.95); cx.fill();
+    cx.fillStyle=cd; cx.beginPath(); cx.ellipse(sx-s*.17,b-fh*.35,s*.08,s*.16,0,0,7); cx.fill();
+    cx.strokeStyle=cu; cx.lineWidth=Math.max(2,s*.06); cx.lineCap='round'; cx.beginPath(); cx.moveTo(sx+s*.07,b-fh*.68); cx.lineTo(sx+s*.16,b-fh*1.0); cx.stroke();
+    cx.strokeStyle='#d9e2de'; cx.lineWidth=Math.max(1.5,s*.035); cx.beginPath(); cx.moveTo(sx+s*.16,b-fh*1.0); cx.lineTo(sx+s*.18,b-fh*1.55); cx.stroke(); },
+  // a gate barrier on a post: down across the road, or raised
+  barrier(u){ const s=tw*.5,[sx,sy]=iso(u.x,u.y); cx.fillStyle='#555'; cx.fillRect(sx-2,sy-s*.5,4,s*.5);
+    const a=u.up?-1.25:0, L=s*1.6, ex=sx+Math.cos(a)*L*.9, ey=sy-s*.42+Math.sin(a)*L*.9+(u.up?0:L*.45);
+    cx.lineCap='butt'; cx.lineWidth=Math.max(2.5,s*.08); for(let i=0;i<6;i++){ const k0=i/6,k1=(i+1)/6; cx.strokeStyle=i%2?'#fff':'#c0392b'; cx.beginPath(); cx.moveTo(sx+(ex-sx)*k0,sy-s*.42+(ey-sy+s*.42)*k0); cx.lineTo(sx+(ex-sx)*k1,sy-s*.42+(ey-sy+s*.42)*k1); cx.stroke(); } },
 };
 function tankBody(u,hullCols,turCols,camo){
   const s=tw*.36,h=s*.42; shadow(u,s); const c=box(u,.62,.36,h,hullCols);
