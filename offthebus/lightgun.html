@@ -841,7 +841,7 @@ async function draw(e,animate){
     case 'act': add(el('stamp',null,'<b>'+e.text+'</b>')); lastFrom=null; break;
     case 'xp': add(el('stamp xp',null,e.html)); lastFrom=null; break;
     case 'levelup': add(el('stamp levelup',null,e.html)); lastFrom=null; break;
-    case 'radio': add(el('scroll',e.text)); lastFrom=null; break;
+    case 'radio': add(el('scroll',e.text)); lastFrom=null; if(animate&&AC.classList.contains('show')&&!AC.classList.contains('collapsed')) setCollapsed(true,true); break;   // narration: put the balloon away so it can be read
     case 'gloss': add(el('gloss',e.text)); break;
     case 'net': { fromLabel(e.who); const b=row('av-net',sc.callsigns[e.who]??e.who.slice(0,2),'b in'+(animate?' typing':''));
       if(animate){ b.innerHTML='<span></span><span></span><span></span>'; await sleep(650); b.className='b in'; } await speak(b,e.text,NET_WPM,animate); if(animate) await sleep(250); break; }
@@ -871,7 +871,8 @@ const AC=$('ac'), acText=$('acText'), acTag=$('acTag'), acGl=$('acGl'), acOpts=$
 let acTap=null;
 AC.addEventListener('click',()=>acTap&&acTap());
 AC.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&acTap){ e.preventDefault(); acTap(); } });
-function setCollapsed(c){ AC.classList.toggle('collapsed',c); const r=$('acReopen'); r.hidden=!c; if(c) r.textContent='💬 Back to '+(acTag.textContent==='Pemberton'?'the conversation':acTag.textContent); }
+let autoCollapsed=false;                             // put away by narration, not by the player: the next balloon line brings it back
+function setCollapsed(c,auto){ autoCollapsed=c&&!!auto; AC.classList.toggle('collapsed',c); const r=$('acReopen'); r.hidden=!c; if(c) r.textContent='💬 Back to '+(acTag.textContent==='Pemberton'?'the conversation':acTag.textContent); }
 $('acHide').addEventListener('click',e=>{ e.stopPropagation(); setCollapsed(true); });
 $('acReopen').addEventListener('click',()=>setCollapsed(false));
 function showBalloon(ac,full){                       // draw the balloon from the core's state
@@ -895,12 +896,12 @@ function openPop(p,anchor){ const vs=core.verbsOf(p); if(!vs.length||!canAct()) 
 function openPopAt(p,sx,sy){ openPop(p,{getBoundingClientRect:()=>{ const c=cv.getBoundingClientRect(); return {left:c.left+sx,top:c.top+sy,width:0,height:0}; }}); }
 function closePop(){ pop.hidden=true; pop.innerHTML=''; }
 document.addEventListener('click',e=>{ if(!pop.hidden&&!pop.contains(e.target)&&!e.target.closest('.ch-prop')&&e.target!==cv&&!e.target.closest('#acTag')&&!e.target.closest('#acPortrait')) closePop(); });
-async function runVerb(v){ closePop(); const speaks=v.lines.some(l=>/^say\s/.test(l)); const wasCollapsed=AC.classList.contains('collapsed'); if(speaks) setCollapsed(false);
+async function runVerb(v){ closePop(); const speaks=v.lines.some(l=>/^say\s/.test(l)); const wasCollapsed=AC.classList.contains('collapsed'), wasAuto=autoCollapsed; if(speaks) setCollapsed(false);
   busy=true; refreshWorld(); const optsWas=acOpts.classList.contains('show'), readyWas=AC.classList.contains('ready'), tapWas=acTap;
   replies.style.visibility='hidden'; acOpts.classList.remove('show');
   inVerb=true; await core.useVerb(v.key); inVerb=false;
   replies.style.visibility=''; showBalloon(ST().ac,true);
-  if(ST().ac.show){ if(optsWas) acOpts.classList.add('show'); AC.classList.toggle('ready',readyWas); acTap=tapWas; if(wasCollapsed&&speaks) setCollapsed(true); }
+  if(ST().ac.show){ if(optsWas) acOpts.classList.add('show'); AC.classList.toggle('ready',readyWas); acTap=tapWas; if(wasCollapsed&&speaks) setCollapsed(true,wasAuto); }
   busy=false; refreshWorld(); scrollDown(); }
 let inVerb=false, redrawPending=false;
 function openPouch(){ if(!canAct()) return; const sh=$('sheet'); sh.innerHTML='<h2>Pouch</h2><p>What you carry.</p>';
@@ -924,7 +925,7 @@ const io={
   choose(opts,o){ if(o.targets) tapTargets=o.targets; return waitFor(chips(opts)).finally(()=>{ tapTargets=null; }); },
   ask(opts){ return waitFor(new Promise(res=>{ acOpts.innerHTML=''; acOpts.classList.add('show'); AC.classList.remove('ready'); acTap=null;
     opts.forEach((o,i)=>{ const b=document.createElement('button'); b.textContent=o.text; b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus(),30); }); })); },
-  async say(ac){ showBalloon(ac,false); AC.classList.remove('ready'); acOpts.classList.remove('show'); acGl.textContent=''; acText.textContent='';
+  async say(ac){ if(autoCollapsed) setCollapsed(false); showBalloon(ac,false); AC.classList.remove('ready'); acOpts.classList.remove('show'); acGl.textContent=''; acText.textContent='';
     let done=false; acTap=()=>{done=true;};
     for(let i=0;i<ac.text.length&&!done;i++){ acText.textContent=ac.text.slice(0,i+1); if(reduce) continue;
       const ch=ac.text[i]; let d=70; if(/[.!?…]/.test(ch)) d+=320; else if(/[,—–]/.test(ch)) d+=160; await new Promise(r=>setTimeout(r,d)); }
