@@ -842,7 +842,10 @@ def brew
 radio Hollis comes over with two mugs.
 if $brew=0
 say Sgt Hollis: Brew, sir. Stewed, but it’s wet.
-ask Thank you, Sergeant. || What’s the word on the net?
+ask Thanks || The net?
+if $choice=0
+say Pemberton: Thank you, Sergeant.
+end
 if $choice=1
 say Pemberton: What’s the word on the net?
 say Sgt Hollis: Same as yesterday, sir. Nothing’s happening, very loudly.
@@ -855,10 +858,16 @@ if $choice=0
 say Pemberton: Two girls?
 say Sgt Hollis: He’ll find out, sir. They always do.
 end
+if $choice=1
+say Pemberton: Good for him.
+end
 end
 if $brew=2
 say Cpl Baxter: Morning, sir! Did you hear the BFBS request show? Somebody asked for Simply Red for the whole regiment.
-ask I did. || Who asked for it?
+ask I did || Who asked?
+if $choice=0
+say Pemberton: I did.
+end
 if $choice=1
 say Pemberton: Who asked for it?
 say Cpl Baxter: Wasn’t me, sir. | It was him.
@@ -866,7 +875,10 @@ end
 end
 if $brew=3
 say Sgt Hollis: Quiet night, sir. Convoys on the far road till two. All going east.
-ask All going east. || How many?
+ask Going east || How many?
+if $choice=0
+say Pemberton: All going east.
+end
 if $choice=1
 say Pemberton: How many?
 say Sgt Hollis: Stopped counting at forty, sir.
@@ -953,7 +965,7 @@ while $qdone=0
 var pick=3
 if $q1=0
 if $q2=0
-ask What’s the latest from Stockholm? || How long do we sit here? || Say nothing.
+ask Stockholm? || How long? || Say nothing.
 if $choice=0
 var pick=1
 end
@@ -961,14 +973,14 @@ if $choice=1
 var pick=2
 end
 else
-ask What’s the latest from Stockholm? || Say nothing.
+ask Stockholm? || Say nothing.
 if $choice=0
 var pick=1
 end
 end
 else
 if $q2=0
-ask How long do we sit here? || Say nothing.
+ask How long? || Say nothing.
 if $choice=0
 var pick=2
 end
@@ -997,7 +1009,7 @@ endtalk
 stamp 0820 · Troop orders
 radio Hollis and Baxter come over to your tank. Now it is your turn.
 say Sgt Hollis: Sir.
-ask Same as yesterday. Training this morning. || In order: ground, situation, mission, execution, service support, command and signal.
+ask Brief orders || Full orders
 var full=$choice
 if $full=1
 say Pemberton: In order: ground, situation, mission, execution, service support, command and signal. | You give it all: the ground, what Calloway said about the enemy, the mission twice, the drill, the replen, the frequencies{$cwt}.
@@ -1226,13 +1238,16 @@ enddef
 def farmer
 radio A man in a flat cap and a waxed jacket walks up the track from the field, carrying a clipboard.
 say The farmer: Sie sind der Offizier? | “You are the officer?”
-ask Ja. Pemberton. || Sergeant Hollis!
+ask Introduce yourself || Call Hollis
+if $choice=0
+say Pemberton: Ja. Pemberton.
+end
 if $choice=1
 say Pemberton: Sergeant Hollis!
 say Sgt Hollis: Ah. Manöverschäden. Field damage, sir. They claim, we pay. Mostly we pay.
 end
 say The farmer: Your tanks have driven on my field. The winter wheat. Here — and here.
-ask I’m sorry. We’ll make it right. || That wasn’t this troop. || Fill in the form, and we’ll pass it on.
+ask Apologise || Deny it || The form
 if $choice=0
 say Pemberton: I’m sorry. We’ll make it right.
 say The farmer: Gut. | He seems surprised. He writes something on the clipboard and underlines it.
@@ -1522,7 +1537,7 @@ near rover,davies,bins
 wait 600
 radio Captain Davies, rear-party commander, leans on the open door of the Land Rover. He doesn’t get out.
 say Capt Davies: Hello there. How’d you get on, then?
-ask Two clean hits. One short.
+ask Report the shoot
 say Pemberton: Two clean hits. One short.
 say Capt Davies: Mm. Tell your corporal he’s drinking on his own coin tonight. | Davies’s joke — the man who missed pays for his own drinks tonight.
 say Capt Davies: … | He glances into your open hatch, at the ammunition bins. Nearly full.
@@ -1611,7 +1626,7 @@ say Pemberton: Sergeant.
 say Sgt Hollis: Bridge here — need the classification. Bend here, tight for a Challenger. Then through Sibbesse. Narrow street, junction in the middle. We’ll want to stop and look at that junction properly, sir.
 say Pemberton: …the junction.
 say Sgt Hollis: The junction outside the SPAR, sir. Key node. Civilian movement patterns. Logistical reconnaissance.
-ask You want bread. || Logistical reconnaissance? || Go on.
+ask Bread. || Reconnaissance? || Go on.
 if $choice=0
 say Pemberton: You want bread.
 say Sgt Hollis: I want to verify the route, sir. Check the clearances. Assess the operational readiness of local supply infrastructure.
@@ -1624,7 +1639,7 @@ if $choice=2
 say Pemberton: Go on.
 say Sgt Hollis: Clearances, sir. Turning circle. And the operational readiness of local supply infrastructure.
 end
-ask You want bread. || Supply infrastructure. || Sergeant Hollis.
+ask Bread. || Infrastructure? || Sergeant…
 if $choice=0
 say Pemberton: You want bread.
 say Sgt Hollis: The men want bread, sir. I am merely concerned for their welfare. The junction is genuinely tight.
@@ -1637,7 +1652,7 @@ if $choice=2
 say Pemberton: Sergeant Hollis.
 say Sgt Hollis: The men want bread, sir. And the junction is genuinely tight. Both things are true.
 end
-ask Right. Mount up. Route recce, south through Sibbesse. Two minutes at the junction. Out and back. || Two minutes at the junction, Sergeant. Not three. || Fine. Get the crews mounted.
+ask Mount up || Two minutes, not three || Fine
 if $choice=0
 say Pemberton: Right. Mount up. Route recce, south through Sibbesse. Two minutes at the junction. Out and back.
 say Sgt Hollis: Sir.
@@ -1716,10 +1731,12 @@ say Frau Müller: You are buying bread?
 say Sgt Hollis: Bread please. And some cold meat. And six bottles of Jever if you have it.
 say Cpl Baxter: Anything in it, sir? | Baxter is at the magazine rack, holding up the Hildesheimer Allgemeine Zeitung.
 near paper,bread,jever,tv,photo,hollis
-ask Same as the radio, I expect. || Let’s have a look.
+ask Same as the radio || Read it
 if $choice=1
+say Pemberton: Let’s have a look.
 say Pemberton: “Heseltine berichtet von Fortschritt in Stockholm. Bundeswehr auf normaler Bereitschaft.” | Heseltine reports progress in Stockholm. Bundeswehr on normal readiness. Nothing the radio hasn’t said.
 else
+say Pemberton: Same as the radio, I expect.
 say Cpl Baxter: Bet it is, sir.
 end
 say Herr Müller: Sie sind aus Detmold? | “You are from Detmold?” He looks at the British soldiers without surprise.
@@ -1728,7 +1745,7 @@ say Herr Müller: My boy is in the Bundeswehr. He is with his unit also. Near Wo
 say Sgt Hollis: He’ll be all right, sir.
 say Frau Müller: Are you here long?
 say Sgt Hollis: As long as needed.
-ask Thank you, Frau Müller.
+ask Thank her
 say Pemberton: Thank you, Frau Müller.
 say Frau Müller: Pass auf dich auf, junger Mann. | “Take care of yourself, young man.” She has caught his sleeve. Hollis pauses. Nods. Says nothing.
 endtalk
@@ -2254,9 +2271,9 @@ async function run1(cmd,a){
     case 'hear': { const [n,t]=nameText(a); await hear(n,t); break; }
     case 'choose': vars.choice=await waitFor(choose(parseOpts(a))); break;
     case 'say': { const [n,t]=nameText(a); const [txt,gl]=interp(t).split(' | ');
-      if(n===(S.head.player||'Pemberton') && !busy && txt!=='…' && !/^[“"]/.test(txt) && txt!==lastAsked){ lastAsked=null; await waitFor(acChoose([{text:txt}])); }
-      if(txt===lastAsked) lastAsked=null; await acSay(n,txt,gl); break; }
-    case 'ask': { const os=parseOpts(a); vars.choice=await waitFor(acChoose(os)); lastAsked=os[vars.choice].text; break; }
+      if(n===(S.head.player||'Pemberton') && !busy && txt!=='…' && !/^[“"]/.test(txt) && !lastAsked){ await waitFor(acChoose([{text:txt}])); }
+      if(n===(S.head.player||'Pemberton')) lastAsked=null; await acSay(n,txt,gl); break; }
+    case 'ask': { const os=parseOpts(a); vars.choice=await waitFor(acChoose(os)); lastAsked=true; break; }   // the next 'say Pemberton' is this choice's line
     case 'endtalk': acShow(false); break;
     case 'wait': await sleep(+a); break;
     case 'var': { const m=a.match(/^\$?(\w+)\s*(\+?=)\s*(\$\w+|-?\d+)$/); const v=m[3].startsWith('$')?(vars[m[3].slice(1)]??0):+m[3]; vars[m[1]]=m[2]==='+='?(vars[m[1]]??0)+v:v; renderBadge(); break; }
@@ -2332,7 +2349,7 @@ async function resumeDone(f,ins){
   if(ins.cmd==='say'){ if(!d.printed) return run1('say',ins.arg); await acWaitTap(); return; }
   if(PRINTS.has(ins.cmd)) return;                                      // the line is already in the thread
   if(ins.cmd==='choose'){ const o=parseOpts(ins.arg)[d.chosen]; vars.choice=d.chosen; if(!d.printed){ await chooseEffect(o); f.done.printed=1; save(); } return; }
-  if(ins.cmd==='ask'){ const o=parseOpts(ins.arg)[d.chosen]; vars.choice=d.chosen; lastAsked=o.text; acOpts.classList.remove('show'); return; }
+  if(ins.cmd==='ask'){ const o=parseOpts(ins.arg)[d.chosen]; vars.choice=d.chosen; lastAsked=true; acOpts.classList.remove('show'); return; }
   if(ins.cmd==='tap'){ vars.choice=d.chosen; return; }
   if(ins.cmd==='cards'){ vars.choice=d.chosen; return; }
 }
