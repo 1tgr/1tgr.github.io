@@ -365,26 +365,17 @@ look: radio Brass cartridge cases stacked by each gun, still smoking faintly in 
 </script>
 <script type="application/json" id="campaign">{"name": "lightgun", "order": ["lightgun"]}</script>
 <script type="application/json" id="portraits">{}</script>
-<script>/* Off the Bus prototype engine.
-   One engine for every scene. A scene is a text file (see scenes/*.scene) with a header,
-   a JSON map and a script; tools/build.py combines engine + scene + portraits into one page. */
-(()=>{
-const SCENE_TEXTS = {}; document.querySelectorAll('script.scene').forEach(e=>SCENE_TEXTS[e.dataset.name]=e.textContent);
-const CAMPAIGN = JSON.parse(document.getElementById('campaign').textContent);   // {name, order:[scene names]}
-const PORTRAITS = JSON.parse(document.getElementById('portraits').textContent);
-const TESTARG = new URLSearchParams(location.search).get('test');
-const TEST = TESTARG!=null;                                  // ?test=<seed>: no pauses, instant moves, plays itself
-let tseed = (parseInt(TESTARG)||1)*7919; const trand = n => { tseed=(tseed*16807)%2147483647; return tseed % n; };
-const TLOG = window.__test = {done:false, steps:0, choices:[], errors:[]};
-function finalState(){ return JSON.stringify(vars)+'|'+thread.innerText.length+'|'+[...thread.innerText].reduce((h,c)=>(h*31+c.charCodeAt(0))|0,0); }
-const QS=new URLSearchParams(location.search), RESTORE_AT=+(QS.get('restoreAt')||0), RESUME=QS.has('resume'), RESTORE_MODE=QS.get('restoreMode')||'before';   // playtest save/restore checks
-if(TEST) window.addEventListener('error', e=>TLOG.errors.push(String(e.message)));
-const reduce = TEST || matchMedia('(prefers-reduced-motion: reduce)').matches;
-const $ = id => document.getElementById(id);
-const soon = f => TEST ? Promise.resolve().then(f) : setTimeout(f,0);
-const sleep = ms => TEST ? Promise.resolve() : new Promise(r=>setTimeout(r, reduce?Math.min(ms,150):ms));
+<script>/* Off the Bus engine core: the game with no page.
+   Parses scenes, compiles scripts to steps, runs them, and keeps the whole game state as plain
+   data (core.state). Everything the player sees or does goes through an `io` object supplied by
+   the caller: the page (ui.js) animates and waits for taps; the test harness answers instantly.
 
-/* ================= universal objects: always to hand ================= */
+   io: print(entry) · choose(opts, {targets}) → i · ask(opts) → i · say(ac) · tap() · cards(title, sub, items) → i
+       zoom(label) · wait(ms) · waitMoves(ids) · effect(ev) · update() · persist(json) · end(kind)
+   All io methods may return promises. */
+(function(root){
+'use strict';
+
 const UNIVERSAL_PROPS=`
 @pistol your pistol
 kit: yes
@@ -399,7 +390,7 @@ verb: Change
 use: radio You take off your boots and change your socks. Dry feet. For a few minutes, the world is a better place.
 use: gloss Foot care: every soldier is taught that wet feet end campaigns. Nobody needs to tell you twice.
 `;
-/* ================= scene parsing ================= */
+
 function parseScene(text){
   const [headText, rest] = text.split(/^---map\s*$/m);
   const [mapText, afterMap] = rest.split(/^---script\s*$/m);
@@ -427,145 +418,244 @@ function parseScene(text){
   return { head, map:JSON.parse(mapText), script, macros, props, days, legend, callsigns:lists('callsigns'), crew:lists('crew'), people,
     vars:Object.fromEntries(Object.entries(lists('vars')).map(([k,v])=>[k,Number(v)])) };
 }
-const PARSED={}; const sceneOf=n=>PARSED[n]||(PARSED[n]=parseScene(SCENE_TEXTS[n]));
-let SNAME=CAMPAIGN.order[0], S=sceneOf(SNAME);
 
-/* ================= page chrome ================= */
-function applyChrome(){
-document.title = S.head.title || 'Off the Bus';
-let [hudT,hudD] = (S.head.hud||'|').split('|').map(s=>s.trim()); $('hudT').textContent=hudT; $('hudD').textContent=hudD;
-let [endBig,endSub] = (S.head.endcard||'Off the Bus|').split('|').map(s=>s.trim()); $('endBig').textContent=endBig; $('endSub').textContent=endSub;
-let [netName,netSub,netAv] = (S.head.net||'Net||').split('|').map(s=>s.trim()); $('hn').textContent=netName; $('hs').textContent=netSub; $('av').textContent=netAv;
-$('map').setAttribute('aria-label', S.head.maplabel||'Isometric map');
-}
-
-/* ================= the thread ================= */
-const thread=$('thread'), replies=$('replies');
-let lastFrom=null, lastDelivered=null, skip=false, speaking=false;
-thread.addEventListener('click',()=>{ if(speaking) skip=true; });
-const scrollDown=()=>{ if(!TEST) thread.scrollTop=thread.scrollHeight; };
-function el(cls,txt,html){ const d=document.createElement('div'); d.className=cls; if(html!=null) d.innerHTML=html; else d.textContent=txt; return d; }
-function add(e){ thread.appendChild(e); scrollDown(); return e; }
-const NET_WPM=380, IC_WPM=250;
-async function speak(b,text,msPerWord){
-  b.textContent=''; speaking=true; skip=false;
-  const said=document.createElement('span'), rest=document.createElement('span'); rest.className='unsaid'; rest.textContent=text; b.append(said,rest); scrollDown();
-  const per=msPerWord/5.5;
-  for(let i=0;i<text.length;i++){ if(skip||reduce) break; said.textContent=text.slice(0,i+1); rest.textContent=text.slice(i+1);
-    const ch=text[i], nx=text[i+1]||' '; let d=per; if(/[.!?…]/.test(ch)&&/[\s"”’]/.test(nx)) d+=380; else if(/[,—–:;]/.test(ch)) d+=200;
-    await new Promise(r=>setTimeout(r,d)); }
-  said.textContent=text; rest.textContent=''; skip=false; speaking=false;
-}
-function row(avCls,avTxt,bCls){ const r=el('row',null,`<span class="av ${avCls}">${avTxt}</span>`); const b=el(bCls,''); r.appendChild(b); add(r); return b; }
-function fromLabel(t){ if(lastFrom!==t){ add(el('from',t)); } lastFrom=t; }
-let printedHook=null, choiceHook=null;   // set by the interpreter: a step's output has finished / a choice was made
-const printed=()=>{ const h=printedHook; printedHook=null; h&&h(); };
-async function netIn(who,text){ fromLabel(who); const b=row('av-net',S.callsigns[who]??who.slice(0,2),'b in typing'); b.innerHTML='<span></span><span></span><span></span>'; await sleep(650); b.className='b in'; await speak(b,text,NET_WPM); printed(); await sleep(250); }
-async function netOut(text){ if(lastDelivered) lastDelivered.remove(); const b=add(el('b out','')); await speak(b,text,NET_WPM); lastDelivered=add(el('delivered','Transmitted')); lastFrom=null; printed(); await sleep(200); }
-async function icIn(who,text){ fromLabel(who+' · intercom'); const b=row('av-ic',S.crew[who]??who[0],'b ic-in'); await sleep(250); await speak(b,text,IC_WPM); printed(); await sleep(150); }
-async function icOut(text){ const b=add(el('b ic-out','')); lastFrom=null; await speak(b,text,IC_WPM); printed(); await sleep(150); }
-async function hear(who,text){ fromLabel(who+' · overheard'); const b=row('av-oh',(who.match(/\d/)||['·'])[0],'b oh'); await sleep(300); await speak(b,text,NET_WPM*.85); printed(); await sleep(200); }
-const stamp=h=>{ add(el('stamp',null,h)); lastFrom=null; };
-const radio=t=>{ add(el('scroll',t)); lastFrom=null; };
-const gloss=t=>add(el('gloss',t));
-
-/* the world: objects on the map, people by their face, kit in the pouch.
-   Usable whenever the game is waiting for the player (a choice, or a balloon waiting for a tap). */
-const propsBar=$('props'), pop=$('pop'); let near=[], used=new Set(), waiting=0, busy=false;
-const kitIds=()=>Object.values(S.props).filter(p=>p.kit).map(p=>p.id);
-function verbsOf(p){ const out=[];
-  if(p.look.length) out.push({icon:'🔍',text:'Look at '+p.label,lines:p.look,key:p.id+':look'});
-  if(p.use.length&&!used.has(p.id+':use')) out.push({icon:'✋',text:p.verb+' '+p.label,lines:p.use,key:p.id+':use',once:1});
-  for(const [topic,lines] of Object.entries(p.asks)) if(!used.has(p.id+':ask:'+topic)) out.push({icon:'💬',text:'Ask '+topic,lines,key:p.id+':ask:'+topic,once:1});
-  return out; }
-const nearProps=()=>near.map(id=>S.props[id]).filter(Boolean);
-function canAct(){ return waiting>0 && !busy; }
-function refreshWorld(){ propsBar.innerHTML=''; $('pouch').hidden=!canAct(); AC.classList.toggle('can-hide',canAct());
-  if(!canAct()){ closePop(); return; }
-  for(const p of nearProps()){ if(p.at||p.unit||p.kit||p.person||!verbsOf(p).length) continue;   // things in the room with no place on the map
-    const b=document.createElement('button'); b.className='chip ch-prop'; b.textContent=(p.icon!=='•'?p.icon+' ':'')+p.label; b.onclick=e=>openPop(p,e.currentTarget); propsBar.appendChild(b); } }
-function openPop(p,anchor){ const vs=verbsOf(p); if(!vs.length||!canAct()) return;
-  pop.innerHTML=`<div class="pt">${p.label}</div>`; for(const v of vs){ const b=document.createElement('button'); b.textContent=v.icon+' '+v.text; b.onclick=e=>{ e.stopPropagation(); runVerb(v); }; pop.appendChild(b); }
-  pop.hidden=false; const r=anchor?anchor.getBoundingClientRect():null, app=$('app').getBoundingClientRect();
-  if(r){ pop.style.left=Math.max(8,Math.min(app.width-pop.offsetWidth-8,r.left-app.left+r.width/2-pop.offsetWidth/2))+'px'; pop.style.top=Math.max(8,r.top-app.top-pop.offsetHeight-6)+'px'; }
-  else { pop.style.left=((app.width-pop.offsetWidth)/2)+'px'; pop.style.top='30%'; } }
-function openPopAt(p,sx,sy){ const fake={getBoundingClientRect:()=>{ const c=cv.getBoundingClientRect(); return {left:c.left+sx,top:c.top+sy,width:0,height:0}; }}; openPop(p,fake); }
-function closePop(){ pop.hidden=true; pop.innerHTML=''; }
-document.addEventListener('click',e=>{ if(!pop.hidden&&!pop.contains(e.target)&&!e.target.closest('.ch-prop')&&e.target!==cv&&!e.target.closest('#acTag')&&!e.target.closest('#acPortrait')) closePop(); });
-async function runVerb(v){ closePop(); const speaks=v.lines.some(l=>/^say\s/.test(l)); const wasCollapsed=AC.classList.contains('collapsed'); if(speaks) setCollapsed(false); busy=true; refreshWorld();
-  const acWas=AC.classList.contains('show'), optsWas=acOpts.classList.contains('show'), readyWas=AC.classList.contains('ready');
-  const saved=acWas?{tag:acTag.textContent,bg:acTag.style.background,text:acText.textContent,gl:acGl.textContent,por:acPor.className,img:acPor.style.backgroundImage,tap:acTap}:null;
-  replies.style.visibility='hidden'; acOpts.classList.remove('show');
-  if(v.once) used.add(v.key);
-  await exec(v.lines);
-  replies.style.visibility='';
-  if(saved){ acShow(true); acTag.textContent=saved.tag; acTag.style.background=saved.bg; acText.textContent=saved.text; acGl.textContent=saved.gl; acPor.className=saved.por; acPor.style.backgroundImage=saved.img;
-    if(optsWas) acOpts.classList.add('show'); AC.classList.toggle('ready',readyWas); acTap=saved.tap; if(wasCollapsed&&speaks) setCollapsed(true); } else acShow(false);
-  busy=false; refreshWorld(); scrollDown(); save(); }
-async function waitFor(promise){ waiting++; refreshWorld(); try{ return await promise; } finally{ waiting--; refreshWorld(); } }
-function openPouch(){ if(!canAct()) return; const sh=$('sheet'); sh.innerHTML='<h2>Pouch</h2><p>What you carry.</p>';
-  for(const id of kitIds()){ const p=S.props[id]; for(const v of verbsOf(p)){ const b=document.createElement('button'); b.className='card';
-    b.innerHTML=`<div class="ct">${p.icon!=='•'?p.icon+' ':''}${v.text}</div>`; b.onclick=()=>{ $('scrim').classList.remove('show'); runVerb(v); }; sh.appendChild(b); } }
-  const r=document.createElement('button'); r.className='card'; r.innerHTML='<div class="ct">↺ Start again from the beginning</div><div class="cs">Clears your saved game.</div>';
-  r.onclick=()=>{ sh.innerHTML='<h2>Start again?</h2><p>Your saved game will be cleared and the campaign will start from the beginning.</p>';
-    const y=document.createElement('button'); y.className='card'; y.innerHTML='<div class="ct">Yes, start again</div>'; y.onclick=()=>{ clearSave(); location.reload(); };
-    const n=document.createElement('button'); n.className='card'; n.innerHTML='<div class="cs">No, keep playing</div>'; n.onclick=()=>$('scrim').classList.remove('show');
-    sh.append(y,n); }; sh.appendChild(r);
-  const c=document.createElement('button'); c.className='card'; c.innerHTML='<div class="cs">Close</div>'; c.onclick=()=>$('scrim').classList.remove('show'); sh.appendChild(c);
-  $('scrim').classList.add('show'); }
-$('pouch').addEventListener('click',openPouch);
-function personProp(name){ return nearProps().find(p=>p.person===name); }
-$('acTag').addEventListener('click',e=>{ const p=personProp(acTag.textContent); if(p&&canAct()){ e.stopPropagation(); openPop(p,acTag); } });
-$('acPortrait').addEventListener('click',e=>{ const p=personProp(acTag.textContent); if(p&&canAct()){ e.stopPropagation(); openPop(p,acPor); } });
-
-/* choices: net: transmits, ic: says it on the intercom, act: Pemberton's own action, hint: silent */
-let mapPick=null;
+const parseLine=l=>{ const m=l.match(/^(\S+)\s*(.*)$/); return [m[1],m[2]]; };
+const nameText=a=>{ const m=a.match(/^([^:]+):\s*(.*)$/); return [m[1].trim(),m[2]]; };
+const pt=s=>s.split(',').map(Number);
+function kv(args){ const o={}; for(const m of args.matchAll(/(\w+)=([^\s]+)/g)) o[m[1]]=isNaN(+m[2])?m[2]:+m[2]; return o; }
 function parseOpts(arg){ return arg.split('||').map(o=>{ o=o.trim(); const m=o.match(/^(net|ic|act|hint):\s*(.*)$/); return m?{kind:m[1],text:m[2]}:{kind:'net',text:o}; }); }
-async function chooseEffect(o){ const ph=printedHook; printedHook=null;   // the reply's own output: a transmission, an intercom line, an action
-  if(o.kind==='net') await netOut(o.text); else if(o.kind==='ic') await icOut(o.text); else if(o.kind==='act') add(el('stamp',null,'<b>'+o.text+'</b>'));
-  printedHook=ph; }
-function choose(opts){
-  return new Promise(res=>{
-    replies.innerHTML='';
-    const pick=async i=>{ replies.innerHTML=''; mapPick=null; const ch=choiceHook; choiceHook=null; ch&&ch(i);
-      await chooseEffect(opts[i]); printed(); res(i); };
-    opts.forEach((o,i)=>{ const b=document.createElement('button');
-      b.className='chip '+({net:'ch-net',ic:'ch-ic',act:'ch-act',hint:'hint'}[o.kind]);
-      b.textContent=o.kind==='ic'?`“${o.text}”`:o.text; b.onclick=()=>pick(i); replies.appendChild(b); });
-    mapPick=pick; scrollDown();
-    if(TEST){ const i=trand(opts.length); TLOG.choices.push(opts[i].text.slice(0,40)); soon(()=>pick(i)); }
+function compile(lines){
+  const out=lines.map(l=>{ const [cmd,arg]=parseLine(l); return {cmd,arg}; }), stack=[];
+  out.forEach((ins,i)=>{
+    if(ins.cmd==='if'||ins.cmd==='while') stack.push(i);
+    else if(ins.cmd==='else'){ const j=stack.pop(); out[j].jump=i+1; stack.push(i); }
+    else if(ins.cmd==='end'){ const j=stack.pop(); if(out[j].cmd==='while'){ ins.loop=j; out[j].jump=i+1; } else out[j].jump=i+1; }
   });
+  return out;
+}
+const LEVELS=['Raw','Practised','Drilled'];
+const WAITS=new Set(['net','me','ic','icme','hear','choose','ask','say','wait','waitmove','cards','tap','zoomgate','replay']);
+const SPEECH={net:'net',me:'out',ic:'ic',icme:'icout',hear:'hear'};
+
+function createCore({scenes, campaign, io}){
+  const PARSED={}, COMPILED={}, TREES={};
+  const sceneOf=n=>PARSED[n]||(PARSED[n]=parseScene(scenes[n]));
+  const S=()=>sceneOf(state.scene);
+  let state=null;
+  const fresh=()=>({v:3, sceneIdx:0, scene:campaign.order[0], nestDepth:0, frames:[], vars:{}, thread:[],
+    world:{units:[], broken:[], tracks:[], gaps:[], cam:[0,0,6], night:0, hud:['',''], badge:'', tip:'', near:[], used:[], end:false},
+    ac:{show:false, name:'', text:'', gloss:'', collapsed:false}, lastAsked:false, rng:1});
+  state=fresh();
+
+  /* ---- text ---- */
+  const LV=()=>(S().head.levels||'4,8').split(',').map(Number);
+  const levelOf=n=>{ const lv=LV(); return n>=lv[1]?2:n>=lv[0]?1:0; };
+  const CAL=()=>(S().head.calendar||'').split('|').map(x=>x.trim());
+  function interp(t){ const vars=state.vars; return t.replace(/\{(level|pips|date|bar)?:?\$(\w+)\}/g,(m,f,k)=>{ const v=vars[k]??0; if(f==='level') return LEVELS[levelOf(v)]; if(f==='date') return CAL()[v]||'';
+    if(f==='bar'){ const lv=LV(), l=levelOf(v), lo=l===0?0:lv[0], hi=l===0?lv[0]:lv[1], w=l>=2?1:Math.max(0,Math.min(1,(v-lo)/(hi-lo))); return `<span class="xpbar"><i style="width:${Math.round(w*100)}%"></i></span>`; }
+    if(f==='pips'){ const on=v>0?levelOf(v)+1:0; return '<span class="pips">'+[0,1,2].map(i=>`<i class="${i<on?'on':''}"></i>`).join('')+'</span>'; } return String(v); }); }
+  function cond(expr){ const m=expr.match(/^\$(\w+)\s*(=|!=|<|>)\s*(-?\d+)$/); if(!m) throw new Error('bad if: '+expr); const v=state.vars[m[1]]??0, n=+m[3];
+    return {'=':v===n,'!=':v!==n,'<':v<n,'>':v>n}[m[2]]; }
+  function rand(n){ state.rng=(state.rng*16807)%2147483647; return state.rng%n; }
+
+  /* ---- the world ---- */
+  function treesOf(name){ if(TREES[name]) return TREES[name]; const sc=sceneOf(name), out=[]; let seed=1; const rnd=()=>{ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; };
+    for(const a of sc.map.trees||[]){ seed=a.seed||7;
+      for(let i=0;i<a.n;i++){ const x=a.x[0]+rnd()*(a.x[1]-a.x[0]), y=a.y[0]+rnd()*(a.y[1]-a.y[0]); const s=(a.s||[.7,1.3]); const t={x,y,s:s[0]+rnd()*(s[1]-s[0]),kind:a.kind||'broad',col:a.col};
+        if((sc.map.keep||[]).some(k=>Math.hypot(k[0]-x,k[1]-y)<(k[2]||.8))) continue; out.push(t); } }
+    for(const t of sc.map.tree||[]) out.push({s:1,kind:'broad',...t});
+    for(const h of sc.map.hedge||[]){ const [a,b]=[h.from,h.to], n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/(h.step||.35)); for(let i=0;i<=n;i++) out.push({x:a[0]+(b[0]-a[0])*i/n,y:a[1]+(b[1]-a[1])*i/n,s:.9+((i*37)%5)/20,kind:'hedge'}); }
+    return TREES[name]=out; }
+  const unit=id=>state.world.units.find(u=>u.id===id);
+  const ids=s=>s.split(',').map(x=>x.trim()).flatMap(x=>x==='all'?state.world.units.map(u=>u.id):[x]);
+  function tick(dt){                                   // advance moving units; tracks and broken hedges are world state
+    const w=state.world, trees=treesOf(state.scene);
+    for(const u of w.units){ if(!u.trail||!u.path.length||u.delay>0) continue; const last=u._tr; if(!last||Math.hypot(u.x-last[0],u.y-last[1])>.12){ w.tracks.push([u.x,u.y,last?Math.atan2(u.y-last[1],u.x-last[0]):0]); u._tr=[u.x,u.y]; }
+      trees.forEach((t,i)=>{ if(t.kind==='hedge'&&!w.broken.includes(i)&&Math.hypot(t.x-u.x,t.y-u.y)<.45){ w.broken.push(i); w.gaps.push([t.x,t.y]); } }); }
+    for(const u of w.units){ if(u.delay>0){u.delay-=dt;continue;} if(u.path.length){ const [px,py]=u.path[0], dx=px-u.x, dy=py-u.y, d=Math.hypot(dx,dy); if(d<.03) u.path.shift(); else { const v=Math.min(d,dt*u.spd); u.x+=dx/d*v; u.y+=dy/d*v; } }
+      if(u.telev!=null) u.elev=(u.elev??.25)+(u.telev-(u.elev??.25))*Math.min(1,dt*2); }
+  }
+  function finishMoves(){ let guard=0; while(state.world.units.some(u=>u.path.length||u.delay>0)&&guard++<20000) tick(.05); for(const u of state.world.units) if(u.telev!=null) u.elev=u.telev; }
+  const moving=list=>list.some(id=>{ const u=unit(id); return u&&(u.path.length||u.delay>0); });
+
+  /* ---- objects ---- */
+  function verbsOf(p){ const out=[], used=state.world.used;
+    if(p.look.length) out.push({icon:'🔍',text:'Look at '+p.label,lines:p.look,key:p.id+':look'});
+    if(p.use.length&&!used.includes(p.id+':use')) out.push({icon:'✋',text:p.verb+' '+p.label,lines:p.use,key:p.id+':use',once:1});
+    for(const [topic,lines] of Object.entries(p.asks)) if(!used.includes(p.id+':ask:'+topic)) out.push({icon:'💬',text:'Ask '+topic,lines,key:p.id+':ask:'+topic,once:1});
+    return out; }
+  const nearProps=()=>state.world.near.map(id=>S().props[id]).filter(Boolean);
+  const kitProps=()=>Object.values(S().props).filter(p=>p.kit);
+  async function useVerb(key){
+    const [id]=key.split(':'); const p=S().props[id]; const v=p&&verbsOf(p).find(x=>x.key===key); if(!v) return;
+    const saved={...state.ac};
+    if(v.once) state.world.used.push(v.key);
+    await exec(v.lines);
+    if(saved.show){ state.ac={...saved}; io.update(); }
+    save();
+  }
+
+  /* ---- thread ---- */
+  async function emit(entry){ await io.print(entry); state.thread.push(entry); }
+
+  /* ---- commands ---- */
+  const H=()=>({printed:null,choice:null});
+  let hook=H();
+  async function exec(lines){                          // object verbs: run whole, not as saved steps
+    for(let i=0;i<lines.length;i++){ const [cmd,arg]=parseLine(lines[i]); await run1(cmd,arg,true); }
+  }
+  async function run1(cmd,a,inVerb){
+    const vars=state.vars, w=state.world;
+    switch(cmd){
+      case 'stamp': await emit({k:'stamp',html:interp(a)}); break;
+      case 'radio': await emit({k:'radio',text:interp(a)}); break;
+      case 'gloss': await emit({k:'gloss',text:a}); break;
+      case 'net': case 'ic': case 'hear': { const [n,t]=nameText(a); await emit({k:SPEECH[cmd],who:n,text:cmd==='net'?interp(t):t}); hook.printed&&hook.printed(); break; }
+      case 'me': case 'icme': await emit({k:SPEECH[cmd],text:a}); hook.printed&&hook.printed(); break;
+      case 'choose': { const opts=parseOpts(a); const i=await io.choose(opts,{}); hook.choice&&hook.choice(i); vars.choice=i; await chooseEffect(opts[i]); hook.printed&&hook.printed(); break; }
+      case 'say': { const [n,t]=nameText(a); const [txt,gl]=interp(t).split(' | '); const me=S().head.player||'Pemberton';
+        if(n===me && !inVerb && txt!=='…' && !/^[“"]/.test(txt) && !state.lastAsked){ await io.ask([{text:txt}]); }
+        if(n===me) state.lastAsked=false;
+        state.ac={show:true,name:n,text:txt,gloss:gl||'',collapsed:false}; await io.say(state.ac); hook.printed&&hook.printed(); await io.tap(); break; }
+      case 'ask': { const os=parseOpts(a); const i=await io.ask(os); hook.choice&&hook.choice(i); vars.choice=i; state.lastAsked=true; break; }
+      case 'endtalk': state.ac={...state.ac,show:false}; io.update(); break;
+      case 'wait': await io.wait(+a); break;
+      case 'var': { const m=a.match(/^\$?(\w+)\s*(\+?=)\s*(\$\w+|-?\d+)$/); const v=m[3].startsWith('$')?(vars[m[3].slice(1)]??0):+m[3]; vars[m[1]]=m[2]==='+='?(vars[m[1]]??0)+v:v; io.update(); break; }
+      case 'do': await exec(S().macros[a.trim()]); break;      // only reached from object verbs; the step interpreter handles 'do' itself
+      case 'today': { const row=S().days[vars[a.replace('$','').trim()]??0]||{}; for(const k of Object.keys(S().legend||{})) vars[k]=0; for(const [k,v] of Object.entries(row)) if(k!=='label') vars[k]=v; w.used=[]; io.update(); break; }
+      case 'str': { const m=a.match(/^\$?(\w+)\s*=\s*(.*)$/); vars[m[1]]=interp(m[2]); break; }
+      case 'random': { const [k,lo,hi]=a.replace('$','').split(/\s+/); vars[k]=rand(+hi-+lo+1)+(+lo); break; }
+      case 'xp': { const m=a.match(/^\$?(\w+)\s+(-?\d+)\s+(.*)$/); const before=levelOf(vars[m[1]]??0); vars[m[1]]=(vars[m[1]]??0)+(+m[2]); const after=levelOf(vars[m[1]]);
+        await emit({k:'xp',html:`<b>+${m[2]} XP</b> · ${m[3]} ${interp('{bar:$'+m[1]+'}')}`});
+        if(after>before) await emit({k:'levelup',html:`<b>${m[3]} is now ${LEVELS[after]}</b>`});
+        io.update(); break; }
+      case 'cards': { const [headPart,list]=a.split('::'); const [title,sub]=headPart.split('|').map(x=>x.trim());
+        const items=list.split('||').map(c=>c.split('|').map(x=>x.trim())).map(([t,d,l])=>({title:t,desc:d||'',label:interp(l||'')}));
+        const i=await io.cards(interp(title),interp(sub||''),items); hook.choice&&hook.choice(i); vars.choice=i; break; }
+      case 'badge': w.badge=a; io.update(); break;
+      case 'move': { const parts=a.split(/\s+/); const who=ids(parts[0]); const pts=parts.slice(1).filter(p=>/^-?[\d.]+,-?[\d.]+$/.test(p)).map(pt); const o=kv(a);
+        who.forEach((id,k)=>{ const u=unit(id); u.path=pts.map(p=>[...p]); u.spd=o.speed??1; u.delay=(o.delay??0)+(o.stagger??0)*k; }); break; }
+      case 'to': { const parts=a.split(/\s+/).filter(p=>!p.includes('=')); const o=kv(a); let k=0;
+        for(let j=0;j<parts.length;j+=2){ const u=unit(parts[j]); u.path=[pt(parts[j+1])]; u.spd=o.speed??1; u.delay=(o.stagger??0)*k++; } break; }
+      case 'waitmove': { const list=ids(a||'all'); if(moving(list)) await io.waitMoves(list); break; }
+      case 'set': { const parts=a.split(/\s+/); const o=kv(a); for(const id of ids(parts[0])) Object.assign(unit(id),o); io.update(); break; }
+      case 'teleport': { const parts=a.split(/\s+/); for(let j=0;j<parts.length;j+=2){ const u=unit(parts[j]); [u.x,u.y]=pt(parts[j+1]); u.path=[]; } break; }
+      case 'fire': { const m=a.match(/^(\S+)\s+at\s+(\S+)(.*)$/); await io.effect({k:'fire',from:ids(m[1]),at:/^-?[\d.]+,-?[\d.]+$/.test(m[2])?pt(m[2]):m[2],miss:/\bmiss\b/.test(m[3]),light:/\blight\b/.test(m[3])}); break; }
+      case 'burst': { const [x,y]=pt(a.split(/\s+/)[0]); await io.effect({k:'burst',at:[x,y],shake:/shake/.test(a)}); break; }
+      case 'missile': { const [id,to]=a.split(/\s+/); await io.effect({k:'missile',from:id,to:pt(to)}); break; }
+      case 'shake': await io.effect({k:'shake',s:+a||.5}); break;
+      case 'cam': { const [x,y,z]=pt(a); w.cam=[x,y,z||w.cam[2]]; io.update(); break; }
+      case 'hud': { const [t,d]=interp(a).split('|').map(s=>s.trim()); w.hud=[t,d||w.hud[1]]; io.update(); break; }
+      case 'night': w.night=+a; io.update(); break;
+      case 'tutorial': w.tip=a; io.update(); break;
+      case 'tap': { const opts=a.split('||').map(o=>{ const [l,r]=o.split('='); return {targets:l.trim().split('|').map(s=>s.trim()),text:r.trim(),kind:'hint'}; });
+        const i=await io.choose(opts.map(o=>({kind:'hint',text:o.text})),{targets:opts.map(o=>o.targets)}); hook.choice&&hook.choice(i); vars.choice=i; break; }
+      case 'zoomgate': await io.zoom(a); break;
+      case 'near': w.near=a.split(',').map(x=>x.trim()).filter(Boolean); io.update(); break;
+      default: throw new Error('unknown command: '+cmd);
+    }
+  }
+  async function chooseEffect(o){
+    if(o.kind==='net') await emit({k:'out',text:o.text}); else if(o.kind==='ic') await emit({k:'icout',text:o.text}); else if(o.kind==='act') await emit({k:'act',text:o.text});
+  }
+
+  /* ---- scenes, frames and the step interpreter ---- */
+  function code(scene,name){ const k=scene+'|'+name; if(COMPILED[k]) return COMPILED[k];
+    const sc=sceneOf(scene); const lines=name==='main'?sc.script:name.startsWith('macro:')?sc.macros[name.slice(6)]:SYNTH[name];
+    return COMPILED[k]=compile(lines||[]); }
+  const SYNTH={};
+  function loadScene(name){
+    state.scene=name; const sc=sceneOf(name), w=state.world;
+    w.units=(sc.map.units||[]).map(d=>({...d,path:[],delay:0,spd:1})); w.broken=[]; w.tracks=[]; w.gaps=[];
+    w.cam=pt(sc.head.camera||'0,0,6'); w.night=+(sc.head.night||0); const [t,d]=(sc.head.hud||'|').split('|').map(x=>x.trim()); w.hud=[t,d];
+    w.badge=''; w.tip=''; w.near=[]; w.used=[]; w.end=false; state.ac={show:false,name:'',text:'',gloss:'',collapsed:false};
+    for(const [k,v] of Object.entries(sc.vars)) if(state.vars[k]===undefined) state.vars[k]=v;
+    io.update();
+  }
+  function startScene(i){ state.sceneIdx=i; loadScene(campaign.order[i]); state.frames=[{scene:state.scene,code:'main',pc:0}]; }
+  async function resumeDone(f,ins){
+    const d=f.done;
+    if(ins.cmd==='say'){ if(!d.printed) return run1('say',ins.arg); await io.tap(); return; }
+    if(SPEECH[ins.cmd]) return;
+    if(ins.cmd==='choose'){ const o=parseOpts(ins.arg)[d.chosen]; state.vars.choice=d.chosen; if(!d.printed){ await chooseEffect(o); f.done.printed=1; save(); } return; }
+    if(ins.cmd==='ask'){ state.vars.choice=d.chosen; state.lastAsked=true; return; }
+    if(ins.cmd==='tap'||ins.cmd==='cards'){ state.vars.choice=d.chosen; return; }
+  }
+  async function interpret(){
+    while(state.frames.length){
+      const fs=state.frames, f=fs[fs.length-1], c=code(f.scene,f.code);
+      if(f.pc>=c.length){ fs.pop(); if(f.nested){ state.nestDepth--; loadScene(f.caller); state.world.badge=f.badge; state.world.near=f.near; io.update(); } continue; }
+      const ins=c[f.pc];
+      switch(ins.cmd){
+        case 'if': case 'while': f.pc=cond(ins.arg)?f.pc+1:ins.jump; continue;
+        case 'else': f.pc=ins.jump; continue;
+        case 'end': f.pc=ins.loop!=null?ins.loop:f.pc+1; continue;
+        case 'do': f.pc++; fs.push({scene:f.scene,code:'macro:'+ins.arg.trim(),pc:0}); continue;
+        case 'play': { f.pc++; const fr={scene:ins.arg.trim(),code:'main',pc:0,nested:1,caller:state.scene,badge:state.world.badge,near:[...state.world.near]};
+          state.nestDepth++; loadScene(fr.scene); fs.push(fr); continue; }
+        case 'title': f.pc++; if(!state.nestDepth&&state.sceneIdx===campaign.order.length-1){ state.world.end=true; io.update(); } continue;
+        case 'checkpoint': f.pc++; continue;
+        case 'replay':
+          if(state.nestDepth||campaign.order.length>1){ f.pc++; continue; }
+          save(); { const parts=ins.arg.split('||').map(x=>x.split('=').map(y=>y.trim())); const i=await io.choose(parts.map(p=>({kind:'hint',text:p[0]})),{replay:true});
+            if(i==null) return;                       // a test harness ending here
+            const v=parts[i][1]; state=fresh(); startScene(0); if(v){ const [k,n]=v.split(':'); state.vars[k]=+n; } io.update(); } continue;
+      }
+      if(f.done){ await resumeDone(f,ins); delete f.done; f.pc++; continue; }
+      if(WAITS.has(ins.cmd)) save();
+      hook={ printed: (SPEECH[ins.cmd]||ins.cmd==='say') ? ()=>{ f.done={printed:1}; save(); } : null,
+             choice: ['choose','ask','cards','tap'].includes(ins.cmd) ? i=>{ f.done={chosen:i}; save(); hook.printed=()=>{ f.done.printed=1; save(); }; } : null };
+      await run1(ins.cmd,ins.arg);
+      hook=H();
+      if(state.frames[state.frames.length-1]===f){ delete f.done; f.pc++; }
+    }
+  }
+  async function play(){
+    for(;;){
+      await interpret();
+      if(state.sceneIdx<campaign.order.length-1){
+        const next=sceneOf(campaign.order[state.sceneIdx+1]).head.title.replace(/^Off the Bus — /,'');
+        SYNTH['continue']=['choose hint: Continue: '+next]; delete COMPILED[state.scene+'|continue'];
+        state.frames=[{scene:state.scene,code:'continue',pc:0}]; await interpret(); startScene(state.sceneIdx+1); continue;
+      }
+      if(campaign.order.length>1){ state.world.end=true; io.update(); if(await io.end('campaign')==null) return;
+        state=fresh(); startScene(0); continue; }
+      return;
+    }
+  }
+
+  /* ---- saving ---- */
+  const snapshot=()=>JSON.parse(JSON.stringify(state));
+  function save(){ io.persist(JSON.stringify(state)); }
+  function restore(sn){ state=JSON.parse(JSON.stringify(sn)); io.update(); }
+
+  return {
+    get state(){ return state; }, scene:()=>S(), sceneOf, treesOf, interp,
+    start(){ state=fresh(); startScene(0); io.update(); return play(); },
+    resume(sn){ restore(sn); return play(); },
+    restartScene(sn,note){ state=fresh(); state.thread=sn.thread; state.vars=sn.vars; if(note) state.thread.push({k:'stamp',html:note}); startScene(Math.min(sn.sceneIdx,campaign.order.length-1)); return play(); },
+    snapshot, tick, finishMoves, useVerb, verbsOf, nearProps, kitProps, LEVELS,
+  };
 }
 
-/* in person: Animal Crossing-style balloon */
-const AC=$('ac'), acText=$('acText'), acTag=$('acTag'), acGl=$('acGl'), acOpts=$('acOpts'), acPor=$('acPortrait');
-let acTap=null;
-AC.addEventListener('click',()=>acTap&&acTap());
-AC.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&acTap){ e.preventDefault(); acTap(); } });
-const acShow=on=>{ AC.classList.toggle('show',on); if(!on) setCollapsed(false); };
-function setCollapsed(c){ AC.classList.toggle('collapsed',c); const r=$('acReopen'); r.hidden=!c; if(c) r.textContent='💬 Back to '+(acTag.textContent==='Pemberton'?'the conversation':acTag.textContent); }
-$('acHide').addEventListener('click',e=>{ e.stopPropagation(); setCollapsed(true); });
-$('acReopen').addEventListener('click',()=>setCollapsed(false));
-async function acSay(name,text,gl){
-  acShow(true); AC.classList.remove('ready'); acOpts.classList.remove('show');
-  const p=S.people[name]||{}; acTag.textContent=name; acTag.style.background=p.col||'#8aa05a';
-  const img=p.portrait&&PORTRAITS[p.portrait]; acPor.classList.toggle('show',!!img); if(img){ acPor.style.backgroundImage=`url(${img})`; acPor.setAttribute('aria-label',name); }
-  acGl.textContent=''; acText.textContent=''; let done=false; acTap=()=>{done=true;};
-  for(let i=0;i<text.length&&!done;i++){ acText.textContent=text.slice(0,i+1); if(reduce) continue;
-    const ch=text[i]; let d=70; if(/[.!?…]/.test(ch)) d+=320; else if(/[,—–]/.test(ch)) d+=160; await new Promise(r=>setTimeout(r,d)); }
-  acText.textContent=text; if(gl) acGl.textContent=gl;
-  printed(); await acWaitTap();
-}
-async function acWaitTap(){ AC.classList.add('ready'); AC.focus({preventScroll:true});
-  await waitFor(new Promise(r=>{ acTap=()=>{ acTap=null; r(); }; if(TEST) soon(()=>acTap&&acTap()); })); }
-function acChoose(opts){
-  return new Promise(res=>{ acOpts.innerHTML=''; acOpts.classList.add('show'); AC.classList.remove('ready'); acTap=null;
-    opts.forEach((o,i)=>{ const b=document.createElement('button'); b.textContent=o.text;
-      b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); const ch=choiceHook; choiceHook=null; ch&&ch(i); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus(),30); });
-    if(TEST){ const i=trand(opts.length); TLOG.choices.push(opts[i].text.slice(0,40)); soon(()=>{ acOpts.classList.remove('show'); const ch=choiceHook; choiceHook=null; ch&&ch(i); res(i); }); } });
-}
-const tutorial=t=>{ $('tip').textContent=t||''; $('tip').hidden=!t; };
+const API={createCore, parseScene};
+if(typeof module!=='undefined'&&module.exports) module.exports=API; else root.OTBCore=API;
+})(typeof window!=='undefined'?window:globalThis);
 
+/* Off the Bus page: draws the engine core's state and turns taps into inputs.
+   core.js holds the game; this file is the page around it. */
+(()=>{
+const $ = id => document.getElementById(id);
+const SCENES = {}; document.querySelectorAll('script.scene').forEach(e=>SCENES[e.dataset.name]=e.textContent);
+const CAMPAIGN = JSON.parse($('campaign').textContent);
+const PORTRAITS = JSON.parse($('portraits').textContent);
+const QS = new URLSearchParams(location.search);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep = ms => new Promise(r=>setTimeout(r, reduce?Math.min(ms,150):ms));
+let core;
+const ST = () => core.state, SC = () => core.scene();
+const VIS = {}; const V = u => VIS[u.id]||(VIS[u.id]={});          // what the page draws but the game doesn't need: muzzle, recoil
+const unitById = id => ST().world.units.find(u=>u.id===id);
 /* ================= the map ================= */
 const cv=$('map'), cx=cv.getContext('2d');
 let W=0,H=0,DPR=1,tw=40,th=20,ox=0,oy=0, night=0, nightT=0, shake=0;
@@ -597,10 +687,10 @@ const DRAW={
   challenger(u){ tankBody(u,['#3c4a29','#33401f','#56683a'],['#3c4a29','#2f3b1c','#61753f'],true); },
   t80(u){ tankBody(u,['#56552f','#4a4a28','#6b6a3d'],['#56552f','#40401f','#77764a'],false); },
   bmp(u){ const s=tw*.3,h=s*.38; shadow(u,s); const c=box(u,.5,.3,h,['#56552f','#4a4a28','#6b6a3d']); const dir=u.gun??Math.PI;
-    const g0=c(.0,0,h*1.2), g1=c(.4*Math.cos(dir),.4*Math.sin(dir),h*1.25); cx.strokeStyle='#2a2a18'; cx.lineWidth=2; cx.beginPath(); cx.moveTo(g0[0],g0[1]); cx.lineTo(g1[0],g1[1]); cx.stroke(); u.muzzle=g1; tag(c(0,0,h),u.label,tagCol(u),s); },
-  hulk_bmp(u){ const s=tw*.36,h=s*.32; shadow(u,s); const c=box(u,.56,.34,h,['#5b3f2c','#4a3122','#6e4c33']); u.top=c(0,0,h); tag(u.top,u.tagged?u.label:'', 'rgba(20,26,14,.75)',s); },
+    const g0=c(.0,0,h*1.2), g1=c(.4*Math.cos(dir),.4*Math.sin(dir),h*1.25); cx.strokeStyle='#2a2a18'; cx.lineWidth=2; cx.beginPath(); cx.moveTo(g0[0],g0[1]); cx.lineTo(g1[0],g1[1]); cx.stroke(); V(u).muzzle=g1; tag(c(0,0,h),u.label,tagCol(u),s); },
+  hulk_bmp(u){ const s=tw*.36,h=s*.32; shadow(u,s); const c=box(u,.56,.34,h,['#5b3f2c','#4a3122','#6e4c33']); V(u).top=c(0,0,h); tag(V(u).top,u.tagged?u.label:'', 'rgba(20,26,14,.75)',s); },
   hulk_t54(u){ const s=tw*.36,h=s*.42; shadow(u,s); box(u,.62,.34,h,['#5b3f2c','#4a3122','#6e4c33']); const c=box({x:u.x-.04,y:u.y},.26,.26,h*.6,['#5b3f2c','#4a3122','#71503a'],h);
-    const a=c(.1,0,h*1.4), b=c(.55,0,h*1.4); cx.strokeStyle='#3d281b'; cx.lineWidth=Math.max(2,s*.1); cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(b[0],b[1]); cx.stroke(); u.top=c(0,0,h*1.4); tag(u.top,u.tagged?u.label:'','rgba(20,26,14,.75)',s); },
+    const a=c(.1,0,h*1.4), b=c(.55,0,h*1.4); cx.strokeStyle='#3d281b'; cx.lineWidth=Math.max(2,s*.1); cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(b[0],b[1]); cx.stroke(); V(u).top=c(0,0,h*1.4); tag(V(u).top,u.tagged?u.label:'','rgba(20,26,14,.75)',s); },
   rover(u){ const s=tw*.26,h=s*.55; shadow(u,s*.8); const c=box(u,.42,.26,h,['#3f4b2c','#34401f','#56653b']); poly([c(-.12,-.1,h),c(.02,-.12,h),c(.05,.03,h),c(-.1,.08,h)],'#1d2214');
     const a=c(-.18,-.08,h); cx.strokeStyle='#222'; cx.lineWidth=1; cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(a[0]-2,a[1]-s*1.6); cx.stroke(); tag(c(0,0,h),u.label,tagCol(u),s*.7); },
   car(u){ const s=tw*.26,h=s*.42; shadow(u,s*.8); const col=u.col||'#7a8a9a'; const ang=u.ang||0;
@@ -615,8 +705,8 @@ const DRAW={
     const back=iso(u.x-.55,u.y+.05), back2=iso(u.x-.5,u.y+.3); cx.strokeStyle='#2f3a22'; cx.lineWidth=Math.max(2,s*.12); cx.lineCap='round';
     cx.beginPath(); cx.moveTo(sx,sy-2); cx.lineTo(back[0],back[1]); cx.moveTo(sx,sy-2); cx.lineTo(back2[0],back2[1]); cx.stroke();
     cx.fillStyle='#1f2418'; for(const d of [-.18,.18]){ const w=iso(u.x+.02,u.y+d); cx.beginPath(); cx.ellipse(w[0],w[1]-s*.18,s*.13,s*.2,0,0,7); cx.fill(); }
-    const r=(u.recoil||0)*.18, ang=u.gun??0, L=.85-r, tip=iso(u.x+Math.cos(ang)*L,u.y+Math.sin(ang)*L), base=[sx,sy-s*.32], tipY=tip[1]-s*.32-s*(.3+(u.elev??.25)*.9);
-    cx.strokeStyle='#3c4a29'; cx.lineWidth=Math.max(3,s*.16); cx.beginPath(); cx.moveTo(base[0],base[1]); cx.lineTo(tip[0],tipY); cx.stroke(); u.muzzle=[tip[0],tipY];
+    const r=(V(u).recoil||0)*.18, ang=u.gun??0, L=.85-r, tip=iso(u.x+Math.cos(ang)*L,u.y+Math.sin(ang)*L), base=[sx,sy-s*.32], tipY=tip[1]-s*.32-s*(.3+(u.elev??.25)*.9);
+    cx.strokeStyle='#3c4a29'; cx.lineWidth=Math.max(3,s*.16); cx.beginPath(); cx.moveTo(base[0],base[1]); cx.lineTo(tip[0],tipY); cx.stroke(); V(u).muzzle=[tip[0],tipY];
     for(const [dx,dy] of [[-.35,.35],[-.6,.15],[-.2,-.35],[.1,.4]]){ const p=iso(u.x+dx,u.y+dy); cx.fillStyle='#2b3320'; cx.fillRect(p[0]-1.5,p[1]-s*.42,3,s*.42); cx.fillStyle='#d9b38c'; cx.beginPath(); cx.arc(p[0],p[1]-s*.48,2.2,0,7); cx.fill(); }
     tag([sx,sy-s*.55],u.label,tagCol(u),s); },
   cp(u){ const s=tw*.42,h=s*.55; const c=box(u,.8,.6,h,['#4b5a35','#3e4b2b','#5d6e43']); const a=c(-.3,-.2,h); cx.strokeStyle='#222'; cx.lineWidth=1; cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(a[0]-2,a[1]-s*1.4); cx.stroke(); tag(c(0,0,h),u.label,tagCol(u),s*.7); },
@@ -629,21 +719,14 @@ const DRAW={
 function tankBody(u,hullCols,turCols,camo){
   const s=tw*.36,h=s*.42; shadow(u,s); const c=box(u,.62,.36,h,hullCols);
   if(camo){ poly([c(-.25,-.12,h),c(-.05,-.15,h),c(0,.02,h),c(-.2,.08,h)],'#1d2214'); poly([c(.12,.04,h),c(.27,-.02,h),c(.29,.13,h),c(.15,.16,h)],'#1d2214'); }
-  const tz=h*.75, rc=(u.recoil||0)*.12, ang=u.gun??0, tc=box({x:u.x-rc*.3,y:u.y},.3,.26,tz,turCols,h);
+  const tz=h*.75, rc=(V(u).recoil||0)*.12, ang=u.gun??0, tc=box({x:u.x-rc*.3,y:u.y},.3,.26,tz,turCols,h);
   const g0=tc(.12*Math.cos(ang),.12*Math.sin(ang),h+tz), g1=tc((.62-rc)*Math.cos(ang),(.62-rc)*Math.sin(ang),h+tz);
-  cx.strokeStyle='#2a3418'; cx.lineWidth=Math.max(2,s*.12); cx.lineCap='round'; cx.beginPath(); cx.moveTo(g0[0],g0[1]+2); cx.lineTo(g1[0],g1[1]+2); cx.stroke(); u.muzzle=[g1[0],g1[1]+2];
+  cx.strokeStyle='#2a3418'; cx.lineWidth=Math.max(2,s*.12); cx.lineCap='round'; cx.beginPath(); cx.moveTo(g0[0],g0[1]+2); cx.lineTo(g1[0],g1[1]+2); cx.stroke(); V(u).muzzle=[g1[0],g1[1]+2];
   if(u.open){ const hp=tc(-.06,-.05,h+tz); cx.fillStyle='#1b1b1b'; cx.beginPath(); cx.arc(hp[0],hp[1]-s*.12,s*.11,0,7); cx.fill(); }
   tag(tc(-.02,0,h+tz),u.label,tagCol(u),s);
 }
 
 /* trees and marks */
-let seed=1; const rnd=()=>{ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; };
-const trees=[];
-function buildTrees(){ trees.length=0; for(const a of S.map.trees||[]){ seed=a.seed||7;
-  for(let i=0;i<a.n;i++){ const x=a.x[0]+rnd()*(a.x[1]-a.x[0]), y=a.y[0]+rnd()*(a.y[1]-a.y[0]); const s=(a.s||[.7,1.3]); const t={x,y,s:s[0]+rnd()*(s[1]-s[0]),kind:a.kind||'broad',col:a.col};
-    if((S.map.keep||[]).some(k=>Math.hypot(k[0]-x,k[1]-y)<(k[2]||.8))) continue; trees.push(t); } }
-  for(const t of S.map.tree||[]) trees.push({s:1,kind:'broad',...t});
-  for(const h of S.map.hedge||[]){ const [a,b]=[h.from,h.to], n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/(h.step||.35)); for(let i=0;i<=n;i++) trees.push({x:a[0]+(b[0]-a[0])*i/n,y:a[1]+(b[1]-a[1])*i/n,s:.9+((i*37)%5)/20,kind:'hedge'}); } }
 function drawTree(t){ const [sx,sy]=iso(t.x,t.y);
   if(t.kind==='hedge'){ const r=tw*.17*t.s; cx.fillStyle='rgba(0,0,0,.14)'; cx.beginPath(); cx.ellipse(sx+2,sy+1,r*1.1,r*.45,0,0,7); cx.fill();
     cx.fillStyle='#3d6a2c'; cx.beginPath(); cx.arc(sx,sy-r*.7,r,0,7); cx.fill(); cx.fillStyle='rgba(255,255,255,.7)'; for(let i=0;i<4;i++){ cx.fillRect(sx-r*.6+i*r*.4,sy-r*(1+.2*(i%2)),1.6,1.6); } return; }
@@ -659,7 +742,7 @@ function drawMark(m){ const p=iso(m.x,m.y);
   else if(m.type==='sign'){ cx.fillStyle='#666'; cx.fillRect(p[0]-1,p[1]-tw*.45,2,tw*.45); cx.fillStyle=m.col||'#f5d33c'; cx.fillRect(p[0]-tw*.22,p[1]-tw*.62,tw*.44,tw*.2); cx.fillStyle='#111'; cx.font=`700 ${Math.max(7,tw*.085)}px system-ui`; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(m.text||'',p[0],p[1]-tw*.52); }
   else if(m.type==='parapet'){ const a=iso(m.x,m.y), b=iso(m.x+(m.dx||1),m.y+(m.dy||0)); cx.strokeStyle='#8a8478'; cx.lineWidth=3; cx.beginPath(); cx.moveTo(a[0],a[1]-3); cx.lineTo(b[0],b[1]-3); cx.stroke(); }
 }
-function drawGround(){ const g=S.map.ground, [x0,x1]=g.x, [y0,y1]=g.y;
+function drawGround(){ const g=SC().map.ground, [x0,x1]=g.x, [y0,y1]=g.y;
   for(let x=x0;x<x1;x++)for(let y=y0;y<y1;y++){ let c=g.c; for(const r of g.rects||[]) if(x>=r.x[0]&&x<=r.x[1]&&y>=r.y[0]&&y<=r.y[1]) c=r.c; tile(x,y,Array.isArray(c)?c[(x+y)&1]:c); } }
 
 /* effects */
@@ -668,31 +751,194 @@ const puff=(x,y,o={})=>fx.push({x,y,r:o.r??6,grow:o.grow??40,life:o.life??1.4,t:
 const flash=(x,y,r=14)=>fx.push({x,y,r,grow:-r*3,life:.25,t:0,col:'255,236,170',a:1,vy:0});
 let tracer=null, missile=null;
 
-/* units state */
-const U={}; let units=[];
-function resetUnits(){ for(const k in U) delete U[k]; units=(S.map.units||[]).map(d=>({...d,path:[],recoil:0,delay:0,spd:1})); for(const u of units) U[u.id]=u; }
-const tracks=[], gaps=[];
-function step(dt){
-  for(const u of units){ if(!u.trail||!u.path.length||u.delay>0) continue; const last=u._tr; if(!last||Math.hypot(u.x-last[0],u.y-last[1])>.12){ tracks.push([u.x,u.y,last?Math.atan2(u.y-last[1],u.x-last[0]):0]); u._tr=[u.x,u.y]; }
-    for(let i=trees.length-1;i>=0;i--){ const t=trees[i]; if(t.kind==='hedge'&&Math.hypot(t.x-u.x,t.y-u.y)<.45){ trees.splice(i,1); gaps.push([t.x,t.y]); const p=iso(t.x,t.y); puff(p[0],p[1]-tw*.1,{r:2,grow:tw*.25,life:1.2,col:'95,120,60',a:.8,vy:-4}); } } }
-  for(const u of units){ if(u.delay>0){u.delay-=dt;continue;} if(u.path.length){ const [px,py]=u.path[0], dx=px-u.x, dy=py-u.y, d=Math.hypot(dx,dy); if(d<.03) u.path.shift(); else { const v=Math.min(d,dt*u.spd); u.x+=dx/d*v; u.y+=dy/d*v; } }
-    u.recoil=Math.max(0,u.recoil-dt*2.2); if(u.telev!=null) u.elev+=(u.telev-(u.elev??.25))*Math.min(1,dt*2); }
+/* ================= page chrome ================= */
+function applyChrome(){
+  const h=SC().head; document.title=h.title||'Off the Bus';
+  const [endBig,endSub]=(h.endcard||'Off the Bus|').split('|').map(s=>s.trim()); $('endBig').textContent=endBig; $('endSub').textContent=endSub||'';
+  const [netName,netSub,netAv]=(h.net||'Net||').split('|').map(s=>s.trim()); $('hn').textContent=netName; $('hs').textContent=netSub||''; $('av').textContent=netAv||'';
+  $('map').setAttribute('aria-label', h.maplabel||'Isometric map');
 }
-let last=performance.now();
+
+/* ================= the thread ================= */
+const thread=$('thread'), replies=$('replies');
+let lastFrom=null, lastDelivered=null, skip=false, speaking=false;
+thread.addEventListener('click',()=>{ if(speaking) skip=true; });
+const scrollDown=()=>{ thread.scrollTop=thread.scrollHeight; };
+function el(cls,txt,html){ const d=document.createElement('div'); d.className=cls; if(html!=null) d.innerHTML=html; else d.textContent=txt; return d; }
+function add(e){ thread.appendChild(e); scrollDown(); return e; }
+const NET_WPM=380, IC_WPM=250;
+async function speak(b,text,msPerWord,animate){
+  if(!animate){ b.textContent=text; return; }
+  b.textContent=''; speaking=true; skip=false;
+  const said=document.createElement('span'), rest=document.createElement('span'); rest.className='unsaid'; rest.textContent=text; b.append(said,rest); scrollDown();
+  const per=msPerWord/5.5;
+  for(let i=0;i<text.length;i++){ if(skip||reduce) break; said.textContent=text.slice(0,i+1); rest.textContent=text.slice(i+1);
+    const ch=text[i], nx=text[i+1]||' '; let d=per; if(/[.!?…]/.test(ch)&&/[\s"”’]/.test(nx)) d+=380; else if(/[,—–:;]/.test(ch)) d+=200;
+    await new Promise(r=>setTimeout(r,d)); }
+  said.textContent=text; rest.textContent=''; skip=false; speaking=false;
+}
+function row(avCls,avTxt,bCls){ const r=el('row',null,`<span class="av ${avCls}">${avTxt}</span>`); const b=el(bCls,''); r.appendChild(b); add(r); return b; }
+function fromLabel(t){ if(lastFrom!==t){ add(el('from',t)); } lastFrom=t; }
+/* draw one thread entry; animate when it is new, not when redrawing a restored thread */
+function drawStatic(e){                            // a restored entry: drawn at once, in order
+  const sc=SC();
+  switch(e.k){
+    case 'net': { fromLabel(e.who); row('av-net',sc.callsigns[e.who]??e.who.slice(0,2),'b in').textContent=e.text; return; }
+    case 'out': { if(lastDelivered) lastDelivered.remove(); add(el('b out',e.text)); lastDelivered=add(el('delivered','Transmitted')); lastFrom=null; return; }
+    case 'ic': { fromLabel(e.who+' · intercom'); row('av-ic',sc.crew[e.who]??e.who[0],'b ic-in').textContent=e.text; return; }
+    case 'icout': { add(el('b ic-out',e.text)); lastFrom=null; return; }
+    case 'hear': { fromLabel(e.who+' · overheard'); row('av-oh',(e.who.match(/\d/)||['·'])[0],'b oh').textContent=e.text; return; }
+  }
+  draw(e,false);                                     // stamps, narration and glosses draw synchronously anyway
+}
+async function draw(e,animate){
+  const sc=SC();
+  switch(e.k){
+    case 'stamp': add(el('stamp',null,e.html)); lastFrom=null; break;
+    case 'act': add(el('stamp',null,'<b>'+e.text+'</b>')); lastFrom=null; break;
+    case 'xp': add(el('stamp xp',null,e.html)); lastFrom=null; break;
+    case 'levelup': add(el('stamp levelup',null,e.html)); lastFrom=null; break;
+    case 'radio': add(el('scroll',e.text)); lastFrom=null; break;
+    case 'gloss': add(el('gloss',e.text)); break;
+    case 'net': { fromLabel(e.who); const b=row('av-net',sc.callsigns[e.who]??e.who.slice(0,2),'b in'+(animate?' typing':''));
+      if(animate){ b.innerHTML='<span></span><span></span><span></span>'; await sleep(650); b.className='b in'; } await speak(b,e.text,NET_WPM,animate); if(animate) await sleep(250); break; }
+    case 'out': { if(lastDelivered) lastDelivered.remove(); const b=add(el('b out','')); await speak(b,e.text,NET_WPM,animate); lastDelivered=add(el('delivered','Transmitted')); lastFrom=null; if(animate) await sleep(200); break; }
+    case 'ic': { fromLabel(e.who+' · intercom'); const b=row('av-ic',sc.crew[e.who]??e.who[0],'b ic-in'); if(animate) await sleep(250); await speak(b,e.text,IC_WPM,animate); if(animate) await sleep(150); break; }
+    case 'icout': { const b=add(el('b ic-out','')); lastFrom=null; await speak(b,e.text,IC_WPM,animate); if(animate) await sleep(150); break; }
+    case 'hear': { fromLabel(e.who+' · overheard'); const b=row('av-oh',(e.who.match(/\d/)||['·'])[0],'b oh'); if(animate) await sleep(300); await speak(b,e.text,NET_WPM*.85,animate); if(animate) await sleep(200); break; }
+  }
+}
+function redrawThread(){ thread.innerHTML=''; lastFrom=null; lastDelivered=null; for(const e of ST().thread) drawStatic(e); scrollDown(); }
+
+/* ================= waiting for the player ================= */
+let waiting=0, busy=false;
+const canAct=()=>waiting>0&&!busy;
+async function waitFor(promise){ waiting++; refreshWorld(); try{ return await promise; } finally{ waiting--; refreshWorld(); } }
+let mapPick=null, tapTargets=null, zoomWanted=null, pinch=null;
+function chips(opts){
+  return new Promise(res=>{ replies.innerHTML='';
+    const pick=i=>{ replies.innerHTML=''; mapPick=null; res(i); };
+    opts.forEach((o,i)=>{ const b=document.createElement('button'); b.className='chip '+({net:'ch-net',ic:'ch-ic',act:'ch-act',hint:'hint'}[o.kind]);
+      b.textContent=o.kind==='ic'?`“${o.text}”`:o.text; b.onclick=()=>pick(i); replies.appendChild(b); });
+    mapPick=pick; scrollDown(); });
+}
+
+/* ================= in person: the balloon ================= */
+const AC=$('ac'), acText=$('acText'), acTag=$('acTag'), acGl=$('acGl'), acOpts=$('acOpts'), acPor=$('acPortrait');
+let acTap=null;
+AC.addEventListener('click',()=>acTap&&acTap());
+AC.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&acTap){ e.preventDefault(); acTap(); } });
+function setCollapsed(c){ AC.classList.toggle('collapsed',c); const r=$('acReopen'); r.hidden=!c; if(c) r.textContent='💬 Back to '+(acTag.textContent==='Pemberton'?'the conversation':acTag.textContent); }
+$('acHide').addEventListener('click',e=>{ e.stopPropagation(); setCollapsed(true); });
+$('acReopen').addEventListener('click',()=>setCollapsed(false));
+function showBalloon(ac,full){                       // draw the balloon from the core's state
+  AC.classList.toggle('show',!!ac.show); if(!ac.show){ setCollapsed(false); return; }
+  const p=SC().people[ac.name]||{}; acTag.textContent=ac.name; acTag.style.background=p.col||'#8aa05a';
+  const img=p.portrait&&PORTRAITS[p.portrait]; acPor.classList.toggle('show',!!img); if(img){ acPor.style.backgroundImage=`url(${img})`; acPor.setAttribute('aria-label',ac.name); }
+  if(full){ acText.textContent=ac.text; acGl.textContent=ac.gloss||''; }
+}
+
+/* ================= the world: objects, people, kit ================= */
+const propsBar=$('props'), pop=$('pop');
+function refreshWorld(){ propsBar.innerHTML=''; $('pouch').hidden=!canAct(); AC.classList.toggle('can-hide',canAct());
+  if(!canAct()){ closePop(); return; }
+  for(const p of core.nearProps()){ if(p.at||p.unit||p.kit||p.person||!core.verbsOf(p).length) continue;
+    const b=document.createElement('button'); b.className='chip ch-prop'; b.textContent=(p.icon!=='•'?p.icon+' ':'')+p.label; b.onclick=e=>openPop(p,e.currentTarget); propsBar.appendChild(b); } }
+function openPop(p,anchor){ const vs=core.verbsOf(p); if(!vs.length||!canAct()) return;
+  pop.innerHTML=`<div class="pt">${p.label}</div>`; for(const v of vs){ const b=document.createElement('button'); b.textContent=v.icon+' '+v.text; b.onclick=e=>{ e.stopPropagation(); runVerb(v); }; pop.appendChild(b); }
+  pop.hidden=false; const r=anchor?anchor.getBoundingClientRect():null, app=$('app').getBoundingClientRect();
+  if(r){ pop.style.left=Math.max(8,Math.min(app.width-pop.offsetWidth-8,r.left-app.left+r.width/2-pop.offsetWidth/2))+'px'; pop.style.top=Math.max(8,r.top-app.top-pop.offsetHeight-6)+'px'; }
+  else { pop.style.left=((app.width-pop.offsetWidth)/2)+'px'; pop.style.top='30%'; } }
+function openPopAt(p,sx,sy){ openPop(p,{getBoundingClientRect:()=>{ const c=cv.getBoundingClientRect(); return {left:c.left+sx,top:c.top+sy,width:0,height:0}; }}); }
+function closePop(){ pop.hidden=true; pop.innerHTML=''; }
+document.addEventListener('click',e=>{ if(!pop.hidden&&!pop.contains(e.target)&&!e.target.closest('.ch-prop')&&e.target!==cv&&!e.target.closest('#acTag')&&!e.target.closest('#acPortrait')) closePop(); });
+async function runVerb(v){ closePop(); const speaks=v.lines.some(l=>/^say\s/.test(l)); const wasCollapsed=AC.classList.contains('collapsed'); if(speaks) setCollapsed(false);
+  busy=true; refreshWorld(); const optsWas=acOpts.classList.contains('show'), readyWas=AC.classList.contains('ready'), tapWas=acTap;
+  replies.style.visibility='hidden'; acOpts.classList.remove('show');
+  inVerb=true; await core.useVerb(v.key); inVerb=false;
+  replies.style.visibility=''; showBalloon(ST().ac,true);
+  if(ST().ac.show){ if(optsWas) acOpts.classList.add('show'); AC.classList.toggle('ready',readyWas); acTap=tapWas; if(wasCollapsed&&speaks) setCollapsed(true); }
+  busy=false; refreshWorld(); scrollDown(); }
+let inVerb=false, redrawPending=false;
+function openPouch(){ if(!canAct()) return; const sh=$('sheet'); sh.innerHTML='<h2>Pouch</h2><p>What you carry.</p>';
+  for(const p of core.kitProps()) for(const v of core.verbsOf(p)){ const b=document.createElement('button'); b.className='card';
+    b.innerHTML=`<div class="ct">${p.icon!=='•'?p.icon+' ':''}${v.text}</div>`; b.onclick=()=>{ $('scrim').classList.remove('show'); runVerb(v); }; sh.appendChild(b); }
+  const r=document.createElement('button'); r.className='card'; r.innerHTML='<div class="ct">↺ Start again from the beginning</div><div class="cs">Clears your saved game.</div>';
+  r.onclick=()=>{ sh.innerHTML='<h2>Start again?</h2><p>Your saved game will be cleared and the campaign will start from the beginning.</p>';
+    const y=document.createElement('button'); y.className='card'; y.innerHTML='<div class="ct">Yes, start again</div>'; y.onclick=()=>{ clearSave(); location.reload(); };
+    const n=document.createElement('button'); n.className='card'; n.innerHTML='<div class="cs">No, keep playing</div>'; n.onclick=()=>$('scrim').classList.remove('show');
+    sh.append(y,n); }; sh.appendChild(r);
+  const c=document.createElement('button'); c.className='card'; c.innerHTML='<div class="cs">Close</div>'; c.onclick=()=>$('scrim').classList.remove('show'); sh.appendChild(c);
+  $('scrim').classList.add('show'); }
+$('pouch').addEventListener('click',openPouch);
+const personProp=name=>core.nearProps().find(p=>p.person===name);
+$('acTag').addEventListener('click',e=>{ const p=personProp(acTag.textContent); if(p&&canAct()){ e.stopPropagation(); openPop(p,acTag); } });
+$('acPortrait').addEventListener('click',e=>{ const p=personProp(acTag.textContent); if(p&&canAct()){ e.stopPropagation(); openPop(p,acPor); } });
+
+/* ================= the io the core talks to ================= */
+const io={
+  async print(e){ await draw(e,true); },
+  choose(opts,o){ if(o.targets) tapTargets=o.targets; return waitFor(chips(opts)).finally(()=>{ tapTargets=null; }); },
+  ask(opts){ return waitFor(new Promise(res=>{ acOpts.innerHTML=''; acOpts.classList.add('show'); AC.classList.remove('ready'); acTap=null;
+    opts.forEach((o,i)=>{ const b=document.createElement('button'); b.textContent=o.text; b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus(),30); }); })); },
+  async say(ac){ showBalloon(ac,false); AC.classList.remove('ready'); acOpts.classList.remove('show'); acGl.textContent=''; acText.textContent='';
+    let done=false; acTap=()=>{done=true;};
+    for(let i=0;i<ac.text.length&&!done;i++){ acText.textContent=ac.text.slice(0,i+1); if(reduce) continue;
+      const ch=ac.text[i]; let d=70; if(/[.!?…]/.test(ch)) d+=320; else if(/[,—–]/.test(ch)) d+=160; await new Promise(r=>setTimeout(r,d)); }
+    acText.textContent=ac.text; acGl.textContent=ac.gloss||''; acTap=null; },
+  tap(){ AC.classList.add('ready'); AC.focus({preventScroll:true}); return waitFor(new Promise(r=>{ acTap=()=>{ acTap=null; r(); }; })); },
+  cards(title,sub,items){ return waitFor(new Promise(res=>{ const sh=$('sheet'); sh.innerHTML=`<h2>${title}</h2><p>${sub}</p>`;
+    items.forEach((it,i)=>{ const b=document.createElement('button'); b.className='card'; b.innerHTML=`<span class="lvl">${it.label}</span><div class="ct">${it.title}</div><div class="cs">${it.desc}</div>`;
+      b.onclick=()=>{ $('scrim').classList.remove('show'); res(i); }; sh.appendChild(b); });
+    $('scrim').classList.add('show'); setTimeout(()=>sh.querySelector('.card')?.focus(),50); })); },
+  zoom(label){ return waitFor(new Promise(res=>{ replies.innerHTML=''; const b=document.createElement('button'); b.className='chip hint'; b.textContent=label;
+    zoomWanted=()=>{ zoomWanted=null; replies.innerHTML=''; res(); }; b.onclick=()=>zoomWanted&&zoomWanted(); replies.appendChild(b); })); },
+  wait(ms){ return sleep(ms); },
+  async waitMoves(list){ while(list.some(id=>{ const u=unitById(id); return u&&(u.path.length||u.delay>0); })) await sleep(120); },
+  async effect(ev){
+    if(ev.k==='burst'){ const p=iso(...ev.at); flash(p[0],p[1],tw*.25); puff(p[0],p[1],{r:tw*.08,grow:tw*.9,life:2.6,col:'105,95,80',a:.8,vy:-5}); if(ev.shake) shake=.5; return; }
+    if(ev.k==='shake'){ shake=ev.s; return; }
+    if(ev.k==='missile'){ const u=unitById(ev.from); const mz=V(u).muzzle||iso(u.x,u.y); missile={a:[mz[0],mz[1]],to:ev.to,t:0}; return; }
+    if(ev.k==='fire'){ const atPoint=Array.isArray(ev.at);
+      for(const id of ev.from){ const u=unitById(id); V(u).recoil=1; const mz=V(u).muzzle||iso(u.x,u.y); flash(mz[0],mz[1],tw*(ev.light?.12:.2)); puff(mz[0],mz[1],{r:tw*.06,grow:tw*(ev.light?.3:.7),life:1.6});
+        const tgt=()=>{ if(atPoint) return iso(...ev.at); const t=unitById(ev.at); const p=V(t).top||iso(t.x,t.y); return ev.miss?[p[0]-tw*.55,p[1]+tw*.12]:p; };
+        tracer={a:[mz[0],mz[1]],b:tgt,t:0}; if(ev.from.length>1) await sleep(90); }
+      await sleep(420);
+      if(!atPoint){ const t=unitById(ev.at), p=V(t).top||iso(t.x,t.y);
+        if(ev.miss) puff(p[0]-tw*.55,p[1]+tw*.12,{r:tw*.06,grow:tw*.55,life:2,col:'205,190,150',a:.85,vy:-4});
+        else { flash(p[0],p[1]-tw*.05,tw*.2); puff(p[0],p[1],{r:tw*.06,grow:tw*.4,life:1.3,col:'90,80,70',a:.7}); } } }
+  },
+  update(){ if(!core) return; const w=ST().world;
+    if(redrawPending){ redrawPending=false; redrawThread(); showBalloon(ST().ac,true); }
+    applyChrome(); $('hudT').textContent=w.hud[0]||''; $('hudD').textContent=w.hud[1]||'';
+    const b=$('badge'); b.hidden=!w.badge; if(w.badge) b.innerHTML=core.interp(w.badge);
+    $('tip').textContent=w.tip||''; $('tip').hidden=!w.tip; $('end').classList.toggle('show',!!w.end);
+    if(!ST().ac.show) showBalloon(ST().ac,false); refreshWorld(); },
+  persist(json){ try{ localStorage.setItem(SAVEKEY,JSON.stringify({build:BUILD,state:json})); }catch(e){} },
+  end(){ return waitFor(chips([{kind:'hint',text:'Start the campaign again'}])).then(()=>{ clearSave(); thread.innerHTML=''; lastFrom=null; lastDelivered=null; return 0; }); },
+};
+
+/* ================= the map loop ================= */
+let last=performance.now(), shownScene=null;
 function frame(now){
-  if(TEST) return;                                 // nothing to watch in a test
-  const dt=Math.min(.05,(now-last)/1000); last=now; step(dt);
+  const dt=Math.min(.05,(now-last)/1000); last=now;
+  if(!core){ requestAnimationFrame(frame); return; }
+  core.tick(dt); for(const id in VIS) VIS[id].recoil=Math.max(0,(VIS[id].recoil||0)-dt*2.2);
+  const st=ST(), w=st.world, sc=SC();
+  if(shownScene!==st.scene){ shownScene=st.scene; cam.fx=w.cam[0]; cam.fy=w.cam[1]; cam.z=w.cam[2]; night=w.night; }
+  cam.tfx=w.cam[0]; cam.tfy=w.cam[1]; cam.tz=w.cam[2]; nightT=w.night;
   for(const k of ['fx','fy','z']) cam[k]+=(cam['t'+k]-cam[k])*Math.min(1,dt*2.2);
   night+=(nightT-night)*Math.min(1,dt*1.5);
   resizeIf(); setCam(); if(shake>0){ shake-=dt; ox+=(Math.random()-.5)*6; oy+=(Math.random()-.5)*4; }
-  cx.fillStyle=S.map.bg||'#8a9a5a'; cx.fillRect(0,0,W,H); drawGround();
-  for(const m of S.map.marks||[]) if(m.type==='pad'||m.type==='parapet') drawMark(m);
-  cx.fillStyle='rgba(120,92,52,.55)'; for(const [x,y,a] of tracks){ for(const o of [-.11,.11]){ const p=iso(x-Math.sin(a)*o,y+Math.cos(a)*o); cx.beginPath(); cx.ellipse(p[0],p[1],Math.max(1.5,tw*.035),Math.max(1,tw*.02),0,0,7); cx.fill(); } }
-  for(const [x,y] of gaps){ const p=iso(x,y); cx.fillStyle='rgba(110,84,50,.7)'; cx.beginPath(); cx.ellipse(p[0],p[1],tw*.14,tw*.06,0,0,7); cx.fill(); cx.strokeStyle='#5a4126'; cx.lineWidth=1; for(let i=0;i<3;i++){ cx.beginPath(); cx.moveTo(p[0]-tw*.1+i*tw*.08,p[1]-2); cx.lineTo(p[0]-tw*.06+i*tw*.08,p[1]-tw*.07); cx.stroke(); } }
-  const items=[...trees.map(t=>({k:t.x+t.y,f:()=>drawTree(t)})),...(S.map.marks||[]).filter(m=>m.type!=='pad'&&m.type!=='parapet').map(m=>({k:m.x+m.y,f:()=>drawMark(m)})),
-    ...units.filter(u=>!u.hidden).map(u=>({k:u.x+u.y+.01,f:()=>DRAW[u.type](u)}))];
+  cx.fillStyle=sc.map.bg||'#8a9a5a'; cx.fillRect(0,0,W,H); drawGround();
+  for(const m of sc.map.marks||[]) if(m.type==='pad'||m.type==='parapet') drawMark(m);
+  cx.fillStyle='rgba(120,92,52,.55)'; for(const [x,y,a] of w.tracks){ for(const o of [-.11,.11]){ const p=iso(x-Math.sin(a)*o,y+Math.cos(a)*o); cx.beginPath(); cx.ellipse(p[0],p[1],Math.max(1.5,tw*.035),Math.max(1,tw*.02),0,0,7); cx.fill(); } }
+  for(const [x,y] of w.gaps){ const p=iso(x,y); cx.fillStyle='rgba(110,84,50,.7)'; cx.beginPath(); cx.ellipse(p[0],p[1],tw*.14,tw*.06,0,0,7); cx.fill(); cx.strokeStyle='#5a4126'; cx.lineWidth=1; for(let i=0;i<3;i++){ cx.beginPath(); cx.moveTo(p[0]-tw*.1+i*tw*.08,p[1]-2); cx.lineTo(p[0]-tw*.06+i*tw*.08,p[1]-tw*.07); cx.stroke(); } }
+  const trees=core.treesOf(st.scene).filter((t,i)=>!w.broken.includes(i));
+  const items=[...trees.map(t=>({k:t.x+t.y,f:()=>drawTree(t)})),...(sc.map.marks||[]).filter(m=>m.type!=='pad'&&m.type!=='parapet').map(m=>({k:m.x+m.y,f:()=>drawMark(m)})),
+    ...w.units.filter(u=>!u.hidden).map(u=>({k:u.x+u.y+.01,f:()=>DRAW[u.type](u)}))];
   items.sort((a,b)=>a.k-b.k).forEach(i=>i.f());
-  for(const u of units){ if(u.hidden) continue; const p=iso(u.x,u.y);
+  for(const u of w.units){ if(u.hidden) continue; const p=iso(u.x,u.y);
     if(u.smoke&&Math.random()<dt*7) puff(p[0]+(Math.random()-.5)*6,p[1]-tw*.2,{r:3,grow:tw*.35,life:3,col:'55,50,46',a:.55,vy:-9});
     if(u.blossom&&Math.random()<dt*1.5) puff(p[0]+(Math.random()-.5)*tw,p[1]-tw*.3,{r:1.5,grow:0,life:2.5,col:'245,200,215',a:.9,vy:4}); }
   for(const t of trees) if(t.blossom&&Math.random()<dt*1.5){ const p=iso(t.x+(Math.random()-.5),t.y+(Math.random()-.5)); puff(p[0],p[1]-tw*.3,{r:1.5,grow:0,life:2.5,col:'245,200,215',a:.9,vy:4}); }
@@ -701,252 +947,38 @@ function frame(now){
     puff(x,y,{r:1.5,grow:4,life:1.2,col:'235,235,235',a:.7,vy:0}); cx.fillStyle='#ffd27a'; cx.beginPath(); cx.arc(x,y,2.5,0,7); cx.fill(); if(k>=1) missile=null; }
   for(let i=fx.length-1;i>=0;i--){ const p=fx[i]; p.t+=dt; if(p.t>p.life){fx.splice(i,1);continue;} const k=p.t/p.life, r=Math.max(1,p.r+p.grow*k); cx.fillStyle=`rgba(${p.col},${p.a*(1-k)})`; cx.beginPath(); cx.arc(p.x,p.y+p.vy*p.t*3,r,0,7); cx.fill(); }
   if(night>.01){ cx.fillStyle=`rgba(12,22,52,${.62*night})`; cx.fillRect(0,0,W,H); }
-  if(canAct()){ const seen={}; for(const p of nearProps()){ let pos=p.at||(p.unit&&U[p.unit]&&[U[p.unit].x,U[p.unit].y]); if(!pos) continue; const key=pos.map(v=>v.toFixed(1)).join(); const k=seen[key]=(seen[key]||0)+1; pos=[pos[0]+(k-1)*.45,pos[1]-(k-1)*.45]; const [sx,sy]=iso(...pos);
+  if(canAct()){ const seen={}; for(const p of core.nearProps()){ const u=p.unit&&unitById(p.unit); let pos=p.at||(u&&[u.x,u.y]); if(!pos) continue; const key=pos.map(v=>v.toFixed(1)).join(); const k=seen[key]=(seen[key]||0)+1; pos=[pos[0]+(k-1)*.45,pos[1]-(k-1)*.45]; const [sx,sy]=iso(...pos);
     const pulse=1+Math.sin(now/300)*.12, r=Math.max(9,tw*.14)*pulse; cx.fillStyle='rgba(253,247,228,.92)'; cx.strokeStyle='#e3a33a'; cx.lineWidth=2;
-    cx.beginPath(); cx.arc(sx,sy-tw*.55,r,0,7); cx.fill(); cx.stroke(); cx.font=`${Math.round(r*1.1)}px system-ui`; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(p.icon!=='•'?p.icon:'🔍',sx,sy-tw*.55+1); p._scr=[sx,sy-tw*.55]; } }
+    cx.beginPath(); cx.arc(sx,sy-tw*.55,r,0,7); cx.fill(); cx.stroke(); cx.font=`${Math.round(r*1.1)}px system-ui`; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(p.icon!=='•'?p.icon:'🔍',sx,sy-tw*.55+1); MARK[p.id]=[sx,sy-tw*.55]; } }
   requestAnimationFrame(frame);
 }
-
-/* map input: taps on units or marks, and the zoom gate */
-let tapTargets=null, zoomWanted=null, pinch=null;
+const MARK={};
 cv.addEventListener('click',e=>{ const rc=cv.getBoundingClientRect(), px=e.clientX-rc.left, py=e.clientY-rc.top;
-  if(canAct()){ let best=null,bd=1e9; for(const p of nearProps()){ if(!p._scr) continue; const d=Math.hypot(p._scr[0]-px,p._scr[1]-py); if(d<bd){bd=d;best=p;} } if(best&&bd<Math.max(22,tw*.3)){ openPopAt(best,best._scr[0],best._scr[1]-10); return; } }
-  if(!tapTargets||!mapPick) return; const r=cv.getBoundingClientRect(), sx=e.clientX-r.left, sy=e.clientY-r.top;
-  let best=-1,bd=1e9; tapTargets.forEach((ids,i)=>{ for(const id of ids){ const t=U[id]||(S.map.marks||[]).find(m=>m.id===id); if(!t) continue; const p=iso(t.x,t.y), d=Math.hypot(p[0]-sx,p[1]-sy); if(d<bd){bd=d;best=i;} } });
+  if(canAct()){ let best=null,bd=1e9; for(const p of core.nearProps()){ const m=MARK[p.id]; if(!m) continue; const d=Math.hypot(m[0]-px,m[1]-py); if(d<bd){bd=d;best=p;} } if(best&&bd<Math.max(22,tw*.3)){ openPopAt(best,MARK[best.id][0],MARK[best.id][1]-10); return; } }
+  if(!tapTargets||!mapPick) return;
+  let best=-1,bd=1e9; tapTargets.forEach((list,i)=>{ for(const id of list){ const t=unitById(id)||(SC().map.marks||[]).find(m=>m.id===id); if(!t) continue; const p=iso(t.x,t.y), d=Math.hypot(p[0]-px,p[1]-py); if(d<bd){bd=d;best=i;} } });
   if(best>=0&&bd<tw*1.2) mapPick(best); });
 cv.addEventListener('wheel',e=>{ if(zoomWanted&&e.deltaY>0){ e.preventDefault(); zoomWanted(); } },{passive:false});
 cv.addEventListener('touchmove',e=>{ if(e.touches.length===2&&zoomWanted){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); if(pinch&&d<pinch-25) zoomWanted(); pinch=pinch||d; e.preventDefault(); } },{passive:false});
 cv.addEventListener('touchend',()=>pinch=null);
 
-/* ================= the interpreter ================= */
-const LEVELS=['Raw','Practised','Drilled'];
-let LV=[4,8];
-const levelOf=n=>n>=LV[1]?2:n>=LV[0]?1:0;
-let CAL=[];
-function interp(t){ return t.replace(/\{(level|pips|date|bar)?:?\$(\w+)\}/g,(m,f,k)=>{ const v=vars[k]??0; if(f==='level') return LEVELS[levelOf(v)]; if(f==='date') return CAL[v]||'';
-  if(f==='bar'){ const l=levelOf(v), lo=l===0?0:LV[0], hi=l===0?LV[0]:LV[1], w=l>=2?1:Math.max(0,Math.min(1,(v-lo)/(hi-lo))); return `<span class="xpbar"><i style="width:${Math.round(w*100)}%"></i></span>`; }
-  if(f==='pips'){ const on=v>0?levelOf(v)+1:0; return '<span class="pips">'+[0,1,2].map(i=>`<i class="${i<on?'on':''}"></i>`).join('')+'</span>'; } return String(v); }); }
-function cards(arg){ const [headPart,list]=arg.split('::'); const [title,sub]=headPart.split('|').map(x=>x.trim());
-  const items=list.split('||').map(c=>c.split('|').map(x=>x.trim()));
-  return new Promise(res=>{ const sh=$('sheet'); sh.innerHTML=`<h2>${interp(title)}</h2><p>${interp(sub||'')}</p>`;
-    items.forEach(([t,d,l],i)=>{ const b=document.createElement('button'); b.className='card'; b.innerHTML=`<span class="lvl">${interp(l||'')}</span><div class="ct">${t}</div><div class="cs">${d||''}</div>`;
-      b.onclick=()=>{ $('scrim').classList.remove('show'); const ch=choiceHook; choiceHook=null; ch&&ch(i); res(i); }; sh.appendChild(b); });
-    $('scrim').classList.add('show'); setTimeout(()=>sh.querySelector('.card')?.focus(),50);
-    if(TEST){ const i=trand(items.length); TLOG.choices.push(items[i][0].slice(0,40)); soon(()=>{ $('scrim').classList.remove('show'); const ch=choiceHook; choiceHook=null; ch&&ch(i); res(i); }); } }); }
-const vars={};
-const pt=s=>s.split(',').map(Number);
-const ids=s=>s.split(',').map(x=>x.trim()).flatMap(x=>x==='all'?units.map(u=>u.id):[x]);
-function kv(args){ const o={}; for(const m of args.matchAll(/(\w+)=([^\s]+)/g)) o[m[1]]=isNaN(+m[2])?m[2]:+m[2]; return o; }
-function cond(expr){ const m=expr.match(/^\$(\w+)\s*(=|!=|<|>)\s*(-?\d+)$/); if(!m) throw new Error('bad if: '+expr); const v=vars[m[1]]??0, n=+m[3];
-  return {'=':v===n,'!=':v!==n,'<':v<n,'>':v>n}[m[2]]; }
-function blockEnd(lines,i){ let depth=0; for(let j=i;j<lines.length;j++){ const c=lines[j]; if(/^(if|while)\b/.test(c)) depth++; else if(c==='end'){ if(depth===0) return j; depth--; } else if(c==='else'&&depth===0) return j; } return lines.length; }
-const parseLine=l=>{ const m=l.match(/^(\S+)\s*(.*)$/); return [m[1],m[2]]; };
-const nameText=a=>{ const m=a.match(/^([^:]+):\s*(.*)$/); return [m[1].trim(),m[2]]; };
-async function exec(lines){
-  for(let i=0;i<lines.length;i++){
-    const [cmd,arg]=parseLine(lines[i]);
-    if(cmd==='while'){ const e=blockEnd(lines,i+1); let guard=0; while(cond(arg)&&guard++<60) await exec(lines.slice(i+1,e)); i=e; continue; }
-    if(cmd==='if'){ const e=blockEnd(lines,i+1); let e2=e; let elseStart=null; if(lines[e]==='else'){ elseStart=e+1; e2=blockEnd(lines,e+1); }
-      if(cond(arg)) await exec(lines.slice(i+1,e)); else if(elseStart!=null) await exec(lines.slice(elseStart,e2)); i=e2; continue; }
-    await run1(cmd,arg);
-  }
-}
-async function run1(cmd,a){
-  TLOG.steps++;
-  switch(cmd){
-    case 'stamp': stamp(interp(a)); break;
-    case 'radio': radio(interp(a)); break;
-    case 'gloss': gloss(a); break;
-    case 'net': { const [n,t]=nameText(a); await netIn(n,interp(t)); break; }
-    case 'me': await netOut(a); break;
-    case 'ic': { const [n,t]=nameText(a); await icIn(n,t); break; }
-    case 'icme': await icOut(a); break;
-    case 'hear': { const [n,t]=nameText(a); await hear(n,t); break; }
-    case 'choose': vars.choice=await waitFor(choose(parseOpts(a))); break;
-    case 'say': { const [n,t]=nameText(a); const [txt,gl]=interp(t).split(' | ');
-      if(n===(S.head.player||'Pemberton') && !busy && txt!=='…' && !/^[“"]/.test(txt) && txt!==lastAsked){ lastAsked=null; await waitFor(acChoose([{text:txt}])); }
-      if(txt===lastAsked) lastAsked=null; await acSay(n,txt,gl); break; }
-    case 'ask': { const os=parseOpts(a); vars.choice=await waitFor(acChoose(os)); lastAsked=os[vars.choice].text; break; }
-    case 'endtalk': acShow(false); break;
-    case 'wait': await sleep(+a); break;
-    case 'var': { const m=a.match(/^\$?(\w+)\s*(\+?=)\s*(\$\w+|-?\d+)$/); const v=m[3].startsWith('$')?(vars[m[3].slice(1)]??0):+m[3]; vars[m[1]]=m[2]==='+='?(vars[m[1]]??0)+v:v; renderBadge(); break; }
-    case 'do': await exec(S.macros[a.trim()]); break;
-    case 'today': { const row=S.days[vars[a.replace('$','').trim()]??0]||{}; for(const k of Object.keys(S.legend||{})) vars[k]=0; for(const [k,v] of Object.entries(row)) if(k!=='label') vars[k]=v; used.clear(); refreshWorld(); break; }  // a new day: everything can be used again
-    case 'str': { const m=a.match(/^\$?(\w+)\s*=\s*(.*)$/); vars[m[1]]=interp(m[2]); break; }  // a text variable
-    case 'random': { const [k,lo,hi]=a.replace('$','').split(/\s+/); vars[k]=Math.floor(Math.random()*(+hi-+lo+1))+(+lo); break; }
-    case 'xp': { // xp <var> <points> <name>: award practice points, announce level-ups
-      const m=a.match(/^\$?(\w+)\s+(-?\d+)\s+(.*)$/); const before=levelOf(vars[m[1]]??0); vars[m[1]]=(vars[m[1]]??0)+(+m[2]); const after=levelOf(vars[m[1]]);
-      add(el('stamp xp',null,`<b>+${m[2]} XP</b> · ${m[3]} ${interp('{bar:$'+m[1]+'}')}`)); lastFrom=null;
-      if(after>before){ add(el('stamp levelup',null,`<b>${m[3]} is now ${LEVELS[after]}</b>`)); lastFrom=null; }
-      renderBadge(); break; }
-    case 'cards': vars.choice=await cards(a); break;
-    case 'badge': badgeText=a; renderBadge(); break;
-    case 'move': { const parts=a.split(/\s+/); const who=ids(parts[0]); const pts=parts.slice(1).filter(p=>/^-?[\d.]+,-?[\d.]+$/.test(p)).map(pt); const o=kv(a);
-      who.forEach((id,k)=>{ const u=U[id]; u.path=pts.map(p=>[...p]); u.spd=o.speed??1; u.delay=(o.delay??0)+(o.stagger??0)*k; if(TEST){ const l=u.path[u.path.length-1]; if(l){ u.x=l[0]; u.y=l[1]; } u.path=[]; u.delay=0; } }); break; }
-    case 'to': { // to id x,y id x,y ... (each unit its own destination) [speed=] [stagger=]
-      const parts=a.split(/\s+/).filter(p=>!p.includes('=')); const o=kv(a); let k=0;
-      for(let j=0;j<parts.length;j+=2){ const u=U[parts[j]]; u.path=[pt(parts[j+1])]; u.spd=o.speed??1; u.delay=(o.stagger??0)*k++; if(TEST){ [u.x,u.y]=u.path[0]; u.path=[]; u.delay=0; } } break; }
-    case 'waitmove': { const w=ids(a||'all'); while(w.some(id=>U[id].path.length||U[id].delay>0)) await sleep(120); break; }
-    case 'set': { const parts=a.split(/\s+/); const o=kv(a); for(const id of ids(parts[0])) Object.assign(U[id],o); break; }
-    case 'teleport': { const parts=a.split(/\s+/); for(let j=0;j<parts.length;j+=2){ const u=U[parts[j]]; [u.x,u.y]=pt(parts[j+1]); u.path=[]; } break; }
-    case 'fire': { const m=a.match(/^(\S+)\s+at\s+(\S+)(.*)$/); const miss=/\bmiss\b/.test(m[3]), light=/\blight\b/.test(m[3]);
-      for(const id of ids(m[1])){ const u=U[id]; u.recoil=1; const mz=u.muzzle||iso(u.x,u.y); flash(mz[0],mz[1],tw*(light?.12:.2)); puff(mz[0],mz[1],{r:tw*.06,grow:tw*(light?.3:.7),life:1.6});
-        const tgt=()=>{ if(/^-?[\d.]+,-?[\d.]+$/.test(m[2])) return iso(...pt(m[2])); const t=U[m[2]]; const p=t.top||iso(t.x,t.y); return miss?[p[0]-tw*.55,p[1]+tw*.12]:p; };
-        tracer={a:[mz[0],mz[1]],b:tgt,t:0}; if(ids(m[1]).length>1) await sleep(90); }
-      await sleep(420);
-      if(!/^-?[\d.]+,-?[\d.]+$/.test(m[2])){ const t=U[m[2]], p=t.top||iso(t.x,t.y);
-        if(miss) puff(p[0]-tw*.55,p[1]+tw*.12,{r:tw*.06,grow:tw*.55,life:2,col:'205,190,150',a:.85,vy:-4});
-        else { flash(p[0],p[1]-tw*.05,tw*.2); puff(p[0],p[1],{r:tw*.06,grow:tw*.4,life:1.3,col:'90,80,70',a:.7}); } }
-      break; }
-    case 'burst': { const [x,y]=pt(a.split(/\s+/)[0]); const p=iso(x,y); flash(p[0],p[1],tw*.25); puff(p[0],p[1],{r:tw*.08,grow:tw*.9,life:2.6,col:'105,95,80',a:.8,vy:-5}); if(/shake/.test(a)) shake=.5; break; }
-    case 'missile': { const [id,to]=a.split(/\s+/); const u=U[id]; const mz=u.muzzle||iso(u.x,u.y); missile={a:[mz[0],mz[1]],to:pt(to),t:0}; break; }
-    case 'cam': { const [x,y,z]=pt(a); cam.tfx=x; cam.tfy=y; if(z) cam.tz=z; break; }
-    case 'shake': shake=+a||.5; break;
-    case 'hud': { const [t,d]=interp(a).split('|').map(s=>s.trim()); $('hudT').textContent=t; if(d) $('hudD').textContent=d; break; }
-    case 'night': nightT=+a; break;
-    case 'tutorial': tutorial(a); break;
-    case 'tap': { const opts=a.split('||').map(o=>{ const [l,r]=o.split('='); return {targets:l.trim().split('|').map(s=>s.trim()),text:r.trim(),kind:'hint'}; });
-      tapTargets=opts.map(o=>o.targets); vars.choice=await waitFor(choose(opts.map(o=>({kind:'hint',text:o.text})))); tapTargets=null; break; }
-    case 'zoomgate': await waitFor(new Promise(res=>{ replies.innerHTML=''; const b=document.createElement('button'); b.className='chip hint'; b.textContent=a;
-      zoomWanted=()=>{ zoomWanted=null; replies.innerHTML=''; res(); }; b.onclick=()=>zoomWanted&&zoomWanted(); replies.appendChild(b); if(TEST) soon(()=>zoomWanted&&zoomWanted()); })); break;
-    case 'near': near=a.split(',').map(x=>x.trim()).filter(Boolean); refreshWorld(); break;
-    case 'title': case 'checkpoint': case 'replay': case 'play': break;   // handled by the interpreter
-    default: console.warn('unknown command',cmd,a);
-  }
-}
-let replayVal=null, badgeText='', lastAsked=null;
-function renderBadge(){ const b=$('badge'); b.hidden=!badgeText; if(badgeText) b.innerHTML=interp(badgeText); }
-/* ================= the step interpreter and the saved state =================
-   A script is compiled to a flat list of steps. Where the game is up to is a stack of frames,
-   each {scene, code, pc}: plain data, so the whole game state can be saved and restored. */
-let sceneIdx=0, nestDepth=0, frames=[];
-const COMPILED={};
-function compile(lines){
-  const out=lines.map(l=>{ const [cmd,arg]=parseLine(l); return {cmd,arg}; }), stack=[];
-  out.forEach((ins,i)=>{
-    if(ins.cmd==='if'||ins.cmd==='while') stack.push(i);
-    else if(ins.cmd==='else'){ const j=stack.pop(); out[j].jump=i+1; stack.push(i); }
-    else if(ins.cmd==='end'){ const j=stack.pop(); if(out[j].cmd==='while'){ ins.loop=j; out[j].jump=i+1; } else out[j].jump=i+1; }
-  });
-  return out;
-}
-function code(scene,name){ const k=scene+'|'+name; if(COMPILED[k]) return COMPILED[k];
-  const sc=sceneOf(scene); const lines=name==='main'?sc.script:name.startsWith('macro:')?sc.macros[name.slice(6)]:SYNTH[name];
-  return COMPILED[k]=compile(lines||[]); }
-const SYNTH={};                                  // small generated scripts, e.g. "Continue: next scene"
-const WAITS=new Set(['net','me','ic','icme','hear','choose','ask','say','wait','waitmove','cards','tap','zoomgate','replay']);
-const PRINTS=new Set(['net','me','ic','icme','hear','say']), CHOICES=new Set(['choose','ask','cards','tap']);
-/* A step restored with .done has already printed its output or had its choice made: finish it without repeating anything */
-async function resumeDone(f,ins){
-  const d=f.done;
-  if(ins.cmd==='say'){ if(!d.printed) return run1('say',ins.arg); await acWaitTap(); return; }
-  if(PRINTS.has(ins.cmd)) return;                                      // the line is already in the thread
-  if(ins.cmd==='choose'){ const o=parseOpts(ins.arg)[d.chosen]; vars.choice=d.chosen; if(!d.printed){ await chooseEffect(o); f.done.printed=1; save(); } return; }
-  if(ins.cmd==='ask'){ const o=parseOpts(ins.arg)[d.chosen]; vars.choice=d.chosen; lastAsked=o.text; acOpts.classList.remove('show'); return; }
-  if(ins.cmd==='tap'){ vars.choice=d.chosen; return; }
-  if(ins.cmd==='cards'){ vars.choice=d.chosen; return; }
-}
-function loadScene(name){
-  SNAME=name; S=sceneOf(name); LV=(S.head.levels||'4,8').split(',').map(Number); CAL=(S.head.calendar||'').split('|').map(x=>x.trim());
-  applyChrome(); acShow(false); tutorial(); $('end').classList.remove('show');
-  near=[]; used=new Set(); waiting=0; busy=false; propsBar.innerHTML=''; closePop(); badgeText=''; renderBadge(); $('scrim').classList.remove('show');
-  resetUnits(); buildTrees(); tracks.length=0; gaps.length=0; fx.length=0; tracer=null; missile=null; shake=0;
-  const [x,y,z]=pt(S.head.camera||'0,0,6'); cam.fx=cam.tfx=x; cam.fy=cam.tfy=y; cam.z=cam.tz=z; night=nightT=+(S.head.night||0);
-  for(const [k,v] of Object.entries(S.vars)) if(vars[k]===undefined) vars[k]=v;
-}
-function startScene(i){ sceneIdx=i; loadScene(CAMPAIGN.order[i]); frames=[{scene:SNAME,code:'main',pc:0}]; }
-async function interpret(){
-  while(frames.length){
-    const f=frames[frames.length-1], c=code(f.scene,f.code);
-    if(f.pc>=c.length){ frames.pop(); if(f.nested){ nestDepth--; loadScene(f.caller); badgeText=f.badge; renderBadge(); near=f.near; refreshWorld(); } continue; }
-    const ins=c[f.pc];
-    switch(ins.cmd){
-      case 'if': f.pc=cond(ins.arg)?f.pc+1:ins.jump; continue;
-      case 'while': f.pc=cond(ins.arg)?f.pc+1:ins.jump; continue;
-      case 'else': f.pc=ins.jump; continue;
-      case 'end': f.pc=ins.loop!=null?ins.loop:f.pc+1; continue;
-      case 'do': f.pc++; frames.push({scene:f.scene,code:'macro:'+ins.arg.trim(),pc:0}); continue;
-      case 'play': { f.pc++; const fr={scene:ins.arg.trim(),code:'main',pc:0,nested:1,caller:SNAME,badge:badgeText,near:[...near]};
-        nestDepth++; loadScene(fr.scene); frames.push(fr); continue; }
-      case 'title': f.pc++; if(!nestDepth&&sceneIdx===CAMPAIGN.order.length-1) $('end').classList.add('show'); continue;
-      case 'checkpoint': f.pc++; continue;            // no longer needed: the whole state is saved
-      case 'replay':
-        if(nestDepth||CAMPAIGN.order.length>1){ f.pc++; continue; }
-        if(TEST){ TLOG.final=finalState(); TLOG.done=true; frames=[]; return; }
-        save(); { const parts=ins.arg.split('||').map(x=>x.split('=').map(y=>y.trim())); const i=await choose(parts.map(p=>({kind:'hint',text:p[0]})));
-          clearSave(); thread.innerHTML=''; for(const k of Object.keys(vars)) delete vars[k]; startScene(0);
-          const v=parts[i][1]; if(v){ const [k,n]=v.split(':'); vars[k]=+n; } } continue;
-    }
-    if(f.done){ await resumeDone(f,ins); delete f.done; f.pc++; continue; }   // restored after this step's output or choice
-    if(WAITS.has(ins.cmd)){ save();                 // saved with pc at this step, so a restore redoes it
-      if(TEST&&RESTORE_AT&&TLOG.steps>=RESTORE_AT&&!TLOG.saved&&RESTORE_MODE==='before'){ TLOG.saved=true; return new Promise(()=>{}); } }
-    printedHook=PRINTS.has(ins.cmd)?()=>{ f.done={printed:1}; save(); }:null;
-    choiceHook=CHOICES.has(ins.cmd)?i=>{ f.done={chosen:i}; save(); printedHook=()=>{ f.done.printed=1; save(); }; }:null;
-    await run1(ins.cmd,ins.arg);
-    printedHook=null; choiceHook=null;
-    if(TEST&&RESTORE_AT&&TLOG.steps>=RESTORE_AT&&!TLOG.saved&&RESTORE_MODE==='after'&&WAITS.has(ins.cmd)){ TLOG.saved=true; return new Promise(()=>{}); }
-    if(frames[frames.length-1]===f){ delete f.done; f.pc++; }
-  }
-}
-
-/* ----- saving and restoring ----- */
+/* ================= saving and starting ================= */
 const SAVEKEY='offthebus:'+(CAMPAIGN.name||'scene');
-let BUILD=0; { const t=Object.values(SCENE_TEXTS).join('\u0001')+'|engine-3'; for(let i=0;i<t.length;i++) BUILD=(BUILD*31+t.charCodeAt(i))|0; }
-function snapshot(){
-  return {v:1, build:BUILD, sceneIdx, nestDepth, scene:SNAME, frames, vars,
-    thread:thread.innerHTML,
-    world:{units, trees, tracks, gaps, cam:{fx:cam.tfx,fy:cam.tfy,z:cam.tz}, night:nightT, hudT:$('hudT').textContent, hudD:$('hudD').textContent,
-      badge:badgeText, tip:$('tip').hidden?'':$('tip').textContent, near, used:[...used]},
-    ac:{show:AC.classList.contains('show'), collapsed:AC.classList.contains('collapsed'), tag:acTag.textContent, bg:acTag.style.background,
-      text:acText.textContent, gl:acGl.textContent, por:acPor.className, img:acPor.style.backgroundImage},
-    lastAsked, lastFrom, end:$('end').classList.contains('show'), test:TEST?{seed:tseed,steps:TLOG.steps,choices:TLOG.choices}:null};
-}
-let saveTimer=null;
-function save(force){ if(TEST&&!force&&!RESTORE_AT) return; try{ localStorage.setItem(SAVEKEY,JSON.stringify(snapshot())); }catch(e){} }
+let BUILD=0; { const t=Object.values(SCENES).join('\u0001')+'|core-1'; for(let i=0;i<t.length;i++) BUILD=(BUILD*31+t.charCodeAt(i))|0; }
 function clearSave(){ try{ localStorage.removeItem(SAVEKEY); }catch(e){} }
-
-function restore(sn){
-  sceneIdx=sn.sceneIdx; nestDepth=sn.nestDepth; for(const k of Object.keys(vars)) delete vars[k]; Object.assign(vars,sn.vars);
-  loadScene(sn.scene); frames=sn.frames;
-  const w=sn.world; units=w.units; for(const k in U) delete U[k]; for(const u of units) U[u.id]=u;
-  trees.length=0; trees.push(...w.trees); tracks.push(...w.tracks); gaps.push(...w.gaps);
-  cam.fx=cam.tfx=w.cam.fx; cam.fy=cam.tfy=w.cam.fy; cam.z=cam.tz=w.cam.z; night=nightT=w.night;
-  $('hudT').textContent=w.hudT; $('hudD').textContent=w.hudD; badgeText=w.badge; renderBadge(); tutorial(w.tip); near=w.near; used=new Set(w.used);
-  thread.innerHTML=sn.thread; thread.querySelectorAll('.b.typing').forEach(e=>e.closest('.row')?.remove()); lastDelivered=[...thread.querySelectorAll('.delivered')].pop()||null; lastFrom=sn.lastFrom??null;
-  const a=sn.ac; if(a.show){ acShow(true); acTag.textContent=a.tag; acTag.style.background=a.bg; acText.textContent=a.text; acGl.textContent=a.gl; acPor.className=a.por; acPor.style.backgroundImage=a.img; setCollapsed(a.collapsed); }
-  lastAsked=sn.lastAsked; if(sn.end) $('end').classList.add('show'); refreshWorld(); scrollDown();
-  if(TEST&&sn.test){ tseed=sn.test.seed; TLOG.steps=sn.test.steps; TLOG.choices=sn.test.choices; TLOG.restored=true; }
-}
-
-/* ----- the campaign ----- */
-async function play(){
-  for(;;){
-    await interpret();
-    if(sceneIdx<CAMPAIGN.order.length-1){
-      const next=sceneOf(CAMPAIGN.order[sceneIdx+1]).head.title.replace(/^Off the Bus — /,'');
-      SYNTH['continue']=['choose hint: Continue: '+next];
-      frames=[{scene:SNAME,code:'continue',pc:0}]; await interpret(); startScene(sceneIdx+1); continue;
-    }
-    if(CAMPAIGN.order.length>1){
-      $('end').classList.add('show'); if(TEST){ TLOG.final=finalState(); TLOG.done=true; return; }
-      SYNTH['again']=['choose hint: Start the campaign again']; frames=[{scene:SNAME,code:'again',pc:0}]; await interpret();
-      clearSave(); thread.innerHTML=''; for(const k of Object.keys(vars)) delete vars[k]; startScene(0); continue;
-    }
-    return;
-  }
-}
 async function start(){
   if(QS.has('reset')){ clearSave(); history.replaceState(null,'',location.pathname); }
-  let sn=null; if(!TEST||RESUME){ try{ sn=JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){} }
-  if(sn&&sn.v===1&&sn.build===BUILD){ try{ restore(sn); }catch(e){ console.warn('restore failed',e); sn=null; } if(sn) return play(); }
-  if(sn&&sn.v===1){                                // a save from an older build: keep progress, restart the scene it was in
-    thread.innerHTML=sn.thread; for(const k of Object.keys(vars)) delete vars[k]; Object.assign(vars,sn.vars);
-    startScene(Math.min(sn.sceneIdx,CAMPAIGN.order.length-1)); stamp('<b>The game was updated.</b> Picking up at the start of '+($('hudD').textContent||'this scene')+'.');
-    return play();
-  }
-  thread.innerHTML=''; for(const k of Object.keys(vars)) delete vars[k]; startScene(0); return play();
+  core=OTBCore.createCore({scenes:SCENES, campaign:CAMPAIGN, io});
+  window.__core=core;
+  let saved=null; try{ saved=JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){}
+  const sn=saved&&saved.state?JSON.parse(saved.state):null;
+  if(sn&&sn.v===3&&saved.build===BUILD){ redrawPending=true; return core.resume(sn); }
+  if(sn&&sn.v===3){ redrawPending=true; return core.restartScene(sn,'<b>The game was updated.</b> Picking up at the start of this scene.'); }
+  return core.start();
 }
-resize(); requestAnimationFrame(frame); start();
+resize(); requestAnimationFrame(frame);
+start();
+window.__redraw=redrawThread;
 })();
 </script>
 </body>
