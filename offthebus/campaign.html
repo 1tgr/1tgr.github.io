@@ -1848,7 +1848,7 @@ const TEST = TESTARG!=null;                                  // ?test=<seed>: no
 let tseed = (parseInt(TESTARG)||1)*7919; const trand = n => { tseed=(tseed*16807)%2147483647; return tseed % n; };
 const TLOG = window.__test = {done:false, steps:0, choices:[], errors:[]};
 function finalState(){ return JSON.stringify(vars)+'|'+thread.innerText.length+'|'+[...thread.innerText].reduce((h,c)=>(h*31+c.charCodeAt(0))|0,0); }
-const QS=new URLSearchParams(location.search), RESTORE_AT=+(QS.get('restoreAt')||0), RESUME=QS.has('resume');   // playtest save/restore checks
+const QS=new URLSearchParams(location.search), RESTORE_AT=+(QS.get('restoreAt')||0), RESUME=QS.has('resume'), RESTORE_MODE=QS.get('restoreMode')||'before';   // playtest save/restore checks
 if(TEST) window.addEventListener('error', e=>TLOG.errors.push(String(e.message)));
 const reduce = TEST || matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = id => document.getElementById(id);
@@ -1929,11 +1929,13 @@ async function speak(b,text,msPerWord){
 }
 function row(avCls,avTxt,bCls){ const r=el('row',null,`<span class="av ${avCls}">${avTxt}</span>`); const b=el(bCls,''); r.appendChild(b); add(r); return b; }
 function fromLabel(t){ if(lastFrom!==t){ add(el('from',t)); } lastFrom=t; }
-async function netIn(who,text){ fromLabel(who); const b=row('av-net',S.callsigns[who]??who.slice(0,2),'b in typing'); b.innerHTML='<span></span><span></span><span></span>'; await sleep(650); b.className='b in'; await speak(b,text,NET_WPM); await sleep(250); }
-async function netOut(text){ if(lastDelivered) lastDelivered.remove(); const b=add(el('b out','')); await speak(b,text,NET_WPM); lastDelivered=add(el('delivered','Transmitted')); lastFrom=null; await sleep(200); }
-async function icIn(who,text){ fromLabel(who+' · intercom'); const b=row('av-ic',S.crew[who]??who[0],'b ic-in'); await sleep(250); await speak(b,text,IC_WPM); await sleep(150); }
-async function icOut(text){ const b=add(el('b ic-out','')); lastFrom=null; await speak(b,text,IC_WPM); await sleep(150); }
-async function hear(who,text){ fromLabel(who+' · overheard'); const b=row('av-oh',(who.match(/\d/)||['·'])[0],'b oh'); await sleep(300); await speak(b,text,NET_WPM*.85); await sleep(200); }
+let printedHook=null, choiceHook=null;   // set by the interpreter: a step's output has finished / a choice was made
+const printed=()=>{ const h=printedHook; printedHook=null; h&&h(); };
+async function netIn(who,text){ fromLabel(who); const b=row('av-net',S.callsigns[who]??who.slice(0,2),'b in typing'); b.innerHTML='<span></span><span></span><span></span>'; await sleep(650); b.className='b in'; await speak(b,text,NET_WPM); printed(); await sleep(250); }
+async function netOut(text){ if(lastDelivered) lastDelivered.remove(); const b=add(el('b out','')); await speak(b,text,NET_WPM); lastDelivered=add(el('delivered','Transmitted')); lastFrom=null; printed(); await sleep(200); }
+async function icIn(who,text){ fromLabel(who+' · intercom'); const b=row('av-ic',S.crew[who]??who[0],'b ic-in'); await sleep(250); await speak(b,text,IC_WPM); printed(); await sleep(150); }
+async function icOut(text){ const b=add(el('b ic-out','')); lastFrom=null; await speak(b,text,IC_WPM); printed(); await sleep(150); }
+async function hear(who,text){ fromLabel(who+' · overheard'); const b=row('av-oh',(who.match(/\d/)||['·'])[0],'b oh'); await sleep(300); await speak(b,text,NET_WPM*.85); printed(); await sleep(200); }
 const stamp=h=>{ add(el('stamp',null,h)); lastFrom=null; };
 const radio=t=>{ add(el('scroll',t)); lastFrom=null; };
 const gloss=t=>add(el('gloss',t));
@@ -1975,6 +1977,11 @@ async function waitFor(promise){ waiting++; refreshWorld(); try{ return await pr
 function openPouch(){ if(!canAct()) return; const sh=$('sheet'); sh.innerHTML='<h2>Pouch</h2><p>What you carry.</p>';
   for(const id of kitIds()){ const p=S.props[id]; for(const v of verbsOf(p)){ const b=document.createElement('button'); b.className='card';
     b.innerHTML=`<div class="ct">${p.icon!=='•'?p.icon+' ':''}${v.text}</div>`; b.onclick=()=>{ $('scrim').classList.remove('show'); runVerb(v); }; sh.appendChild(b); } }
+  const r=document.createElement('button'); r.className='card'; r.innerHTML='<div class="ct">↺ Start again from the beginning</div><div class="cs">Clears your saved game.</div>';
+  r.onclick=()=>{ sh.innerHTML='<h2>Start again?</h2><p>Your saved game will be cleared and the campaign will start from the beginning.</p>';
+    const y=document.createElement('button'); y.className='card'; y.innerHTML='<div class="ct">Yes, start again</div>'; y.onclick=()=>{ clearSave(); location.reload(); };
+    const n=document.createElement('button'); n.className='card'; n.innerHTML='<div class="cs">No, keep playing</div>'; n.onclick=()=>$('scrim').classList.remove('show');
+    sh.append(y,n); }; sh.appendChild(r);
   const c=document.createElement('button'); c.className='card'; c.innerHTML='<div class="cs">Close</div>'; c.onclick=()=>$('scrim').classList.remove('show'); sh.appendChild(c);
   $('scrim').classList.add('show'); }
 $('pouch').addEventListener('click',openPouch);
@@ -1985,13 +1992,14 @@ $('acPortrait').addEventListener('click',e=>{ const p=personProp(acTag.textConte
 /* choices: net: transmits, ic: says it on the intercom, act: Pemberton's own action, hint: silent */
 let mapPick=null;
 function parseOpts(arg){ return arg.split('||').map(o=>{ o=o.trim(); const m=o.match(/^(net|ic|act|hint):\s*(.*)$/); return m?{kind:m[1],text:m[2]}:{kind:'net',text:o}; }); }
+async function chooseEffect(o){ const ph=printedHook; printedHook=null;   // the reply's own output: a transmission, an intercom line, an action
+  if(o.kind==='net') await netOut(o.text); else if(o.kind==='ic') await icOut(o.text); else if(o.kind==='act') add(el('stamp',null,'<b>'+o.text+'</b>'));
+  printedHook=ph; }
 function choose(opts){
   return new Promise(res=>{
     replies.innerHTML='';
-    const pick=async i=>{ replies.innerHTML=''; mapPick=null; const o=opts[i];
-      if(o.kind==='net') await netOut(o.text); else if(o.kind==='ic') await icOut(o.text);
-      else if(o.kind==='act') add(el('stamp',null,'<b>'+o.text+'</b>'));
-      res(i); };
+    const pick=async i=>{ replies.innerHTML=''; mapPick=null; const ch=choiceHook; choiceHook=null; ch&&ch(i);
+      await chooseEffect(opts[i]); printed(); res(i); };
     opts.forEach((o,i)=>{ const b=document.createElement('button');
       b.className='chip '+({net:'ch-net',ic:'ch-ic',act:'ch-act',hint:'hint'}[o.kind]);
       b.textContent=o.kind==='ic'?`“${o.text}”`:o.text; b.onclick=()=>pick(i); replies.appendChild(b); });
@@ -2017,14 +2025,15 @@ async function acSay(name,text,gl){
   for(let i=0;i<text.length&&!done;i++){ acText.textContent=text.slice(0,i+1); if(reduce) continue;
     const ch=text[i]; let d=70; if(/[.!?…]/.test(ch)) d+=320; else if(/[,—–]/.test(ch)) d+=160; await new Promise(r=>setTimeout(r,d)); }
   acText.textContent=text; if(gl) acGl.textContent=gl;
-  AC.classList.add('ready'); AC.focus({preventScroll:true});
-  await waitFor(new Promise(r=>{ acTap=()=>{ acTap=null; r(); }; if(TEST) soon(()=>acTap&&acTap()); }));
+  printed(); await acWaitTap();
 }
+async function acWaitTap(){ AC.classList.add('ready'); AC.focus({preventScroll:true});
+  await waitFor(new Promise(r=>{ acTap=()=>{ acTap=null; r(); }; if(TEST) soon(()=>acTap&&acTap()); })); }
 function acChoose(opts){
   return new Promise(res=>{ acOpts.innerHTML=''; acOpts.classList.add('show'); AC.classList.remove('ready'); acTap=null;
     opts.forEach((o,i)=>{ const b=document.createElement('button'); b.textContent=o.text;
-      b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus(),30); });
-    if(TEST){ const i=trand(opts.length); TLOG.choices.push(opts[i].text.slice(0,40)); soon(()=>{ acOpts.classList.remove('show'); res(i); }); } });
+      b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); const ch=choiceHook; choiceHook=null; ch&&ch(i); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus(),30); });
+    if(TEST){ const i=trand(opts.length); TLOG.choices.push(opts[i].text.slice(0,40)); soon(()=>{ acOpts.classList.remove('show'); const ch=choiceHook; choiceHook=null; ch&&ch(i); res(i); }); } });
 }
 const tutorial=t=>{ $('tip').textContent=t||''; $('tip').hidden=!t; };
 
@@ -2192,9 +2201,9 @@ function cards(arg){ const [headPart,list]=arg.split('::'); const [title,sub]=he
   const items=list.split('||').map(c=>c.split('|').map(x=>x.trim()));
   return new Promise(res=>{ const sh=$('sheet'); sh.innerHTML=`<h2>${interp(title)}</h2><p>${interp(sub||'')}</p>`;
     items.forEach(([t,d,l],i)=>{ const b=document.createElement('button'); b.className='card'; b.innerHTML=`<span class="lvl">${interp(l||'')}</span><div class="ct">${t}</div><div class="cs">${d||''}</div>`;
-      b.onclick=()=>{ $('scrim').classList.remove('show'); res(i); }; sh.appendChild(b); });
+      b.onclick=()=>{ $('scrim').classList.remove('show'); const ch=choiceHook; choiceHook=null; ch&&ch(i); res(i); }; sh.appendChild(b); });
     $('scrim').classList.add('show'); setTimeout(()=>sh.querySelector('.card')?.focus(),50);
-    if(TEST){ const i=trand(items.length); TLOG.choices.push(items[i][0].slice(0,40)); soon(()=>{ $('scrim').classList.remove('show'); res(i); }); } }); }
+    if(TEST){ const i=trand(items.length); TLOG.choices.push(items[i][0].slice(0,40)); soon(()=>{ $('scrim').classList.remove('show'); const ch=choiceHook; choiceHook=null; ch&&ch(i); res(i); }); } }); }
 const vars={};
 const pt=s=>s.split(',').map(Number);
 const ids=s=>s.split(',').map(x=>x.trim()).flatMap(x=>x==='all'?units.map(u=>u.id):[x]);
@@ -2297,6 +2306,17 @@ function code(scene,name){ const k=scene+'|'+name; if(COMPILED[k]) return COMPIL
   return COMPILED[k]=compile(lines||[]); }
 const SYNTH={};                                  // small generated scripts, e.g. "Continue: next scene"
 const WAITS=new Set(['net','me','ic','icme','hear','choose','ask','say','wait','waitmove','cards','tap','zoomgate','replay']);
+const PRINTS=new Set(['net','me','ic','icme','hear','say']), CHOICES=new Set(['choose','ask','cards','tap']);
+/* A step restored with .done has already printed its output or had its choice made: finish it without repeating anything */
+async function resumeDone(f,ins){
+  const d=f.done;
+  if(ins.cmd==='say'){ if(!d.printed) return run1('say',ins.arg); await acWaitTap(); return; }
+  if(PRINTS.has(ins.cmd)) return;                                      // the line is already in the thread
+  if(ins.cmd==='choose'){ const o=parseOpts(ins.arg)[d.chosen]; vars.choice=d.chosen; if(!d.printed){ await chooseEffect(o); f.done.printed=1; save(); } return; }
+  if(ins.cmd==='ask'){ const o=parseOpts(ins.arg)[d.chosen]; vars.choice=d.chosen; lastAsked=o.text; acOpts.classList.remove('show'); return; }
+  if(ins.cmd==='tap'){ vars.choice=d.chosen; return; }
+  if(ins.cmd==='cards'){ vars.choice=d.chosen; return; }
+}
 function loadScene(name){
   SNAME=name; S=sceneOf(name); LV=(S.head.levels||'4,8').split(',').map(Number); CAL=(S.head.calendar||'').split('|').map(x=>x.trim());
   applyChrome(); acShow(false); tutorial(); $('end').classList.remove('show');
@@ -2328,10 +2348,15 @@ async function interpret(){
           clearSave(); thread.innerHTML=''; for(const k of Object.keys(vars)) delete vars[k]; startScene(0);
           const v=parts[i][1]; if(v){ const [k,n]=v.split(':'); vars[k]=+n; } } continue;
     }
+    if(f.done){ await resumeDone(f,ins); delete f.done; f.pc++; continue; }   // restored after this step's output or choice
     if(WAITS.has(ins.cmd)){ save();                 // saved with pc at this step, so a restore redoes it
-      if(TEST&&RESTORE_AT&&TLOG.steps>=RESTORE_AT&&!TLOG.saved){ save(true); TLOG.saved=true; return new Promise(()=>{}); } }
+      if(TEST&&RESTORE_AT&&TLOG.steps>=RESTORE_AT&&!TLOG.saved&&RESTORE_MODE==='before'){ TLOG.saved=true; return new Promise(()=>{}); } }
+    printedHook=PRINTS.has(ins.cmd)?()=>{ f.done={printed:1}; save(); }:null;
+    choiceHook=CHOICES.has(ins.cmd)?i=>{ f.done={chosen:i}; save(); printedHook=()=>{ f.done.printed=1; save(); }; }:null;
     await run1(ins.cmd,ins.arg);
-    if(frames[frames.length-1]===f) f.pc++;
+    printedHook=null; choiceHook=null;
+    if(TEST&&RESTORE_AT&&TLOG.steps>=RESTORE_AT&&!TLOG.saved&&RESTORE_MODE==='after'&&WAITS.has(ins.cmd)){ TLOG.saved=true; return new Promise(()=>{}); }
+    if(frames[frames.length-1]===f){ delete f.done; f.pc++; }
   }
 }
 
@@ -2348,9 +2373,9 @@ function snapshot(){
     lastAsked, lastFrom, end:$('end').classList.contains('show'), test:TEST?{seed:tseed,steps:TLOG.steps,choices:TLOG.choices}:null};
 }
 let saveTimer=null;
-function save(force){ if(TEST&&!force) return; try{ localStorage.setItem(SAVEKEY,JSON.stringify(snapshot())); }catch(e){} }
+function save(force){ if(TEST&&!force&&!RESTORE_AT) return; try{ localStorage.setItem(SAVEKEY,JSON.stringify(snapshot())); }catch(e){} }
 function clearSave(){ try{ localStorage.removeItem(SAVEKEY); }catch(e){} }
-addEventListener('pagehide',save); document.addEventListener('visibilitychange',()=>{ if(document.hidden) save(); });
+
 function restore(sn){
   sceneIdx=sn.sceneIdx; nestDepth=sn.nestDepth; for(const k of Object.keys(vars)) delete vars[k]; Object.assign(vars,sn.vars);
   loadScene(sn.scene); frames=sn.frames;
@@ -2382,6 +2407,7 @@ async function play(){
   }
 }
 async function start(){
+  if(QS.has('reset')){ clearSave(); history.replaceState(null,'',location.pathname); }
   let sn=null; if(!TEST||RESUME){ try{ sn=JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){} }
   if(sn&&sn.v===1&&sn.build===BUILD){ try{ restore(sn); }catch(e){ console.warn('restore failed',e); sn=null; } if(sn) return play(); }
   if(sn&&sn.v===1){                                // a save from an older build: keep progress, restart the scene it was in
