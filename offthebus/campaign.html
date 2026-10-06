@@ -1847,6 +1847,8 @@ const TESTARG = new URLSearchParams(location.search).get('test');
 const TEST = TESTARG!=null;                                  // ?test=<seed>: no pauses, instant moves, plays itself
 let tseed = (parseInt(TESTARG)||1)*7919; const trand = n => { tseed=(tseed*16807)%2147483647; return tseed % n; };
 const TLOG = window.__test = {done:false, steps:0, choices:[], errors:[]};
+function finalState(){ return JSON.stringify(vars)+'|'+thread.innerText.length+'|'+[...thread.innerText].reduce((h,c)=>(h*31+c.charCodeAt(0))|0,0); }
+const QS=new URLSearchParams(location.search), RESTORE_AT=+(QS.get('restoreAt')||0), RESUME=QS.has('resume');   // playtest save/restore checks
 if(TEST) window.addEventListener('error', e=>TLOG.errors.push(String(e.message)));
 const reduce = TEST || matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = id => document.getElementById(id);
@@ -2319,12 +2321,13 @@ async function interpret(){
       case 'checkpoint': f.pc++; continue;            // no longer needed: the whole state is saved
       case 'replay':
         if(nestDepth||CAMPAIGN.order.length>1){ f.pc++; continue; }
-        if(TEST){ TLOG.done=true; frames=[]; return; }
+        if(TEST){ TLOG.final=finalState(); TLOG.done=true; frames=[]; return; }
         save(); { const parts=ins.arg.split('||').map(x=>x.split('=').map(y=>y.trim())); const i=await choose(parts.map(p=>({kind:'hint',text:p[0]})));
           clearSave(); thread.innerHTML=''; for(const k of Object.keys(vars)) delete vars[k]; startScene(0);
           const v=parts[i][1]; if(v){ const [k,n]=v.split(':'); vars[k]=+n; } } continue;
     }
-    if(WAITS.has(ins.cmd)) save();                  // saved with pc at this step, so a restore redoes it
+    if(WAITS.has(ins.cmd)){ save();                 // saved with pc at this step, so a restore redoes it
+      if(TEST&&RESTORE_AT&&TLOG.steps>=RESTORE_AT&&!TLOG.saved){ save(true); TLOG.saved=true; return new Promise(()=>{}); } }
     await run1(ins.cmd,ins.arg);
     if(frames[frames.length-1]===f) f.pc++;
   }
@@ -2340,10 +2343,10 @@ function snapshot(){
       badge:badgeText, tip:$('tip').hidden?'':$('tip').textContent, near, used:[...used]},
     ac:{show:AC.classList.contains('show'), collapsed:AC.classList.contains('collapsed'), tag:acTag.textContent, bg:acTag.style.background,
       text:acText.textContent, gl:acGl.textContent, por:acPor.className, img:acPor.style.backgroundImage},
-    lastAsked, end:$('end').classList.contains('show')};
+    lastAsked, lastFrom, end:$('end').classList.contains('show'), test:TEST?{seed:tseed,steps:TLOG.steps,choices:TLOG.choices}:null};
 }
 let saveTimer=null;
-function save(){ if(TEST) return; try{ localStorage.setItem(SAVEKEY,JSON.stringify(snapshot())); }catch(e){} }
+function save(force){ if(TEST&&!force) return; try{ localStorage.setItem(SAVEKEY,JSON.stringify(snapshot())); }catch(e){} }
 function clearSave(){ try{ localStorage.removeItem(SAVEKEY); }catch(e){} }
 addEventListener('pagehide',save); document.addEventListener('visibilitychange',()=>{ if(document.hidden) save(); });
 function restore(sn){
@@ -2353,9 +2356,10 @@ function restore(sn){
   trees.length=0; trees.push(...w.trees); tracks.push(...w.tracks); gaps.push(...w.gaps);
   cam.fx=cam.tfx=w.cam.fx; cam.fy=cam.tfy=w.cam.fy; cam.z=cam.tz=w.cam.z; night=nightT=w.night;
   $('hudT').textContent=w.hudT; $('hudD').textContent=w.hudD; badgeText=w.badge; renderBadge(); tutorial(w.tip); near=w.near; used=new Set(w.used);
-  thread.innerHTML=sn.thread; thread.querySelectorAll('.b.typing').forEach(e=>e.closest('.row')?.remove()); lastDelivered=[...thread.querySelectorAll('.delivered')].pop()||null; lastFrom=null;
+  thread.innerHTML=sn.thread; thread.querySelectorAll('.b.typing').forEach(e=>e.closest('.row')?.remove()); lastDelivered=[...thread.querySelectorAll('.delivered')].pop()||null; lastFrom=sn.lastFrom??null;
   const a=sn.ac; if(a.show){ acShow(true); acTag.textContent=a.tag; acTag.style.background=a.bg; acText.textContent=a.text; acGl.textContent=a.gl; acPor.className=a.por; acPor.style.backgroundImage=a.img; setCollapsed(a.collapsed); }
   lastAsked=sn.lastAsked; if(sn.end) $('end').classList.add('show'); refreshWorld(); scrollDown();
+  if(TEST&&sn.test){ tseed=sn.test.seed; TLOG.steps=sn.test.steps; TLOG.choices=sn.test.choices; TLOG.restored=true; }
 }
 
 /* ----- the campaign ----- */
@@ -2368,7 +2372,7 @@ async function play(){
       frames=[{scene:SNAME,code:'continue',pc:0}]; await interpret(); startScene(sceneIdx+1); continue;
     }
     if(CAMPAIGN.order.length>1){
-      $('end').classList.add('show'); if(TEST){ TLOG.done=true; return; }
+      $('end').classList.add('show'); if(TEST){ TLOG.final=finalState(); TLOG.done=true; return; }
       SYNTH['again']=['choose hint: Start the campaign again']; frames=[{scene:SNAME,code:'again',pc:0}]; await interpret();
       clearSave(); thread.innerHTML=''; for(const k of Object.keys(vars)) delete vars[k]; startScene(0); continue;
     }
@@ -2376,7 +2380,7 @@ async function play(){
   }
 }
 async function start(){
-  let sn=null; if(!TEST){ try{ sn=JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){} }
+  let sn=null; if(!TEST||RESUME){ try{ sn=JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){} }
   if(sn&&sn.v===1&&sn.build===BUILD){ try{ restore(sn); }catch(e){ console.warn('restore failed',e); sn=null; } if(sn) return play(); }
   if(sn&&sn.v===1){                                // a save from an older build: keep progress, restart the scene it was in
     thread.innerHTML=sn.thread; for(const k of Object.keys(vars)) delete vars[k]; Object.assign(vars,sn.vars);
