@@ -842,7 +842,7 @@ def brew
 radio Hollis comes over with two mugs.
 if $brew=0
 say Sgt Hollis: Brew, sir. Stewed, but it’s wet.
-ask Thanks || The net?
+ask Say “Thank you, Sergeant” || Ask “The net?”
 if $choice=0
 say Pemberton: Thank you, Sergeant.
 end
@@ -853,7 +853,7 @@ end
 end
 if $brew=1
 say Sgt Hollis: One Two’s been writing letters, sir. Four of them. His mum, his nan, two girls.
-ask Two girls? || Good for him.
+ask Ask “Two girls?” || Say “Good for him”
 if $choice=0
 say Pemberton: Two girls?
 say Sgt Hollis: He’ll find out, sir. They always do.
@@ -864,7 +864,7 @@ end
 end
 if $brew=2
 say Cpl Baxter: Morning, sir! Did you hear the BFBS request show? Somebody asked for Simply Red for the whole regiment.
-ask I did || Who asked?
+ask Say “I did” || Ask “Who asked?”
 if $choice=0
 say Pemberton: I did.
 end
@@ -875,7 +875,7 @@ end
 end
 if $brew=3
 say Sgt Hollis: Quiet night, sir. Convoys on the far road till two. All going east.
-ask Going east || How many?
+ask Say “Going east” || Ask “How many?”
 if $choice=0
 say Pemberton: All going east.
 end
@@ -965,7 +965,7 @@ while $qdone=0
 var pick=3
 if $q1=0
 if $q2=0
-ask Stockholm? || How long? || Say nothing.
+ask Ask “Stockholm?” || Ask “How long?” || Say nothing.
 if $choice=0
 var pick=1
 end
@@ -973,14 +973,14 @@ if $choice=1
 var pick=2
 end
 else
-ask Stockholm? || Say nothing.
+ask Ask “Stockholm?” || Say nothing.
 if $choice=0
 var pick=1
 end
 end
 else
 if $q2=0
-ask How long? || Say nothing.
+ask Ask “How long?” || Say nothing.
 if $choice=0
 var pick=2
 end
@@ -1009,7 +1009,7 @@ endtalk
 stamp 0820 · Troop orders
 radio Hollis and Baxter come over to your tank. Now it is your turn.
 say Sgt Hollis: Sir.
-ask Brief orders || Full orders
+ask Give brief orders || Give full orders
 var full=$choice
 if $full=1
 say Pemberton: In order: ground, situation, mission, execution, service support, command and signal. | You give it all: the ground, what Calloway said about the enemy, the mission twice, the drill, the replen, the frequencies{$cwt}.
@@ -1247,7 +1247,7 @@ say Pemberton: Sergeant Hollis!
 say Sgt Hollis: Ah. Manöverschäden. Field damage, sir. They claim, we pay. Mostly we pay.
 end
 say The farmer: Your tanks have driven on my field. The winter wheat. Here — and here.
-ask Apologise || Deny it || The form
+ask Apologise || Deny it || Say “Fill in the form”
 if $choice=0
 say Pemberton: I’m sorry. We’ll make it right.
 say The farmer: Gut. | He seems surprised. He writes something on the clipboard and underlines it.
@@ -1626,7 +1626,7 @@ say Pemberton: Sergeant.
 say Sgt Hollis: Bridge here — need the classification. Bend here, tight for a Challenger. Then through Sibbesse. Narrow street, junction in the middle. We’ll want to stop and look at that junction properly, sir.
 say Pemberton: …the junction.
 say Sgt Hollis: The junction outside the SPAR, sir. Key node. Civilian movement patterns. Logistical reconnaissance.
-ask Bread. || Reconnaissance? || Go on.
+ask Ask “Bread?” || Ask “Reconnaissance?” || Say “Go on”
 if $choice=0
 say Pemberton: You want bread.
 say Sgt Hollis: I want to verify the route, sir. Check the clearances. Assess the operational readiness of local supply infrastructure.
@@ -1639,7 +1639,7 @@ if $choice=2
 say Pemberton: Go on.
 say Sgt Hollis: Clearances, sir. Turning circle. And the operational readiness of local supply infrastructure.
 end
-ask Bread. || Infrastructure? || Sergeant…
+ask Say “Bread” || Ask “Infrastructure?” || Say “Sergeant…”
 if $choice=0
 say Pemberton: You want bread.
 say Sgt Hollis: The men want bread, sir. I am merely concerned for their welfare. The junction is genuinely tight.
@@ -1652,7 +1652,7 @@ if $choice=2
 say Pemberton: Sergeant Hollis.
 say Sgt Hollis: The men want bread, sir. And the junction is genuinely tight. Both things are true.
 end
-ask Mount up || Two minutes, not three || Fine
+ask Say “Mount up” || Say “Two minutes, not three” || Say “Fine”
 if $choice=0
 say Pemberton: Right. Mount up. Route recce, south through Sibbesse. Two minutes at the junction. Out and back.
 say Sgt Hollis: Sir.
@@ -1731,7 +1731,7 @@ say Frau Müller: You are buying bread?
 say Sgt Hollis: Bread please. And some cold meat. And six bottles of Jever if you have it.
 say Cpl Baxter: Anything in it, sir? | Baxter is at the magazine rack, holding up the Hildesheimer Allgemeine Zeitung.
 near paper,bread,jever,tv,photo,hollis
-ask Same as the radio || Read it
+ask Say “Same as the radio” || Read it
 if $choice=1
 say Pemberton: Let’s have a look.
 say Pemberton: “Heseltine berichtet von Fortschritt in Stockholm. Bundeswehr auf normaler Bereitschaft.” | Heseltine reports progress in Stockholm. Bundeswehr on normal readiness. Nothing the radio hasn’t said.
@@ -1753,7 +1753,7 @@ endtalk
 near bag,boy,cherry
 radio Back at the tanks. The Jever goes into the turret bins for later — sergeant’s rule: nobody drinks on the move.
 say Cpl Baxter: Productive recce, sir?
-ask Most informative.
+ask Say “Most informative”
 say Pemberton: Most informative.
 say Sgt Hollis: The local supply infrastructure remains fully operational. | Deadpan, lighting a cigarette.
 endtalk
@@ -1768,7 +1768,7 @@ set a,p,b open=1
 stamp The hides
 near notebook,bag,hollis
 say Sgt Hollis: Worth the trip, sir.
-ask Was it?
+ask Ask “Was it?”
 say Pemberton: Was it?
 say Sgt Hollis: Frau Müller. Said pass auf dich auf. To me. Not to you, sir, no disrespect intended.
 say Sgt Hollis: That’s the first time in this country anyone’s said that to me on this tour.
