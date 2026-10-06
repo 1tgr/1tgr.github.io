@@ -429,16 +429,53 @@ say Maj Calloway: Execution. {$x}
 say Maj Calloway: Service support. {$ss}
 say Maj Calloway: Command and signal. {$cs}
 say Maj Calloway: Questions?
-ask No questions, sir. || What’s the latest from Stockholm? || How long do we sit here?
+var qdone=0
+var q1=0
+var q2=0
+while $qdone=0
+var pick=3
+if $q1=0
+if $q2=0
+ask What’s the latest from Stockholm? || How long do we sit here? || Say nothing.
+if $choice=0
+var pick=1
+end
 if $choice=1
+var pick=2
+end
+else
+ask What’s the latest from Stockholm? || Say nothing.
+if $choice=0
+var pick=1
+end
+end
+else
+if $q2=0
+ask How long do we sit here? || Say nothing.
+if $choice=0
+var pick=2
+end
+else
+ask Say nothing.
+end
+end
+if $pick=1
 say Pemberton: What’s the latest from Stockholm?
 say Maj Calloway: Talks continue. That’s all Brigade tells me, and I suspect it’s all they know.
+var q1=1
+say Maj Calloway: Any more questions?
 end
-if $choice=2
+if $pick=2
 say Pemberton: How long do we sit here?
 say Maj Calloway: As long as Corps wants a reserve. Which is to say, until it doesn’t.
+var q2=1
+say Maj Calloway: Any more questions?
 end
-say Maj Calloway: Time check. The time is now 0812. That’s all. | Watches checked. The troop leaders go back to their troops.
+if $pick=3
+var qdone=1
+end
+end
+say Maj Calloway: Good. Time check. The time is now 0812. That’s all. | Watches checked. The troop leaders go back to their troops.
 endtalk
 stamp 0820 · Troop orders
 radio Hollis and Baxter come over to your tank. Now it is your turn.
