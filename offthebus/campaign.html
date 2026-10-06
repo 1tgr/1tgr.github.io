@@ -551,7 +551,7 @@ vars: hq1=0, hq2=0, hq3=0, hq4=0, hq5=0, hq6=0, hasked=0, hdone=0
 ---script
 stamp <b>Wednesday 25 April 1990</b> · 1630<br>Hobart Barracks, Detmold
 radio Late afternoon, low sun, long shadows. The troop rolls through the Hobart gate and follows the sentry’s directions to the workshop bay.
-to a 3,4.4 p 4.3,4.4 b 5.6,4.4 speed=1.3 stagger=0.4
+to a 5.6,4.4 p 4.3,4.4 b 3,4.4 speed=1.3 stagger=0.4
 cam 5,6,7.5
 waitmove a,p,b
 radio REME are waiting. They take over the moment the hatches open: track tension, fuel, ammunition, periscopes. Compressors, ratchets, a shout in broad Yorkshire.
@@ -564,57 +564,131 @@ say Capt Holley: Pemberton, is it? | He returns the salute, correctly but unhurr
 ask Say “Sir”
 say Pemberton: Sir.
 say Capt Holley: Right. Come round here. Mind the map. | A map drawn in chalk, about three metres square, smudged where he has walked across it. He points with the toe of his boot.
-say Capt Holley: You’ve come from Sennelager. Davies has spoken to you. You’re being sent forward to join your squadron.
+say Capt Holley: You’ve come from Sennelager. Davies has spoken to you.
+say Capt Holley: He’s gone on ahead to the squadron.
+say Capt Holley: Left me his Rover and the stragglers.
+say Capt Holley: You’re being sent forward to join your squadron.
 say Capt Holley: We are here. | His boot taps Detmold.
-say Capt Holley: This is the position you’ve been hearing about on the news. Foreign Secretary in Stockholm, agreement within days, all that. You’ll have noticed the squadron’s gone forward in a hurry, while the radio insists otherwise.
-say Capt Holley: Between you and me, we don’t know. Could be bluff. Could be the real thing. We’re planning for both. The agreement may yet come and we’ll all stand down feeling foolish. It may not. So we go forward. | Not a hard look. Just direct. The first time anyone in uniform has told you the radio is not the whole picture.
-say Capt Holley: Third Shock Army opposite this sector. Tanks, motor rifle, the usual. Heavy. They’ve been mobilising for three weeks. Reports of forward elements moving into assembly areas as of last night, but that could mean an exercise or it could mean a crossing. | His boot moves east of the border line, to “3 SA”.
-say Capt Holley: What I’m telling you is: assume they’re coming. Hope they’re not.
-say Capt Holley: Regiment’s here. Hildesheim, south of the town, in hides in the Hildesheimer Wald. We’re corps reserve. Covering force goes forward, the forward divisions dig in, and we sit and wait until Corps tells us where to hit. Plenty of kit will go past you going east. You stay put. | His boot moves to Hildesheim, circled, with “SQN” beside it.
-say Capt Holley: Your mission is to get there. Meet your squadron leader, Major Calloway, by eighteen hundred tomorrow. He’ll have your orders when you arrive. You’re his now.
-say Capt Holley: Mortar section will catch up with you on the road. Sergeant Coates and his lads, eighty-one mil, three four-three-twos, off the infantry. They’ll fall in behind your three tanks. Worth a brew when you meet him. | He says this warmly. Coates is someone he knows and likes.
-say Capt Holley: Route is the B1. Out through Horn, here, then Blomberg, Barntrup, over the Weser at Hameln, Elze, Hildesheim. Call it sixty miles. Should take you the rest of today and part of tomorrow, depending on traffic. | His boot traces the dotted route.
-say Capt Holley: You will see a lot of military traffic going east. Some of it British. Most of it German. You will also see civilians going west. Don’t get tangled in either. Stay on the road, keep your spacing, don’t dawdle.
-say Capt Holley: Hermann’s behind you once you’re out of town. Keep the Teutoburger Wald on your right as far as Horn. If the hills are on your left, you’ve gone wrong. | His boot finds the little stick figure with its sword raised. He drew it himself. A slight smile, the first.
-say Capt Holley: Comms: regimental net, frequency one, through the rebro. You’ll lose it in the valleys. You’re Bravo One Zero on that net. Your OC’s Bravo Zero Alpha. Sunray on that net is the Colonel, so keep it short. Change to the squadron net when you reach them. Break radio silence if you have a contact or a casualty. Otherwise nothing.
-say Capt Holley: On contact: report and break. Do not engage unless you have to. You’re getting to the squadron, you’re not picking fights on the way. There’s no honour in losing a tank on the road. Clear? | The paternal note surfaces for the first time.
+say Capt Holley: This is the position you’ve been hearing about on the news.
+say Capt Holley: Foreign Secretary in Stockholm,
+say Capt Holley: agreement within days, all that.
+say Capt Holley: You’ll have noticed the squadron’s gone forward in a hurry,
+say Capt Holley: while the radio insists otherwise.
+say Capt Holley: Between you and me, we don’t know. Could be bluff.
+say Capt Holley: Could be the real thing. We’re planning for both.
+say Capt Holley: The agreement may yet come
+say Capt Holley: and we’ll all stand down feeling foolish. It may not.
+say Capt Holley: So we go forward. | Not a hard look. Just direct. The first time anyone in uniform has told you the radio is not the whole picture.
+say Capt Holley: Third Shock Army opposite this sector.
+say Capt Holley: Tanks, motor rifle, the usual. Heavy.
+say Capt Holley: They’ve been mobilising for three weeks.
+say Capt Holley: Reports of forward elements moving into assembly areas
+say Capt Holley: as of last night,
+say Capt Holley: but that could mean an exercise or it could mean a crossing. | His boot moves east of the border line, to “3 SA”.
+say Capt Holley: What I’m telling you is: assume they’re coming.
+say Capt Holley: Hope they’re not.
+say Capt Holley: Regiment’s here. Hildesheim, south of the town,
+say Capt Holley: in hides in the Hildesheimer Wald. We’re corps reserve.
+say Capt Holley: Covering force goes forward, the forward divisions dig in,
+say Capt Holley: and we sit and wait until Corps tells us where to hit.
+say Capt Holley: Plenty of kit will go past you going east. You stay put. | His boot moves to Hildesheim, circled, with “SQN” beside it.
+say Capt Holley: Your mission is to get there.
+say Capt Holley: Meet your squadron leader, Major Calloway,
+say Capt Holley: by eighteen hundred tomorrow.
+say Capt Holley: He’ll have your orders when you arrive. You’re his now.
+say Capt Holley: Mortar section will catch up with you on the road.
+say Capt Holley: Sergeant Coates and his lads, eighty-one mil,
+say Capt Holley: three four-three-twos, off the infantry.
+say Capt Holley: They’ll fall in behind your three tanks.
+say Capt Holley: Worth a brew when you meet him. | He says this warmly. Coates is someone he knows and likes.
+say Capt Holley: Route is the B1.
+say Capt Holley: Out through Horn, here, then Blomberg, Barntrup,
+say Capt Holley: over the Weser at Hameln, Elze, Hildesheim.
+say Capt Holley: Call it sixty miles.
+say Capt Holley: Should take you the rest of today and part of tomorrow,
+say Capt Holley: depending on traffic. | His boot traces the dotted route.
+say Capt Holley: You will see a lot of military traffic going east.
+say Capt Holley: Some of it British. Most of it German.
+say Capt Holley: You will also see civilians going west.
+say Capt Holley: Don’t get tangled in either.
+say Capt Holley: Stay on the road, keep your spacing, don’t dawdle.
+say Capt Holley: Hermann’s behind you once you’re out of town.
+say Capt Holley: Keep the Teutoburger Wald on your right as far as Horn.
+say Capt Holley: If the hills are on your left, you’ve gone wrong. | His boot finds the little stick figure with its sword raised. He drew it himself. A slight smile, the first.
+say Capt Holley: Comms: regimental net, frequency one, through the rebro.
+say Capt Holley: You’ll lose it in the valleys.
+say Capt Holley: You’re Bravo One Zero on that net. Your OC’s Bravo Zero Alpha.
+say Capt Holley: Sunray on that net is the Colonel, so keep it short.
+say Capt Holley: Change to the squadron net when you reach them.
+say Capt Holley: Break radio silence if you have a contact or a casualty.
+say Capt Holley: Otherwise nothing.
+say Capt Holley: On contact: report and break.
+say Capt Holley: Do not engage unless you have to.
+say Capt Holley: You’re getting to the squadron,
+say Capt Holley: you’re not picking fights on the way.
+say Capt Holley: There’s no honour in losing a tank on the road. Clear? | The paternal note surfaces for the first time.
 ask Say “Sir”
 say Pemberton: Sir.
-say Capt Holley: Tanks are being topped up here. Fuel for the move and combat load. Rations and water for seventy-two hours. Your sergeant should check stowage before you move.
+say Capt Holley: Tanks are being topped up here.
+say Capt Holley: Fuel for the move and combat load.
+say Capt Holley: Rations and water for seventy-two hours.
+say Capt Holley: Your sergeant should check stowage before you move.
 say Capt Holley: Questions?
 while $hdone=0
 ask {$hq1=0} Ask “Comms?” || {$hq2=0} Ask “Civilians?” || {$hq3=0} Ask “The Bundeswehr?” || {$hq4=0} Ask “Trouble on the route?” || {$hq5=0} Ask “Air?” || {$hq6=0} Ask “Contact?” || {$hasked=0} Say “No questions, sir” || {$hasked>0} Say nothing
 if $choice=0
 say Pemberton: What if comms go down?
-say Capt Holley: Make for the RV. Use ground signals if you have to — orange smoke for friendly, black for not. Major Calloway knows you’re coming.
+say Capt Holley: Make for the RV. Use ground signals if you have to —
+say Capt Holley: orange smoke for friendly, black for not.
+say Capt Holley: Major Calloway knows you’re coming.
 var hq1=1
 end
 if $choice=1
 say Pemberton: What about the civilians?
-say Capt Holley: Leave them be. Don’t be drawn in. If a German Polizei vehicle wants you to stop, stop. Otherwise, drive on.
-say Capt Holley: And don’t engage civilians. Under any circumstances. If you think you’re seeing a threat, identify first. Better to be slow than wrong. We are not in the business of shooting refugees, and you do not want to be the officer who finds out he was. | He looks at you more directly than he has so far.
+say Capt Holley: Leave them be. Don’t be drawn in.
+say Capt Holley: If a German Polizei vehicle wants you to stop, stop.
+say Capt Holley: Otherwise, drive on.
+say Capt Holley: And don’t engage civilians. Under any circumstances.
+say Capt Holley: If you think you’re seeing a threat, identify first.
+say Capt Holley: Better to be slow than wrong.
+say Capt Holley: We are not in the business of shooting refugees,
+say Capt Holley: and you do not want to be the officer who finds out he was. | He looks at you more directly than he has so far.
 var hq2=1
 end
 if $choice=2
 say Pemberton: What’s the situation with the Bundeswehr?
-say Capt Holley: They’re moving in parallel. You’ll see their kit on the autobahn. Stay out of each other’s way. Their liaison is at Calloway’s harbour if you need anything.
+say Capt Holley: They’re moving in parallel.
+say Capt Holley: You’ll see their kit on the autobahn.
+say Capt Holley: Stay out of each other’s way.
+say Capt Holley: Their liaison is at Calloway’s harbour if you need anything.
 var hq3=1
 end
 if $choice=3
 say Pemberton: Are we expecting trouble on the route?
-say Capt Holley: Spetsnaz are reported to be operating ahead of any crossing. We’ve had nothing solid in this sector. But you’ll want your hatches manned and your commanders alert. Use cover where the road allows. Don’t bunch up. | A brief pause first.
-say Capt Holley: When you site your OPs forward, put them where you’d walk if you were them. The other side doesn’t always think like a textbook. | Low, almost an aside, looking down at the map.
+say Capt Holley: Spetsnaz are reported to be operating ahead of any crossing.
+say Capt Holley: We’ve had nothing solid in this sector.
+say Capt Holley: But you’ll want your hatches manned and your commanders alert.
+say Capt Holley: Use cover where the road allows. Don’t bunch up. | A brief pause first.
+say Capt Holley: When you site your OPs forward,
+say Capt Holley: put them where you’d walk if you were them.
+say Capt Holley: The other side doesn’t always think like a textbook. | Low, almost an aside, looking down at the map.
 say Capt Holley: You’ll work it out.
 var hq4=1
 end
 if $choice=4
 say Pemberton: What about air?
-say Capt Holley: RAF is up. The Soviets aren’t, yet. If you see a low-flying aircraft, identify before reacting. The Bundeswehr is moving Alpha Jets around at low level. Looks aggressive, isn’t.
+say Capt Holley: RAF is up. The Soviets aren’t, yet.
+say Capt Holley: If you see a low-flying aircraft, identify before reacting.
+say Capt Holley: The Bundeswehr is moving Alpha Jets around at low level.
+say Capt Holley: Looks aggressive, isn’t.
 var hq5=1
 end
 if $choice=5
 say Pemberton: What if we make contact en route?
-say Capt Holley: Report. Break contact. Continue mission. You are not the cavalry of song. You are three tanks getting to a squadron. The squadron will deal with what comes after.
+say Capt Holley: Report. Break contact. Continue mission.
+say Capt Holley: You are not the cavalry of song.
+say Capt Holley: You are three tanks getting to a squadron.
+say Capt Holley: The squadron will deal with what comes after.
 var hq6=1
 end
 if $choice=6
@@ -639,7 +713,6 @@ endtalk
 radio You salute. He returns it, more economically this time. As you walk back to the bay, a REME staff sergeant comes over to him with a clipboard and they begin a different conversation. Your briefing was one of many.
 hear Capt Holley: …keep an eye on him.
 radio If you look back, Holley is alone with his chalk map. The wind is already moving the dust across the dotted route.
-to a 3,4.4 p 4.3,4.4 b 5.6,4.4
 radio BBC World Service: talks in Stockholm resuming, sterling firm.
 title
 replay Play again
@@ -973,7 +1046,8 @@ say Sgt Hollis: Same as yesterday, sir. Nothing’s happening, very loudly.
 end
 end
 if $brew=1
-say Sgt Hollis: One Two’s been writing letters, sir. Four of them. His mum, his nan, two girls.
+say Sgt Hollis: One Two’s been writing letters, sir. Four of them.
+say Sgt Hollis: His mum, his nan, two girls.
 ask Ask “Two girls?” || Say “Good for him”
 if $choice=0
 say Pemberton: Two girls?
@@ -984,7 +1058,8 @@ say Pemberton: Good for him.
 end
 end
 if $brew=2
-say Cpl Baxter: Morning, sir! Did you hear the BFBS request show? Somebody asked for Fools Gold for the whole regiment.
+say Cpl Baxter: Morning, sir! Did you hear the BFBS request show?
+say Cpl Baxter: Somebody asked for Fools Gold for the whole regiment.
 ask Say “I did” || Ask “Who asked?”
 if $choice=0
 say Pemberton: I did.
@@ -995,7 +1070,8 @@ say Cpl Baxter: Wasn’t me, sir. | It was him.
 end
 end
 if $brew=3
-say Sgt Hollis: Quiet night, sir. Convoys on the far road till two. All going east.
+say Sgt Hollis: Quiet night, sir. Convoys on the far road till two.
+say Sgt Hollis: All going east.
 ask Say “Going east” || Ask “How many?”
 if $choice=0
 say Pemberton: All going east.
@@ -1061,7 +1137,10 @@ end
 net Zero Alpha: Hello all stations, this is Zero Alpha. O Group, my location, 0800. Out.
 radio You walk across to Calloway’s tank with your map and notebook. The other troop leaders are already there. The map is spread on the engine decks.
 if $og=3
-say Maj Calloway: Before the orders. Yesterday, on the Sibbesse road, an accident that was not an accident. A Spetsnaz group. Two civilians who were not what they seemed, and one who was. A girl of six, from Magdeburg. | He stops for about two seconds before he says “six”. Nobody says anything.
+say Maj Calloway: Before the orders. Yesterday, on the Sibbesse road,
+say Maj Calloway: an accident that was not an accident. A Spetsnaz group.
+say Maj Calloway: Two civilians who were not what they seemed, and one who was.
+say Maj Calloway: A girl of six, from Magdeburg. | He stops for about two seconds before he says “six”. Nobody says anything.
 end
 say Maj Calloway: Ground. {$g} | His finger moves over the map: the hides, the wood edge, the field, the roads east.
 say Maj Calloway: Situation. {$sit}
@@ -1072,10 +1151,14 @@ say Maj Calloway: Service support. {$ss}
 say Maj Calloway: Command and signal. {$cs}
 if $day=4
 if $ourroute=1
-say Maj Calloway: Route cards. 1st Troop’s is the one we’ll use: bridge class, the ford, the junction at Sibbesse. If Corps sends us south, we go your way, Pemberton. | Calloway’s plan for a move south now follows your route. Unlogged routes would have meant a slower, safer road.
+say Maj Calloway: Route cards. 1st Troop’s is the one we’ll use:
+say Maj Calloway: bridge class, the ford, the junction at Sibbesse.
+say Maj Calloway: If Corps sends us south, we go your way, Pemberton. | Calloway’s plan for a move south now follows your route. Unlogged routes would have meant a slower, safer road.
 end
 if $ourroute=0
-say Maj Calloway: Route cards. 1st Troop’s is thin, Pemberton. 3rd Troop’s route goes further round, but it’s fully logged, so that’s the one we’ll use. | An incomplete route card can’t be planned on. Calloway picks the longer road that someone did log.
+say Maj Calloway: Route cards. 1st Troop’s is thin, Pemberton.
+say Maj Calloway: 3rd Troop’s route goes further round,
+say Maj Calloway: but it’s fully logged, so that’s the one we’ll use. | An incomplete route card can’t be planned on. Calloway picks the longer road that someone did log.
 end
 end
 say Maj Calloway: Questions?
@@ -1111,13 +1194,15 @@ end
 end
 if $pick=1
 say Pemberton: What’s the latest from Stockholm?
-say Maj Calloway: Talks continue. That’s all Brigade tells me, and I suspect it’s all they know.
+say Maj Calloway: Talks continue.
+say Maj Calloway: That’s all Brigade tells me, and I suspect it’s all they know.
 var q1=1
 say Maj Calloway: Any more questions?
 end
 if $pick=2
 say Pemberton: How long do we sit here?
-say Maj Calloway: As long as Corps wants a reserve. Which is to say, until it doesn’t.
+say Maj Calloway: As long as Corps wants a reserve.
+say Maj Calloway: Which is to say, until it doesn’t.
 var q2=1
 say Maj Calloway: Any more questions?
 end
@@ -1133,7 +1218,8 @@ say Sgt Hollis: Sir.
 ask Give brief orders || Give full orders
 var full=$choice
 if $full=1
-say Pemberton: In order: ground, situation, mission, execution, service support, command and signal. | You give it all: the ground, what Calloway said about the enemy, the mission twice, the drill, the replen, the frequencies{$cwt}.
+say Pemberton: In order: ground, situation, mission,
+say Pemberton: execution, service support, command and signal. | You give it all: the ground, what Calloway said about the enemy, the mission twice, the drill, the replen, the frequencies{$cwt}.
 say Sgt Hollis: Sir. | Baxter is writing it all down.
 else
 say Pemberton: Same as yesterday. Training this morning.
@@ -1249,7 +1335,8 @@ xp contact 15 Contact drill
 end
 if $oc=1
 say Capt Davies: … | Not Calloway: Davies, standing in for him, hands in pockets, watching. He says nothing until the end.
-say Capt Davies: Not bad. Not bad at all. Again tomorrow, and you’ll be dangerous.
+say Capt Davies: Not bad. Not bad at all.
+say Capt Davies: Again tomorrow, and you’ll be dangerous.
 endtalk
 if $slot=0
 xp crash 5 Watched by Davies
@@ -1365,9 +1452,11 @@ say Pemberton: Ja. Pemberton.
 end
 if $choice=1
 say Pemberton: Sergeant Hollis!
-say Sgt Hollis: Ah. Manöverschäden. Field damage, sir. They claim, we pay. Mostly we pay.
+say Sgt Hollis: Ah. Manöverschäden. Field damage, sir. They claim, we pay.
+say Sgt Hollis: Mostly we pay.
 end
-say The farmer: Your tanks have driven on my field. The winter wheat. Here — and here.
+say The farmer: Your tanks have driven on my field. The winter wheat.
+say The farmer: Here — and here.
 ask Apologise || Deny it || Say “Fill in the form”
 if $choice=0
 say Pemberton: I’m sorry. We’ll make it right.
@@ -1491,8 +1580,10 @@ look: radio Two pairs of tank tracks across the corner of a field of green winte
 person: Sgt Hollis
 unit: a
 icon: 💬
-ask about One Two: say Sgt Hollis: Good lad, sir. Keen. Too keen, some days. He’ll be all right if nobody needs him to be all right in a hurry.
-ask about the war: say Sgt Hollis: Same as the last war that didn’t happen, sir. We sit, we wait, we drink tea. Until we don’t.
+ask about One Two: say Sgt Hollis: Good lad, sir. Keen. Too keen, some days. He’ll be all right
+ask about One Two: say Sgt Hollis: if nobody needs him to be all right in a hurry.
+ask about the war: say Sgt Hollis: Same as the last war that didn’t happen, sir.
+ask about the war: say Sgt Hollis: We sit, we wait, we drink tea. Until we don’t.
 @telegraph the Telegraph
 kit: yes
 icon: 📰
@@ -1663,8 +1754,11 @@ say Pemberton: Two clean hits. One short.
 say Capt Davies: Mm. Tell your corporal he’s drinking on his own coin tonight. | Davies’s joke — the man who missed pays for his own drinks tonight.
 say Capt Davies: … | He glances into your open hatch, at the ammunition bins. Nearly full.
 say Capt Davies: Bins still full. Hmm. Well — happens.
-say Capt Davies: Actually, lucky. Plans have changed. You’re being moved on. You’ll be glad of the rounds.
-say Capt Davies: Squadron’s deploying ahead of schedule. Square your lot away, then bring them to the workshop at Detmold. Captain Holley’s expecting you. He’ll have your orders. | Square away — get sorted out: clean up, stow kit, ready for the next move.
+say Capt Davies: Actually, lucky. Plans have changed. You’re being moved on.
+say Capt Davies: You’ll be glad of the rounds.
+say Capt Davies: Squadron’s deploying ahead of schedule. Square your lot away,
+say Capt Davies: then bring them to the workshop at Detmold.
+say Capt Davies: Captain Holley’s expecting you. He’ll have your orders. | Square away — get sorted out: clean up, stow kit, ready for the next move.
 say Capt Davies: Crews all right? | He taps the roof. The Lance Corporal starts the engine.
 say Pemberton: All up, sir.
 move rover 2.5,7.45 2.5,18 speed=2.2
@@ -1721,8 +1815,12 @@ look: radio A Land Rover 110 in green-and-black, “44” stencilled on the door
 person: Capt Davies
 unit: rover
 icon: 💬
-ask about Detmold: say Capt Davies: Lovely spot. Hills, a Schloss, a statue of a chap with a sword. You’ll like it. Everybody likes Detmold.
-ask about the squadron: say Capt Davies: Gone forward, ahead of schedule. Major Calloway is in his element. Map in one hand, brew in the other.
+ask about Detmold: say Capt Davies: Lovely spot.
+ask about Detmold: say Capt Davies: Hills, a Schloss, a statue of a chap with a sword.
+ask about Detmold: say Capt Davies: You’ll like it. Everybody likes Detmold.
+ask about the squadron: say Capt Davies: Gone forward, ahead of schedule.
+ask about the squadron: say Capt Davies: Major Calloway is in his element.
+ask about the squadron: say Capt Davies: Map in one hand, brew in the other.
 </script>
 <script type="text/plain" class="scene" data-name="spar">title: Off the Bus — SPAR route recce
 hud: 1500 | 30 April 1990
@@ -1742,40 +1840,57 @@ radio Five days in reserve. As corps reserve, the squadron’s work while it wai
 wait 900
 near mapcase,hollis,notebook
 radio Hollis walks over from his tank with the map case.
-say Sgt Hollis: Sir. Route recce. Squadron’s given us the stretch south through the Wald. Got a minute?
+say Sgt Hollis: Sir. Route recce.
+say Sgt Hollis: Squadron’s given us the stretch south through the Wald.
+say Sgt Hollis: Got a minute?
 say Pemberton: Sergeant.
-say Sgt Hollis: Bridge here — need the classification. Bend here, tight for a Challenger. Then through Sibbesse. Narrow street, junction in the middle. We’ll want to stop and look at that junction properly, sir.
+say Sgt Hollis: Bridge here — need the classification.
+say Sgt Hollis: Bend here, tight for a Challenger. Then through Sibbesse.
+say Sgt Hollis: Narrow street, junction in the middle.
+say Sgt Hollis: We’ll want to stop and look at that junction properly, sir.
 say Pemberton: …the junction.
-say Sgt Hollis: The junction outside the SPAR, sir. Key node. Civilian movement patterns. Logistical reconnaissance.
+say Sgt Hollis: The junction outside the SPAR, sir. Key node.
+say Sgt Hollis: Civilian movement patterns. Logistical reconnaissance.
 ask Ask “Bread?” || Ask “Reconnaissance?” || Say “Go on”
 if $choice=0
 say Pemberton: You want bread.
-say Sgt Hollis: I want to verify the route, sir. Check the clearances. Assess the operational readiness of local supply infrastructure.
+say Sgt Hollis: I want to verify the route, sir. Check the clearances.
+say Sgt Hollis: Assess the operational readiness
+say Sgt Hollis: of local supply infrastructure.
 end
 if $choice=1
 say Pemberton: Logistical reconnaissance?
-say Sgt Hollis: Of the junction, sir. And its surroundings. Check the clearances. Assess the operational readiness of local supply infrastructure.
+say Sgt Hollis: Of the junction, sir. And its surroundings.
+say Sgt Hollis: Check the clearances. Assess the operational readiness
+say Sgt Hollis: of local supply infrastructure.
 end
 if $choice=2
 say Pemberton: Go on.
-say Sgt Hollis: Clearances, sir. Turning circle. And the operational readiness of local supply infrastructure.
+say Sgt Hollis: Clearances, sir. Turning circle.
+say Sgt Hollis: And the operational readiness of local supply infrastructure.
 end
 ask Say “Bread” || Ask “Infrastructure?” || Say “Sergeant…”
 if $choice=0
 say Pemberton: You want bread.
-say Sgt Hollis: The men want bread, sir. I am merely concerned for their welfare. The junction is genuinely tight.
+say Sgt Hollis: The men want bread, sir.
+say Sgt Hollis: I am merely concerned for their welfare.
+say Sgt Hollis: The junction is genuinely tight.
 end
 if $choice=1
 say Pemberton: Supply infrastructure.
-say Sgt Hollis: Bread, sir. For the men. I am merely concerned for their welfare. The junction is genuinely tight.
+say Sgt Hollis: Bread, sir. For the men.
+say Sgt Hollis: I am merely concerned for their welfare.
+say Sgt Hollis: The junction is genuinely tight.
 end
 if $choice=2
 say Pemberton: Sergeant Hollis.
-say Sgt Hollis: The men want bread, sir. And the junction is genuinely tight. Both things are true.
+say Sgt Hollis: The men want bread, sir. And the junction is genuinely tight.
+say Sgt Hollis: Both things are true.
 end
 ask Say “Mount up” || Say “Two minutes, not three” || Say “Fine”
 if $choice=0
-say Pemberton: Right. Mount up. Route recce, south through Sibbesse. Two minutes at the junction. Out and back.
+say Pemberton: Right. Mount up. Route recce, south through Sibbesse.
+say Pemberton: Two minutes at the junction. Out and back.
 say Sgt Hollis: Sir.
 end
 if $choice=1
@@ -1849,20 +1964,23 @@ radio Bell over the door. Fresh Brötchen. NDR playing low behind the counter. T
 say Frau Müller: Ah! Die Briten. Guten Tag. | “Ah! The British. Good afternoon.”
 say Sgt Hollis: Guten Tag, Frau Müller. | She is mildly surprised that he knows her name. She doesn’t ask.
 say Frau Müller: You are buying bread?
-say Sgt Hollis: Bread please. And some cold meat. And six bottles of Jever if you have it.
+say Sgt Hollis: Bread please. And some cold meat.
+say Sgt Hollis: And six bottles of Jever if you have it.
 say Cpl Baxter: Anything in it, sir? | Baxter is at the magazine rack, holding up the Hildesheimer Allgemeine Zeitung.
 near paper,bread,jever,tv,photo,hollis
 ask Say “Same as the radio” || Read it
 if $choice=1
 say Pemberton: Let’s have a look.
-say Pemberton: “Heseltine berichtet von Fortschritt in Stockholm. Bundeswehr auf normaler Bereitschaft.” | Heseltine reports progress in Stockholm. Bundeswehr on normal readiness. Nothing the radio hasn’t said.
+say Pemberton: “Heseltine berichtet von Fortschritt in Stockholm.”
+say Pemberton: “Bundeswehr auf normaler Bereitschaft.” | Heseltine reports progress in Stockholm. Bundeswehr on normal readiness. Nothing the radio hasn’t said.
 else
 say Pemberton: Same as the radio, I expect.
 say Cpl Baxter: Bet it is, sir.
 end
 say Herr Müller: Sie sind aus Detmold? | “You are from Detmold?” He looks at the British soldiers without surprise.
 say Sgt Hollis: 1st/5th Dragoon Guards, sir. We are forward of Detmold.
-say Herr Müller: My boy is in the Bundeswehr. He is with his unit also. Near Wolfsburg.
+say Herr Müller: My boy is in the Bundeswehr. He is with his unit also.
+say Herr Müller: Near Wolfsburg.
 say Sgt Hollis: He’ll be all right, sir.
 say Frau Müller: Are you here long?
 say Sgt Hollis: As long as needed.
@@ -1881,7 +1999,7 @@ endtalk
 set a,p,b open=0
 radio The boy on the bicycle is back across the road. He waves. Baxter waves back from his cupola, with a piece of Brötchen.
 choose One One, One Two, One Zero. Back to the hides. Out.
-to a -2.6,7.5 p -1.3,7.5 b 0,7.5 speed=1.1
+to a 0,7.5 p -1.3,7.5 b -2.6,7.5 speed=1.1
 cam 1,7.1,6.4
 waitmove a,p,b
 set a,p,b open=1
@@ -1891,8 +2009,10 @@ near notebook,bag,hollis
 say Sgt Hollis: Worth the trip, sir.
 ask Ask “Was it?”
 say Pemberton: Was it?
-say Sgt Hollis: Frau Müller. Said pass auf dich auf. To me. Not to you, sir, no disrespect intended.
-say Sgt Hollis: That’s the first time in this country anyone’s said that to me on this tour.
+say Sgt Hollis: Frau Müller. Said pass auf dich auf. To me.
+say Sgt Hollis: Not to you, sir, no disrespect intended.
+say Sgt Hollis: That’s the first time in this country
+say Sgt Hollis: anyone’s said that to me on this tour.
 say Sgt Hollis: They know, sir. The locals. They know what’s coming.
 say Sgt Hollis: Crews are happy. I’ll get the routine sorted for tomorrow. | He walks off. You are left standing by your tank, holding half a Brötchen.
 endtalk
@@ -1926,9 +2046,12 @@ look: radio The 1:50,000 sheet in its case, the route marked in Hollis’s neat 
 person: Sgt Hollis
 unit: a
 icon: 💬
-ask about the bridge: say Sgt Hollis: Class seventy on the old sheet, sir. I want to see the disc with our own eyes. Sheets lie.
-ask about Sibbesse: say Sgt Hollis: Village. Church, petrol pump, the shop. Locals are used to us. Forty-five years of being used to us.
-ask about the Müllers: say Sgt Hollis: Run the shop since before I was born, sir. She remembers faces. He remembers regiments.
+ask about the bridge: say Sgt Hollis: Class seventy on the old sheet, sir.
+ask about the bridge: say Sgt Hollis: I want to see the disc with our own eyes. Sheets lie.
+ask about Sibbesse: say Sgt Hollis: Village. Church, petrol pump, the shop. Locals are used to us.
+ask about Sibbesse: say Sgt Hollis: Forty-five years of being used to us.
+ask about the Müllers: say Sgt Hollis: Run the shop since before I was born, sir.
+ask about the Müllers: say Sgt Hollis: She remembers faces. He remembers regiments.
 @notebook your notebook
 kit: yes
 icon: 📓
@@ -1967,7 +2090,8 @@ look: radio Past its best. Petals on the gravel, a few last blossoms holding on.
 icon: 📰
 verb: Read
 look: radio The Hildesheimer Allgemeine Zeitung, folded on the rack. The front page leads on Stockholm.
-use: say Pemberton: “Heseltine berichtet von Fortschritt in Stockholm. Bundeswehr auf normaler Bereitschaft.” | Heseltine reports progress in Stockholm. Bundeswehr on normal readiness. Nothing the radio hasn’t said.
+use: say Pemberton: “Heseltine berichtet von Fortschritt in Stockholm.”
+use: say Pemberton: “Bundeswehr auf normaler Bereitschaft.” | Heseltine reports progress in Stockholm. Bundeswehr on normal readiness. Nothing the radio hasn’t said.
 @bread the bread
 icon: 🥖
 verb: Take
@@ -2140,12 +2264,12 @@ function createCore({scenes, campaign, io}){
       case 'gloss': await emit({k:'gloss',text:a}); break;
       case 'net': case 'ic': case 'hear': { const [n,t]=nameText(a); await emit({k:SPEECH[cmd],who:n,text:cmd==='net'?interp(t):t}); hook.printed&&hook.printed(); break; }
       case 'me': case 'icme': await emit({k:SPEECH[cmd],text:a}); hook.printed&&hook.printed(); break;
-      case 'choose': { const opts=parseOpts(a); const i=await io.choose(opts,{}); hook.choice&&hook.choice(i); vars.choice=i; await chooseEffect(opts[i]); hook.printed&&hook.printed(); break; }
+      case 'choose': { state.pemSpoke=false; const opts=parseOpts(a); const i=await io.choose(opts,{}); hook.choice&&hook.choice(i); vars.choice=i; await chooseEffect(opts[i]); hook.printed&&hook.printed(); break; }
       case 'say': { const [n,t]=nameText(a); const [txt,gl]=interp(t).split(' | '); const me=S().head.player||'Pemberton';
-        if(n===me && !inVerb && txt!=='…' && !/^[“"]/.test(txt) && !state.lastAsked){ await io.ask([{text:txt}]); }
-        if(n===me) state.lastAsked=false;
+        if(n===me && !inVerb && txt!=='…' && !/^[“"]/.test(txt) && !state.lastAsked && !state.pemSpoke){ await io.ask([{text:txt}]); }
+        if(n===me){ state.lastAsked=false; state.pemSpoke=true; } else state.pemSpoke=false;
         state.ac={show:true,name:n,text:txt,gloss:gl||'',collapsed:false}; await io.say(state.ac); hook.printed&&hook.printed(); await io.tap(); break; }
-      case 'ask': { const os=parseOpts(a); const shown=os.map((o,i)=>[o,i]).filter(([o])=>!o.when||cond(o.when)); const j=await io.ask(shown.map(([o])=>o)); const i=shown[j][1];
+      case 'ask': { state.pemSpoke=false; const os=parseOpts(a); const shown=os.map((o,i)=>[o,i]).filter(([o])=>!o.when||cond(o.when)); const j=await io.ask(shown.map(([o])=>o)); const i=shown[j][1];
         hook.choice&&hook.choice(i); vars.choice=i; state.lastAsked=true; break; }
       case 'endtalk': state.ac={...state.ac,show:false}; io.update(); break;
       case 'wait': await io.wait(+a); break;
@@ -2158,7 +2282,7 @@ function createCore({scenes, campaign, io}){
         await emit({k:'xp',html:`<b>+${m[2]} XP</b> · ${m[3]} ${interp('{bar:$'+m[1]+'}')}`});
         if(after>before) await emit({k:'levelup',html:`<b>${m[3]} is now ${LEVELS[after]}</b>`});
         io.update(); break; }
-      case 'cards': { const [headPart,list]=a.split('::'); const [title,sub]=headPart.split('|').map(x=>x.trim());
+      case 'cards': { state.pemSpoke=false; const [headPart,list]=a.split('::'); const [title,sub]=headPart.split('|').map(x=>x.trim());
         const items=list.split('||').map(c=>c.split('|').map(x=>x.trim())).map(([t,d,l])=>({title:t,desc:d||'',label:interp(l||'')}));
         const i=await io.cards(interp(title),interp(sub||''),items); hook.choice&&hook.choice(i); vars.choice=i; break; }
       case 'badge': w.badge=a; io.update(); break;

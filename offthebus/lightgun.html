@@ -512,12 +512,12 @@ function createCore({scenes, campaign, io}){
       case 'gloss': await emit({k:'gloss',text:a}); break;
       case 'net': case 'ic': case 'hear': { const [n,t]=nameText(a); await emit({k:SPEECH[cmd],who:n,text:cmd==='net'?interp(t):t}); hook.printed&&hook.printed(); break; }
       case 'me': case 'icme': await emit({k:SPEECH[cmd],text:a}); hook.printed&&hook.printed(); break;
-      case 'choose': { const opts=parseOpts(a); const i=await io.choose(opts,{}); hook.choice&&hook.choice(i); vars.choice=i; await chooseEffect(opts[i]); hook.printed&&hook.printed(); break; }
+      case 'choose': { state.pemSpoke=false; const opts=parseOpts(a); const i=await io.choose(opts,{}); hook.choice&&hook.choice(i); vars.choice=i; await chooseEffect(opts[i]); hook.printed&&hook.printed(); break; }
       case 'say': { const [n,t]=nameText(a); const [txt,gl]=interp(t).split(' | '); const me=S().head.player||'Pemberton';
-        if(n===me && !inVerb && txt!=='…' && !/^[“"]/.test(txt) && !state.lastAsked){ await io.ask([{text:txt}]); }
-        if(n===me) state.lastAsked=false;
+        if(n===me && !inVerb && txt!=='…' && !/^[“"]/.test(txt) && !state.lastAsked && !state.pemSpoke){ await io.ask([{text:txt}]); }
+        if(n===me){ state.lastAsked=false; state.pemSpoke=true; } else state.pemSpoke=false;
         state.ac={show:true,name:n,text:txt,gloss:gl||'',collapsed:false}; await io.say(state.ac); hook.printed&&hook.printed(); await io.tap(); break; }
-      case 'ask': { const os=parseOpts(a); const shown=os.map((o,i)=>[o,i]).filter(([o])=>!o.when||cond(o.when)); const j=await io.ask(shown.map(([o])=>o)); const i=shown[j][1];
+      case 'ask': { state.pemSpoke=false; const os=parseOpts(a); const shown=os.map((o,i)=>[o,i]).filter(([o])=>!o.when||cond(o.when)); const j=await io.ask(shown.map(([o])=>o)); const i=shown[j][1];
         hook.choice&&hook.choice(i); vars.choice=i; state.lastAsked=true; break; }
       case 'endtalk': state.ac={...state.ac,show:false}; io.update(); break;
       case 'wait': await io.wait(+a); break;
@@ -530,7 +530,7 @@ function createCore({scenes, campaign, io}){
         await emit({k:'xp',html:`<b>+${m[2]} XP</b> · ${m[3]} ${interp('{bar:$'+m[1]+'}')}`});
         if(after>before) await emit({k:'levelup',html:`<b>${m[3]} is now ${LEVELS[after]}</b>`});
         io.update(); break; }
-      case 'cards': { const [headPart,list]=a.split('::'); const [title,sub]=headPart.split('|').map(x=>x.trim());
+      case 'cards': { state.pemSpoke=false; const [headPart,list]=a.split('::'); const [title,sub]=headPart.split('|').map(x=>x.trim());
         const items=list.split('||').map(c=>c.split('|').map(x=>x.trim())).map(([t,d,l])=>({title:t,desc:d||'',label:interp(l||'')}));
         const i=await io.cards(interp(title),interp(sub||''),items); hook.choice&&hook.choice(i); vars.choice=i; break; }
       case 'badge': w.badge=a; io.update(); break;
