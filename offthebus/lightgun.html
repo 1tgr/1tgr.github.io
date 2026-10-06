@@ -423,7 +423,7 @@ const parseLine=l=>{ const m=l.match(/^(\S+)\s*(.*)$/); return [m[1],m[2]]; };
 const nameText=a=>{ const m=a.match(/^([^:]+):\s*(.*)$/); return [m[1].trim(),m[2]]; };
 const pt=s=>s.split(',').map(Number);
 function kv(args){ const o={}; for(const m of args.matchAll(/(\w+)=([^\s]+)/g)) o[m[1]]=isNaN(+m[2])?m[2]:+m[2]; return o; }
-function parseOpts(arg){ return arg.split('||').map(o=>{ o=o.trim(); const m=o.match(/^(net|ic|act|hint):\s*(.*)$/); return m?{kind:m[1],text:m[2]}:{kind:'net',text:o}; }); }
+function parseOpts(arg){ return arg.split('||').map(o=>{ o=o.trim(); let when=null; const w=o.match(/^\{(\$\w+\s*(?:=|!=|<|>)\s*-?\d+)\}\s*(.*)$/); if(w){ when=w[1]; o=w[2]; } const m=o.match(/^(net|ic|act|hint):\s*(.*)$/); return {...(m?{kind:m[1],text:m[2]}:{kind:'net',text:o}), when}; }); }
 function compile(lines){
   const out=lines.map(l=>{ const [cmd,arg]=parseLine(l); return {cmd,arg}; }), stack=[];
   out.forEach((ins,i)=>{
@@ -517,7 +517,8 @@ function createCore({scenes, campaign, io}){
         if(n===me && !inVerb && txt!=='…' && !/^[“"]/.test(txt) && !state.lastAsked){ await io.ask([{text:txt}]); }
         if(n===me) state.lastAsked=false;
         state.ac={show:true,name:n,text:txt,gloss:gl||'',collapsed:false}; await io.say(state.ac); hook.printed&&hook.printed(); await io.tap(); break; }
-      case 'ask': { const os=parseOpts(a); const i=await io.ask(os); hook.choice&&hook.choice(i); vars.choice=i; state.lastAsked=true; break; }
+      case 'ask': { const os=parseOpts(a); const shown=os.map((o,i)=>[o,i]).filter(([o])=>!o.when||cond(o.when)); const j=await io.ask(shown.map(([o])=>o)); const i=shown[j][1];
+        hook.choice&&hook.choice(i); vars.choice=i; state.lastAsked=true; break; }
       case 'endtalk': state.ac={...state.ac,show:false}; io.update(); break;
       case 'wait': await io.wait(+a); break;
       case 'var': { const m=a.match(/^\$?(\w+)\s*(\+?=)\s*(\$\w+|-?\d+)$/); const v=m[3].startsWith('$')?(vars[m[3].slice(1)]??0):+m[3]; vars[m[1]]=m[2]==='+='?(vars[m[1]]??0)+v:v; io.update(); break; }
@@ -735,6 +736,9 @@ function drawTree(t){ const [sx,sy]=iso(t.x,t.y);
   const r=tw*.24*t.s; cx.fillStyle='rgba(0,0,0,.16)'; cx.beginPath(); cx.ellipse(sx+r*.3,sy+r*.12,r*.9,r*.4,0,0,7); cx.fill(); cx.fillStyle='#4e3826'; cx.fillRect(sx-1.2,sy-r*.7,2.4,r*.7);
   cx.fillStyle=t.col||'#3f6630'; cx.beginPath(); cx.arc(sx,sy-r*1.15,r,0,7); cx.fill(); cx.fillStyle='rgba(255,255,255,.08)'; cx.beginPath(); cx.arc(sx-r*.25,sy-r*1.4,r*.6,0,7); cx.fill(); }
 function drawMark(m){ const p=iso(m.x,m.y);
+  if(m.type==='chalk'){ cx.strokeStyle='rgba(245,245,240,.8)'; cx.lineWidth=Math.max(1.5,tw*.03); cx.lineCap='round'; cx.setLineDash(m.dash?[4,4]:[]);
+    cx.beginPath(); (m.pts||[]).forEach((q,i)=>{ const r=iso(q[0],q[1]); i?cx.lineTo(r[0],r[1]):cx.moveTo(r[0],r[1]); }); if(m.pts&&m.pts.length) cx.stroke(); cx.setLineDash([]);
+    if(m.text){ cx.fillStyle='rgba(245,245,240,.9)'; cx.font=`700 ${Math.max(8,tw*.11)}px system-ui`; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(m.text,p[0],p[1]); } return; }
   if(m.type==='pad'){ poly([iso(m.x-.5,m.y-.45),iso(m.x+.5,m.y-.45),iso(m.x+.5,m.y+.45),iso(m.x-.5,m.y+.45)],'#c9c6bd'); }
   else if(m.type==='peg'){ cx.fillStyle='#e9e2c9'; cx.fillRect(p[0]-1.5,p[1]-tw*.18,3,tw*.18); cx.fillStyle='#c0392b'; cx.fillRect(p[0]-1.5,p[1]-tw*.18,3,tw*.05); if(m.text){ cx.fillStyle='#333'; cx.font=`600 ${Math.max(8,tw*.1)}px system-ui`; cx.textAlign='center'; cx.fillText(m.text,p[0],p[1]-tw*.24); } }
   else if(m.type==='flag'){ cx.strokeStyle='#5a4a3a'; cx.lineWidth=1.5; cx.beginPath(); cx.moveTo(p[0],p[1]); cx.lineTo(p[0],p[1]-tw*.6); cx.stroke(); cx.fillStyle='#c0392b'; cx.fillRect(p[0],p[1]-tw*.6,tw*.28,tw*.18); }
@@ -931,11 +935,11 @@ function frame(now){
   night+=(nightT-night)*Math.min(1,dt*1.5);
   resizeIf(); setCam(); if(shake>0){ shake-=dt; ox+=(Math.random()-.5)*6; oy+=(Math.random()-.5)*4; }
   cx.fillStyle=sc.map.bg||'#8a9a5a'; cx.fillRect(0,0,W,H); drawGround();
-  for(const m of sc.map.marks||[]) if(m.type==='pad'||m.type==='parapet') drawMark(m);
+  for(const m of sc.map.marks||[]) if(m.type==='pad'||m.type==='parapet'||m.type==='chalk') drawMark(m);
   cx.fillStyle='rgba(120,92,52,.55)'; for(const [x,y,a] of w.tracks){ for(const o of [-.11,.11]){ const p=iso(x-Math.sin(a)*o,y+Math.cos(a)*o); cx.beginPath(); cx.ellipse(p[0],p[1],Math.max(1.5,tw*.035),Math.max(1,tw*.02),0,0,7); cx.fill(); } }
   for(const [x,y] of w.gaps){ const p=iso(x,y); cx.fillStyle='rgba(110,84,50,.7)'; cx.beginPath(); cx.ellipse(p[0],p[1],tw*.14,tw*.06,0,0,7); cx.fill(); cx.strokeStyle='#5a4126'; cx.lineWidth=1; for(let i=0;i<3;i++){ cx.beginPath(); cx.moveTo(p[0]-tw*.1+i*tw*.08,p[1]-2); cx.lineTo(p[0]-tw*.06+i*tw*.08,p[1]-tw*.07); cx.stroke(); } }
   const trees=core.treesOf(st.scene).filter((t,i)=>!w.broken.includes(i));
-  const items=[...trees.map(t=>({k:t.x+t.y,f:()=>drawTree(t)})),...(sc.map.marks||[]).filter(m=>m.type!=='pad'&&m.type!=='parapet').map(m=>({k:m.x+m.y,f:()=>drawMark(m)})),
+  const items=[...trees.map(t=>({k:t.x+t.y,f:()=>drawTree(t)})),...(sc.map.marks||[]).filter(m=>m.type!=='pad'&&m.type!=='parapet'&&m.type!=='chalk').map(m=>({k:m.x+m.y,f:()=>drawMark(m)})),
     ...w.units.filter(u=>!u.hidden).map(u=>({k:u.x+u.y+.01,f:()=>DRAW[u.type](u)}))];
   items.sort((a,b)=>a.k-b.k).forEach(i=>i.f());
   for(const u of w.units){ if(u.hidden) continue; const p=iso(u.x,u.y);
