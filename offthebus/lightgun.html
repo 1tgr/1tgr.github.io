@@ -764,7 +764,7 @@ async function run1(cmd,a){
     case 'hear': { const [n,t]=nameText(a); await hear(n,t); break; }
     case 'choose': vars.choice=await waitFor(choose(parseOpts(a))); break;
     case 'say': { const [n,t]=nameText(a); const [txt,gl]=interp(t).split(' | ');
-      if(n===(S.head.player||'Pemberton') && !busy && txt!=='…' && !/^[“"]/.test(txt) && txt!==lastAsked){ lastAsked=null; const i=await waitFor(acChoose([{text:txt},{text:'Say nothing.'}])); if(i===1){ if(gl) await acSay(n,'…',gl); break; } }
+      if(n===(S.head.player||'Pemberton') && !busy && txt!=='…' && !/^[“"]/.test(txt) && txt!==lastAsked){ lastAsked=null; await waitFor(acChoose([{text:txt}])); }
       if(txt===lastAsked) lastAsked=null; await acSay(n,txt,gl); break; }
     case 'ask': { const os=parseOpts(a); vars.choice=await waitFor(acChoose(os)); lastAsked=os[vars.choice].text; break; }
     case 'endtalk': acShow(false); break;

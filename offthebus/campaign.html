@@ -228,11 +228,7 @@ waitmove a,p,b
 cam 13,7.4,5.6
 near merc,trabant,plate,suitcase,family,hedge,field,notebook
 radio Round the bend, the road is blocked. A Mercedes has nudged the rear corner of a Trabant. Both cars are at an angle across the road. Nobody is hurt.
-choose Zero, One Zero. Possible obstacle. Wait, out. || hint: Watch for a moment.
-if $choice=1
-wait 1500
 choose Zero, One Zero. Possible obstacle. Wait, out.
-end
 set a,p,b open=1
 hear Mercedes driver: Mein Gott, schauen Sie sich das an!
 gloss “My God, look at this!”
@@ -243,7 +239,7 @@ gloss “Insurance — do you have insurance?”
 hear Trabant driver: Nein.
 gloss “No.” Their East German state insurance means nothing on a West German road. They are from the other side.
 net Zero: One Zero, Zero. Sitrep your location, over.
-choose Zero, One Zero. Civilian RTA blocking the road. No casualties. No way through. Over. || Zero, One Zero. Two civilian cars blocking the road. East German family. No casualties. Over.
+choose Zero, One Zero. Civilian RTA blocking the road. No casualties. No way through. Over.
 gloss RTA — road traffic accident.
 net Zero: Bypass it. Don’t get drawn in. Holley’s been on the net — don’t keep him. Out.
 
@@ -362,7 +358,7 @@ stamp 0900
 hud 0900
 net One One: One One.
 radio Nothing else. Hollis is letting you know he is there.
-choose One Zero. || hint: Say nothing.
+choose One Zero.
 wait 1500
 
 stamp 0915
@@ -489,7 +485,7 @@ radio Three minutes of silence. Hatches come open, carefully.
 set a,p,b open=1
 wait 1500
 radio Hollis lights a cigarette, standing in his cupola, headset pushed back, looking east. He says nothing.
-choose One Zero. Well done, all. Out. || hint: Say nothing.
+choose One Zero. Well done, all. Out.
 wait 2000
 net Two One: Zero, Two One. Two killed. Continuing task. Out.
 radio 2nd Troop’s sergeant. The screen troop that came back through you an hour ago.
@@ -720,7 +716,7 @@ calendar: Friday 27 April 1990 | Saturday 28 April 1990 | Sunday 29 April 1990 |
 callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12
 crew: Gunner=G, Loader=L, Driver=D
 people: Maj Calloway=#6a7f9a:calloway, Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Pemberton=#5aa7e0:pemberton, The farmer=#8a6d3b, Capt Davies=#e59b3a:davies
-vars: day=0, crash=10, gas=0, gun=0, contact=0, fatigue=0, debt=0, rain=0, oc=0, checks=0
+vars: ourroute=0, logbridge=0, logjunction=0, day=0, crash=10, gas=0, gun=0, contact=0, fatigue=0, debt=0, rain=0, oc=0, checks=0
 ---map
 {"bg": "#7a9a52", "ground": {"x": [-6, 22], "y": [-6, 22], "c": ["#97b45d", "#9dba62"], "rects": [{"x": [-6, 5], "y": [-6, 22], "c": ["#4f7334", "#557a37"]}, {"x": [10, 22], "y": [-6, 22], "c": ["#a9bf6d", "#afc472"]}, {"x": [8, 8], "y": [-6, 22], "c": ["#bfae84", "#c4b388"]}, {"x": [11, 11], "y": [1, 5], "c": ["#d8c844", "#dccd4a"]}]}, "trees": [{"x": [-6, 6.3], "y": [-5, 20], "n": 110, "seed": 7, "s": [0.7, 1.2]}], "keep": [[2.6, 3.8, 0.8], [2.4, 7, 0.8], [2.8, 10.2, 0.8], [6.3, 3.6, 0.8], [6.4, 7, 0.8], [6.3, 10.4, 0.8]], "units": [{"id": "a", "type": "challenger", "x": 2.6, "y": 3.8, "label": "11", "me": 0, "open": 1}, {"id": "p", "type": "challenger", "x": 2.4, "y": 7, "label": "10", "me": 1, "open": 1}, {"id": "b", "type": "challenger", "x": 2.8, "y": 10.2, "label": "12", "me": 0, "open": 1}]}
 ---script
@@ -862,8 +858,8 @@ end
 end
 if $brew=2
 say Cpl Baxter: Morning, sir! Did you hear the BFBS request show? Somebody asked for Simply Red for the whole regiment.
-ask I did. || I was asleep. || Who asked for it?
-if $choice=2
+ask I did. || Who asked for it?
+if $choice=1
 say Pemberton: Who asked for it?
 say Cpl Baxter: Wasn’t me, sir. | It was him.
 end
@@ -941,6 +937,14 @@ say Maj Calloway: Mission. {$m} | The mission, said twice: the one sentence nobo
 say Maj Calloway: Execution. {$x}
 say Maj Calloway: Service support. {$ss}
 say Maj Calloway: Command and signal. {$cs}
+if $day=4
+if $ourroute=1
+say Maj Calloway: Route cards. 1st Troop’s is the one we’ll use: bridge class, the ford, the junction at Sibbesse. If Corps sends us south, we go your way, Pemberton. | Calloway’s plan for a move south now follows your route. Unlogged routes would have meant a slower, safer road.
+end
+if $ourroute=0
+say Maj Calloway: Route cards. 1st Troop’s is thin, Pemberton. 3rd Troop’s route goes further round, but it’s fully logged, so that’s the one we’ll use. | An incomplete route card can’t be planned on. Calloway picks the longer road that someone did log.
+end
+end
 say Maj Calloway: Questions?
 var qdone=0
 var q1=0
@@ -1014,6 +1018,13 @@ night 0.55
 stamp <b>{date:$day}</b> · 0525
 today $day
 var rain=$weather
+if $day=4
+if $logbridge=1
+if $logjunction=1
+var ourroute=1
+end
+end
+end
 if $rain=1
 radio Rain in the night, still falling. The cam nets hang heavy and everything smells of wet canvas.
 end
@@ -1060,7 +1071,7 @@ var checks=0
 if $rain=1
 radio First parade in the rain. Everything takes longer and everyone is wet to the elbows.
 end
-choose act: First parade done || hint: Skip to the O Group
+choose act: First parade done
 if $checks<3
 var debt+=1
 radio You sign off first parade with half of it unchecked. Somewhere in the engine decks, something will remember.
@@ -1140,7 +1151,7 @@ stamp 1430
 do afternoon
 hud 1900
 stamp 1900 · Last parade
-choose act: Last parade done || hint: Leave it to the crews
+choose act: Last parade done
 hud 2300
 night 1
 cards The night | Stag rota and radio watch, until first light. :: Even split | Everyone does two hours, you included. | fair || Officer first | You take the first stag, so the crews sleep. | you’ll be tired || Hollis sorts it | He will put himself on the worst hours. | Hollis will be tired
@@ -1511,12 +1522,8 @@ near rover,davies,bins
 wait 600
 radio Captain Davies, rear-party commander, leans on the open door of the Land Rover. He doesn’t get out.
 say Capt Davies: Hello there. How’d you get on, then?
-ask Two clean hits. One short. || All rounds away. Two on target.
-if $choice=0
+ask Two clean hits. One short.
 say Pemberton: Two clean hits. One short.
-else
-say Pemberton: All rounds away. Two on target.
-end
 say Capt Davies: Mm. Tell your corporal he’s drinking on his own coin tonight. | Davies’s joke — the man who missed pays for his own drinks tonight.
 say Capt Davies: … | He glances into your open hatch, at the ammunition bins. Nearly full.
 say Capt Davies: Bins still full. Hmm. Well — happens.
@@ -1589,6 +1596,7 @@ maplabel: Isometric view of the route through Sibbesse: the bridge, the village 
 camera: 1,7.1,6.4
 callsigns: Zero=0, One One=11, One Two=12
 crew: Gunner=G, Loader=L, Driver=D
+vars: logbridge=0, logjunction=0
 people: Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Pemberton=#5aa7e0:pemberton, Frau Müller=#b5739d, Herr Müller=#7a6f9b
 ---map
 {"bg": "#9dba62", "ground": {"x": [-14, 30], "y": [-6, 22], "c": ["#9dba62", "#a5c069"], "rects": [{"x": [-14, -2], "y": [-6, 22], "c": ["#4f7334", "#557a37"]}, {"x": [9, 19], "y": [-6, 4], "c": ["#b7c97a", "#bdce7f"]}, {"x": [9, 19], "y": [11, 22], "c": ["#b7c97a", "#bdce7f"]}, {"x": [5, 5], "y": [-6, 22], "c": "#6d9cc4"}, {"x": [-14, 30], "y": [7, 7], "c": ["#a99a76", "#b1a27d"]}, {"x": [10, 19], "y": [7, 7], "c": ["#b9b4a8", "#c2bdb1"]}, {"x": [15, 15], "y": [0, 15], "c": ["#b9b4a8", "#c2bdb1"]}]}, "trees": [{"x": [-12, -2], "y": [-2, 18], "n": 120, "seed": 21}, {"x": [6.5, 9], "y": [0, 14], "n": 12, "seed": 4, "col": "#4d7a3a", "s": [0.6, 1.1]}], "keep": [[-12, 7.5, 1.3], [-11, 7.5, 1.3], [-10, 7.5, 1.3], [-9, 7.5, 1.3], [-8, 7.5, 1.3], [-7, 7.5, 1.3], [-6, 7.5, 1.3], [-5, 7.5, 1.3], [-4, 7.5, 1.3], [-3, 7.5, 1.3], [-2, 7.5, 1.3], [-1, 7.5, 1.3], [0, 7.5, 1.3], [1, 7.5, 1.3], [2, 7.5, 1.3], [3, 7.5, 1.3], [4, 7.5, 1.3], [5, 7.5, 1.3], [6, 7.5, 1.3], [7, 7.5, 1.3], [8, 7.5, 1.3], [9, 7.5, 1.3]], "tree": [{"x": 17.3, "y": 6.2, "s": 1.0, "col": "#f2b8c6", "blossom": 1}], "marks": [{"type": "parapet", "x": 5, "y": 7, "dx": 1}, {"type": "parapet", "x": 5, "y": 8, "dx": 1}, {"type": "disc", "x": 4.6, "y": 6.6, "text": "70"}, {"type": "sign", "x": 9.6, "y": 6.6, "text": "Sibbesse"}], "units": [{"id": "h1", "type": "house", "x": 11, "y": 5.4, "L": 1.1, "Wd": 0.9, "h": 1.0, "wall": "#efe2c8", "roof": "#a8432e"}, {"id": "h2", "type": "house", "x": 12.6, "y": 5.3, "L": 1.0, "Wd": 0.9, "h": 0.95, "wall": "#e9d8b8", "roof": "#8f3b2a"}, {"id": "spar", "type": "house", "x": 16.4, "y": 5.4, "L": 1.2, "Wd": 1.0, "h": 1.0, "wall": "#f4ead8", "roof": "#a8432e", "sign": "SPAR"}, {"id": "h4", "type": "house", "x": 18.2, "y": 5.3, "L": 1.0, "Wd": 0.9, "h": 1.1, "wall": "#e6d3b0", "roof": "#94402e"}, {"id": "h5", "type": "house", "x": 11.2, "y": 9.7, "L": 1.0, "Wd": 0.9, "h": 1.0, "wall": "#e9d8b8", "roof": "#a8432e"}, {"id": "h6", "type": "house", "x": 16.6, "y": 9.8, "L": 1.1, "Wd": 0.9, "h": 0.9, "wall": "#f0e4cc", "roof": "#8f3b2a"}, {"id": "church", "type": "house", "x": 13.4, "y": 10.2, "L": 1.6, "Wd": 0.8, "h": 1.25, "wall": "#d9d2c2", "roof": "#5d5d66", "spire": 1}, {"id": "boy", "type": "person", "x": 12.6, "y": 7.6, "col": "#c0392b", "bike": 1}, {"id": "mother", "type": "person", "x": 12.3, "y": 9.1, "col": "#6b4f8a"}, {"id": "pram", "type": "person", "x": 11.2, "y": 6.4, "col": "#3d5a80"}, {"id": "tractor", "type": "tractor", "x": 9.8, "y": 7.5}, {"id": "a", "type": "challenger", "x": 0, "y": 7.5, "label": "11", "open": 1}, {"id": "p", "type": "challenger", "x": -1.3, "y": 7.5, "label": "10", "me": 1, "open": 1}, {"id": "b", "type": "challenger", "x": -2.6, "y": 7.5, "label": "12", "open": 1}]}
@@ -1660,6 +1668,10 @@ near disc,notebook,brook
 radio At the bridge, a yellow Military Load Class disc. Seventy. A Challenger weighs about sixty-two tonnes.
 gloss Military Load Class — the weight a West German bridge is rated for, posted on a yellow disc. Route recce means writing every one down.
 choose act: 📝 Log it: bridge, class seventy || act: Carry on
+if $choice=0
+var logbridge=1
+radio You write it in your notebook: “Bridge over the brook, MLC 70. Fordable alongside, about a metre.”
+end
 move tractor 8.4,7.5 8.4,8.8 speed=0.8
 to a 7.2,7.5 p 5.95,7.5 b 4.7,7.5 speed=0.9 stagger=0.25
 cam 6,7.1,6.4
@@ -1690,7 +1702,11 @@ waitmove a,p,b
 radio The troop halts at the junction, pulled tight to the kerb outside the SPAR. Engines idle.
 near spar,cherry,notebook
 choose act: 📝 Log it: junction, one go if the cars are gone || act: Carry on
-gloss A Challenger can just make the turn in one go — if the parked cars are gone. That goes on the route card too.
+if $choice=0
+var logjunction=1
+radio You write it in your notebook: “Sibbesse junction, outside the SPAR. One go for a Challenger if the parked cars are gone.”
+gloss Route recce — the notes become the route card the squadron will plan with.
+end
 
 stamp The SPAR, Sibbesse
 radio Bell over the door. Fresh Brötchen. NDR playing low behind the counter. Two elderly customers turn to look.
@@ -1712,19 +1728,16 @@ say Herr Müller: My boy is in the Bundeswehr. He is with his unit also. Near Wo
 say Sgt Hollis: He’ll be all right, sir.
 say Frau Müller: Are you here long?
 say Sgt Hollis: As long as needed.
-ask Thank you, Frau Müller. || Say nothing.
+ask Thank you, Frau Müller.
+say Pemberton: Thank you, Frau Müller.
 say Frau Müller: Pass auf dich auf, junger Mann. | “Take care of yourself, young man.” She has caught his sleeve. Hollis pauses. Nods. Says nothing.
 endtalk
 
 near bag,boy,cherry
 radio Back at the tanks. The Jever goes into the turret bins for later — sergeant’s rule: nobody drinks on the move.
 say Cpl Baxter: Productive recce, sir?
-ask Most informative. || Bridge, bend, junction. All logged.
-if $choice=0
+ask Most informative.
 say Pemberton: Most informative.
-else
-say Pemberton: Bridge, bend, junction. All logged.
-end
 say Sgt Hollis: The local supply infrastructure remains fully operational. | Deadpan, lighting a cigarette.
 endtalk
 set a,p,b open=0
@@ -1738,18 +1751,30 @@ set a,p,b open=1
 stamp The hides
 near notebook,bag,hollis
 say Sgt Hollis: Worth the trip, sir.
-ask Was it? || The route was.
-if $choice=0
+ask Was it?
 say Pemberton: Was it?
-else
-say Pemberton: The route was.
-end
 say Sgt Hollis: Frau Müller. Said pass auf dich auf. To me. Not to you, sir, no disrespect intended.
 say Sgt Hollis: That’s the first time in this country anyone’s said that to me on this tour.
 say Sgt Hollis: They know, sir. The locals. They know what’s coming.
 say Sgt Hollis: Crews are happy. I’ll get the routine sorted for tomorrow. | He walks off. You are left standing by your tank, holding half a Brötchen.
 endtalk
-stamp Route card: bridge class 70 · tight bend · street width and wires · junction turns in one go
+str card=
+if $logbridge=1
+str card=bridge MLC 70, fordable alongside
+end
+if $logjunction=1
+if $logbridge=1
+str card={$card} · junction turns in one go if the cars are gone
+else
+str card=junction turns in one go if the cars are gone
+end
+end
+if $logbridge=0
+if $logjunction=0
+str card=blank — nothing logged
+end
+end
+stamp Your route card: {$card}
 wait 1200
 title
 replay Play again
@@ -2229,7 +2254,7 @@ async function run1(cmd,a){
     case 'hear': { const [n,t]=nameText(a); await hear(n,t); break; }
     case 'choose': vars.choice=await waitFor(choose(parseOpts(a))); break;
     case 'say': { const [n,t]=nameText(a); const [txt,gl]=interp(t).split(' | ');
-      if(n===(S.head.player||'Pemberton') && !busy && txt!=='…' && !/^[“"]/.test(txt) && txt!==lastAsked){ lastAsked=null; const i=await waitFor(acChoose([{text:txt},{text:'Say nothing.'}])); if(i===1){ if(gl) await acSay(n,'…',gl); break; } }
+      if(n===(S.head.player||'Pemberton') && !busy && txt!=='…' && !/^[“"]/.test(txt) && txt!==lastAsked){ lastAsked=null; await waitFor(acChoose([{text:txt}])); }
       if(txt===lastAsked) lastAsked=null; await acSay(n,txt,gl); break; }
     case 'ask': { const os=parseOpts(a); vars.choice=await waitFor(acChoose(os)); lastAsked=os[vars.choice].text; break; }
     case 'endtalk': acShow(false); break;
