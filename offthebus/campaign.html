@@ -1101,7 +1101,7 @@ radio The column comes down into Hameln in the grey light, and out over the Wese
 to a 88,7.5 p 86.7,7.5 b 85.4,7.5 q1 84.1,7.5 q2 82.9,7.5 q3 81.7,7.5 speed=0.5 stagger=0.2
 wait 2400
 night 0
-radio Below the bridge, the river is full of lorries. A line of M2 rigs, side by side, their decks folded out and locked together across the water.
+radio Below the bridge, the river is full of lorries. A line of M2 rigs, side floats folded out, bolted together by their ramps across the water.
 gloss M2 rigs: bridging lorries that swim, and join up into a bridge or a ferry. 28 Amphibious Engineer Regiment, the Rubber Ducks, are based in Hameln.
 near rigs,notebook
 waitmove a,p,b,q1,q2,q3
@@ -1127,7 +1127,7 @@ set f1,f2 hidden=0
 move f1 92,6.7 speed=0.8
 move f2 92,6.7 speed=0.8 delay=1.4
 cam 108,6,6.5
-radio Two six-wheeled armoured cars come the other way, boat-nosed, a tall aerial on each. Their crews are in NBC suits.
+radio Two six-wheeled armoured cars come the other way, boat-nosed, a tall aerial on each. Every hatch shut; nobody visible.
 gloss Spürpanzer Fuchs: a six-wheeled armoured car that samples the air and the ground for chemical agents.
 near fuchs,polizei,notebook
 waitmove f1,f2
@@ -1197,7 +1197,7 @@ look: radio Three FV432s, box-shaped, a big round hatch in each roof. The crews 
 @rigs the bridging rigs
 unit: m2
 icon: 🌉
-look: radio Each rig is a lorry with a boat for a hull. In the water its sides fold out into a deck, and the next rig locks on. Engineers in life jackets walk across the joined decks as if they were a road.
+look: radio Each rig is a lorry with a boat for a hull. In the water its side floats fold out, and the next rig is bolted on by its ramps. Engineers in life jackets walk across the joined decks as if they were a road.
 @polizei the Polizei
 unit: pol
 icon: 🚓
@@ -1205,7 +1205,7 @@ look: radio A green-and-white Polizei car across the side road, its blue light t
 @fuchs the armoured cars
 unit: f1
 icon: 🧪
-look: radio Six big wheels, a hull shaped like a boat, black-and-white crosses on the sides. The men in the hatches are in NBC suits, hoods down.
+look: radio Six big wheels, a hull shaped like a boat, black-and-white crosses on the sides. Every hatch is shut. Whoever is inside is sealed in.
 @harbour the squadron’s hides
 at: 138,15
 icon: 🌲
@@ -2793,7 +2793,7 @@ const DRAW={
     cx.fillStyle='#1d2016'; for(const dx of [-.2,0,.2]){ const w=c(dx,.15,s*.12); cx.beginPath(); cx.ellipse(w[0],w[1],s*.1,s*.13,0,0,7); cx.fill(); }
     if(u.nbc){ cx.fillStyle='#2a2d22'; for(const d of [-.08,.08]){ const w=c(-.33,d,s*.05); cx.beginPath(); cx.arc(w[0],w[1],s*.05,0,7); cx.fill(); } const a=c(-.2,-.1,s*.1+h); cx.strokeStyle='#222'; cx.lineWidth=1; cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(a[0],a[1]-s*1.1); cx.stroke(); }
     tag(c(0,0,s*.1+h),u.label,tagCol(u),s); },
-  // amphibious bridging rig: a hull that swims, its deck folded out to join the next one
+  // amphibious bridging rig: a hull that swims, side floats folded out, bolted to the next rig by its ramps
   m2(u){ const s=tw*.36,h=s*.32; const c=box(u,.9,u.open?.9:.42,h,['#4a5136','#3c4229','#5e6744']);
     if(u.open){ poly([c(-.42,-.4,h),c(.42,-.4,h),c(.42,.4,h),c(-.42,.4,h)],'#7c7a68'); cx.strokeStyle='#5d5b4c'; cx.lineWidth=1; for(const d of [-.2,0,.2]){ const a=c(-.42,d,h), b=c(.42,d,h); cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(b[0],b[1]); cx.stroke(); } }
     const k=box({x:u.x+.25,y:u.y},.22,.3,h*.9,['#4a5136','#3c4229','#2e3a3e'],h); tag(k(0,0,h*.9),u.label,tagCol(u),s); },
