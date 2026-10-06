@@ -195,7 +195,7 @@ canvas{display:block;width:100%;height:100%}
   <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
   <div class="ac" id="ac" role="dialog" aria-live="polite" tabindex="0"><div class="portrait" id="acPortrait" role="img"></div><div class="opts" id="acOpts"></div><div class="bal"><button class="hidebtn" id="acHide" aria-label="Hide the conversation">⌄ Hide</button><span class="tag" id="acTag"></span><span id="acText"></span><span class="gl" id="acGl"></span><span class="more">▼</span></div></div>
 </div>
-<script type="text/plain" id="scene">title: Off the Bus — Light Gun fire mission
+<script type="text/plain" class="scene" data-name="lightgun">title: Off the Bus — Light Gun fire mission
 hud: 1015 | 25 April 1990
 endcard: Off the Bus | A Light Gun fire mission
 net: Battery net | Four Three is the FOO · you are Four Zero | 40
@@ -363,12 +363,14 @@ unit: g3
 icon: 🔩
 look: radio Brass cartridge cases stacked by each gun, still smoking faintly in the cold air.
 </script>
+<script type="application/json" id="campaign">{"name": "lightgun", "order": ["lightgun"]}</script>
 <script type="application/json" id="portraits">{}</script>
 <script>/* Off the Bus prototype engine.
    One engine for every scene. A scene is a text file (see scenes/*.scene) with a header,
    a JSON map and a script; tools/build.py combines engine + scene + portraits into one page. */
 (()=>{
-const SCENE_TEXT = document.getElementById('scene').textContent;
+const SCENE_TEXTS = {}; document.querySelectorAll('script.scene').forEach(e=>SCENE_TEXTS[e.dataset.name]=e.textContent);
+const CAMPAIGN = JSON.parse(document.getElementById('campaign').textContent);   // {name, order:[scene names]}
 const PORTRAITS = JSON.parse(document.getElementById('portraits').textContent);
 const TESTARG = new URLSearchParams(location.search).get('test');
 const TEST = TESTARG!=null;                                  // ?test=<seed>: no pauses, instant moves, plays itself
@@ -422,14 +424,17 @@ function parseScene(text){
   return { head, map:JSON.parse(mapText), script, macros, props, days, legend, callsigns:lists('callsigns'), crew:lists('crew'), people,
     vars:Object.fromEntries(Object.entries(lists('vars')).map(([k,v])=>[k,Number(v)])) };
 }
-const S = parseScene(SCENE_TEXT);
+const PARSED={}; const sceneOf=n=>PARSED[n]||(PARSED[n]=parseScene(SCENE_TEXTS[n]));
+let SNAME=CAMPAIGN.order[0], S=sceneOf(SNAME);
 
 /* ================= page chrome ================= */
+function applyChrome(){
 document.title = S.head.title || 'Off the Bus';
-const [hudT,hudD] = (S.head.hud||'|').split('|').map(s=>s.trim()); $('hudT').textContent=hudT; $('hudD').textContent=hudD;
-const [endBig,endSub] = (S.head.endcard||'Off the Bus|').split('|').map(s=>s.trim()); $('endBig').textContent=endBig; $('endSub').textContent=endSub;
-const [netName,netSub,netAv] = (S.head.net||'Net||').split('|').map(s=>s.trim()); $('hn').textContent=netName; $('hs').textContent=netSub; $('av').textContent=netAv;
+let [hudT,hudD] = (S.head.hud||'|').split('|').map(s=>s.trim()); $('hudT').textContent=hudT; $('hudD').textContent=hudD;
+let [endBig,endSub] = (S.head.endcard||'Off the Bus|').split('|').map(s=>s.trim()); $('endBig').textContent=endBig; $('endSub').textContent=endSub;
+let [netName,netSub,netAv] = (S.head.net||'Net||').split('|').map(s=>s.trim()); $('hn').textContent=netName; $('hs').textContent=netSub; $('av').textContent=netAv;
 $('map').setAttribute('aria-label', S.head.maplabel||'Isometric map');
+}
 
 /* ================= the thread ================= */
 const thread=$('thread'), replies=$('replies');
@@ -702,9 +707,9 @@ cv.addEventListener('touchend',()=>pinch=null);
 
 /* ================= the interpreter ================= */
 const LEVELS=['Raw','Practised','Drilled'];
-const LV=(S.head.levels||'4,8').split(',').map(Number);
+let LV=[4,8];
 const levelOf=n=>n>=LV[1]?2:n>=LV[0]?1:0;
-const CAL=(S.head.calendar||'').split('|').map(x=>x.trim());
+let CAL=[];
 function interp(t){ return t.replace(/\{(level|pips|date|bar)?:?\$(\w+)\}/g,(m,f,k)=>{ const v=vars[k]??0; if(f==='level') return LEVELS[levelOf(v)]; if(f==='date') return CAL[v]||'';
   if(f==='bar'){ const l=levelOf(v), lo=l===0?0:LV[0], hi=l===0?LV[0]:LV[1], w=l>=2?1:Math.max(0,Math.min(1,(v-lo)/(hi-lo))); return `<span class="xpbar"><i style="width:${Math.round(w*100)}%"></i></span>`; }
   if(f==='pips'){ const on=v>0?levelOf(v)+1:0; return '<span class="pips">'+[0,1,2].map(i=>`<i class="${i<on?'on':''}"></i>`).join('')+'</span>'; } return String(v); }); }
@@ -792,8 +797,11 @@ async function run1(cmd,a){
     case 'zoomgate': await waitFor(new Promise(res=>{ replies.innerHTML=''; const b=document.createElement('button'); b.className='chip hint'; b.textContent=a;
       zoomWanted=()=>{ zoomWanted=null; replies.innerHTML=''; res(); }; b.onclick=()=>zoomWanted&&zoomWanted(); replies.appendChild(b); if(TEST) setTimeout(()=>zoomWanted&&zoomWanted(),0); })); break;
     case 'near': near=a.split(',').map(x=>x.trim()).filter(Boolean); refreshWorld(); break;
-    case 'title': $('end').classList.add('show'); break;
-    case 'replay': { if(TEST){ TLOG.done=true; return; } // replay Raw=level:0 || Practised=level:1  (or just: replay Play again)
+    case 'play': await playNested(a.trim()); break;
+    case 'checkpoint': checkpoint(); break;
+    case 'title': if(!nestDepth && sceneIdx===CAMPAIGN.order.length-1) $('end').classList.add('show'); break;
+    case 'replay': { if(nestDepth) return; if(CAMPAIGN.order.length>1){ campaignEnd=true; return; }
+      if(TEST){ TLOG.done=true; return; } // replay Raw=level:0 || Practised=level:1  (or just: replay Play again)
       const parts=a.split('||').map(x=>x.split('=').map(y=>y.trim())); const i=await choose(parts.map(p=>({kind:'hint',text:p[0]})));
       replay(parts[i][1]??null); return; }
     default: console.warn('unknown command',cmd,a);
@@ -802,12 +810,48 @@ async function run1(cmd,a){
 let replayVal=null, badgeText='', lastAsked=null;
 function renderBadge(){ const b=$('badge'); b.hidden=!badgeText; if(badgeText) b.innerHTML=interp(badgeText); }
 function replay(v){ replayVal=v; start(); }
-async function start(){
-  thread.innerHTML=''; replies.innerHTML=''; lastFrom=null; lastDelivered=null; acShow(false); tutorial(); $('end').classList.remove('show');
-  Object.assign(vars,S.vars); if(replayVal!=null){ const [k,v]=String(replayVal).split(':'); if(v!=null) vars[k]=+v; }
+let sceneIdx=0, nestDepth=0, campaignEnd=false;
+function loadScene(name){
+  SNAME=name; S=sceneOf(name); LV=(S.head.levels||'4,8').split(',').map(Number); CAL=(S.head.calendar||'').split('|').map(x=>x.trim());
+  applyChrome(); acShow(false); tutorial(); $('end').classList.remove('show');
   near=[]; used=new Set(); waiting=0; busy=false; propsBar.innerHTML=''; closePop(); badgeText=''; renderBadge(); $('scrim').classList.remove('show');
   resetUnits(); buildTrees(); tracks.length=0; gaps.length=0; fx.length=0; tracer=null; missile=null; shake=0;
   const [x,y,z]=pt(S.head.camera||'0,0,6'); cam.fx=cam.tfx=x; cam.fy=cam.tfy=y; cam.z=cam.tz=z; night=nightT=+(S.head.night||0);
+  for(const [k,v] of Object.entries(S.vars)) if(vars[k]===undefined) vars[k]=v;
+}
+async function playNested(name){            // a scene inside a scene: the SPAR recce inside the fortnight
+  const caller=SNAME, saved={badge:badgeText, near:[...near]};
+  nestDepth++; loadScene(name); await exec(S.script); nestDepth--;
+  loadScene(caller); badgeText=saved.badge; renderBadge(); near=saved.near; refreshWorld();
+}
+/* progress in the browser: a checkpoint at each scene and each routine day */
+const SAVEKEY='offthebus:'+(CAMPAIGN.name||'scene');
+function checkpoint(){ if(TEST||nestDepth) return; try{ localStorage.setItem(SAVEKEY,JSON.stringify({idx:sceneIdx,vars,label:$('hudD').textContent+' · '+(S.head.title||'').replace(/^Off the Bus — /,'')})); }catch(e){} }
+function loadSave(){ if(TEST) return null; try{ return JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){ return null; } }
+function clearSave(){ try{ localStorage.removeItem(SAVEKEY); }catch(e){} }
+async function runCampaign(from, restored){
+  thread.innerHTML=''; replies.innerHTML=''; lastFrom=null; lastDelivered=null;
+  for(const k of Object.keys(vars)) delete vars[k]; if(restored) Object.assign(vars,restored);
+  for(let i=from;i<CAMPAIGN.order.length;i++){
+    sceneIdx=i; campaignEnd=false; loadScene(CAMPAIGN.order[i]); checkpoint();
+    if(restored&&i===from) stamp('<b>Resumed</b> · '+$('hudD').textContent);
+    await exec(S.script);
+    if(i<CAMPAIGN.order.length-1){ const next=sceneOf(CAMPAIGN.order[i+1]).head.title.replace(/^Off the Bus — /,''); await waitFor(choose([{kind:'hint',text:'Continue: '+next}])); }
+  }
+  clearSave(); $('end').classList.add('show');
+  if(TEST){ TLOG.done=true; return; }
+  await choose([{kind:'hint',text:'Start the campaign again'}]); runCampaign(0,null);
+}
+async function start(){
+  if(CAMPAIGN.order.length>1){
+    const sv=loadSave();
+    if(sv){ applyChrome(); const i=await cards(`Off the Bus | Your campaign is saved. :: Continue | ${sv.label} | saved || Start again | From the beginning: Sennelager, 24 April. | new`);
+      if(i===0) return runCampaign(sv.idx,sv.vars); clearSave(); }
+    return runCampaign(0,null);
+  }
+  thread.innerHTML=''; replies.innerHTML=''; lastFrom=null; lastDelivered=null;
+  for(const k of Object.keys(vars)) delete vars[k];
+  loadScene(SNAME); if(replayVal!=null){ const [k,v]=String(replayVal).split(':'); if(v!=null) vars[k]=+v; }
   await exec(S.script);
 }
 resize(); requestAnimationFrame(frame); start();
