@@ -496,7 +496,7 @@ async function runVerb(v){ closePop(); const speaks=v.lines.some(l=>/^say\s/.tes
   replies.style.visibility='';
   if(saved){ acShow(true); acTag.textContent=saved.tag; acTag.style.background=saved.bg; acText.textContent=saved.text; acGl.textContent=saved.gl; acPor.className=saved.por; acPor.style.backgroundImage=saved.img;
     if(optsWas) acOpts.classList.add('show'); AC.classList.toggle('ready',readyWas); acTap=saved.tap; if(wasCollapsed&&speaks) setCollapsed(true); } else acShow(false);
-  busy=false; refreshWorld(); scrollDown(); }
+  busy=false; refreshWorld(); scrollDown(); save(); }
 async function waitFor(promise){ waiting++; refreshWorld(); try{ return await promise; } finally{ waiting--; refreshWorld(); } }
 function openPouch(){ if(!canAct()) return; const sh=$('sheet'); sh.innerHTML='<h2>Pouch</h2><p>What you carry.</p>';
   for(const id of kitIds()){ const p=S.props[id]; for(const v of verbsOf(p)){ const b=document.createElement('button'); b.className='card';
@@ -797,20 +797,31 @@ async function run1(cmd,a){
     case 'zoomgate': await waitFor(new Promise(res=>{ replies.innerHTML=''; const b=document.createElement('button'); b.className='chip hint'; b.textContent=a;
       zoomWanted=()=>{ zoomWanted=null; replies.innerHTML=''; res(); }; b.onclick=()=>zoomWanted&&zoomWanted(); replies.appendChild(b); if(TEST) setTimeout(()=>zoomWanted&&zoomWanted(),0); })); break;
     case 'near': near=a.split(',').map(x=>x.trim()).filter(Boolean); refreshWorld(); break;
-    case 'play': await playNested(a.trim()); break;
-    case 'checkpoint': checkpoint(); break;
-    case 'title': if(!nestDepth && sceneIdx===CAMPAIGN.order.length-1) $('end').classList.add('show'); break;
-    case 'replay': { if(nestDepth) return; if(CAMPAIGN.order.length>1){ campaignEnd=true; return; }
-      if(TEST){ TLOG.done=true; return; } // replay Raw=level:0 || Practised=level:1  (or just: replay Play again)
-      const parts=a.split('||').map(x=>x.split('=').map(y=>y.trim())); const i=await choose(parts.map(p=>({kind:'hint',text:p[0]})));
-      replay(parts[i][1]??null); return; }
+    case 'title': case 'checkpoint': case 'replay': case 'play': break;   // handled by the interpreter
     default: console.warn('unknown command',cmd,a);
   }
 }
 let replayVal=null, badgeText='', lastAsked=null;
 function renderBadge(){ const b=$('badge'); b.hidden=!badgeText; if(badgeText) b.innerHTML=interp(badgeText); }
-function replay(v){ replayVal=v; start(); }
-let sceneIdx=0, nestDepth=0, campaignEnd=false;
+/* ================= the step interpreter and the saved state =================
+   A script is compiled to a flat list of steps. Where the game is up to is a stack of frames,
+   each {scene, code, pc}: plain data, so the whole game state can be saved and restored. */
+let sceneIdx=0, nestDepth=0, frames=[];
+const COMPILED={};
+function compile(lines){
+  const out=lines.map(l=>{ const [cmd,arg]=parseLine(l); return {cmd,arg}; }), stack=[];
+  out.forEach((ins,i)=>{
+    if(ins.cmd==='if'||ins.cmd==='while') stack.push(i);
+    else if(ins.cmd==='else'){ const j=stack.pop(); out[j].jump=i+1; stack.push(i); }
+    else if(ins.cmd==='end'){ const j=stack.pop(); if(out[j].cmd==='while'){ ins.loop=j; out[j].jump=i+1; } else out[j].jump=i+1; }
+  });
+  return out;
+}
+function code(scene,name){ const k=scene+'|'+name; if(COMPILED[k]) return COMPILED[k];
+  const sc=sceneOf(scene); const lines=name==='main'?sc.script:name.startsWith('macro:')?sc.macros[name.slice(6)]:SYNTH[name];
+  return COMPILED[k]=compile(lines||[]); }
+const SYNTH={};                                  // small generated scripts, e.g. "Continue: next scene"
+const WAITS=new Set(['net','me','ic','icme','hear','choose','ask','say','wait','waitmove','cards','tap','zoomgate','replay']);
 function loadScene(name){
   SNAME=name; S=sceneOf(name); LV=(S.head.levels||'4,8').split(',').map(Number); CAL=(S.head.calendar||'').split('|').map(x=>x.trim());
   applyChrome(); acShow(false); tutorial(); $('end').classList.remove('show');
@@ -819,40 +830,89 @@ function loadScene(name){
   const [x,y,z]=pt(S.head.camera||'0,0,6'); cam.fx=cam.tfx=x; cam.fy=cam.tfy=y; cam.z=cam.tz=z; night=nightT=+(S.head.night||0);
   for(const [k,v] of Object.entries(S.vars)) if(vars[k]===undefined) vars[k]=v;
 }
-async function playNested(name){            // a scene inside a scene: the SPAR recce inside the fortnight
-  const caller=SNAME, saved={badge:badgeText, near:[...near]};
-  nestDepth++; loadScene(name); await exec(S.script); nestDepth--;
-  loadScene(caller); badgeText=saved.badge; renderBadge(); near=saved.near; refreshWorld();
-}
-/* progress in the browser: a checkpoint at each scene and each routine day */
-const SAVEKEY='offthebus:'+(CAMPAIGN.name||'scene');
-function checkpoint(){ if(TEST||nestDepth) return; try{ localStorage.setItem(SAVEKEY,JSON.stringify({idx:sceneIdx,vars,label:$('hudD').textContent+' · '+(S.head.title||'').replace(/^Off the Bus — /,'')})); }catch(e){} }
-function loadSave(){ if(TEST) return null; try{ return JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){ return null; } }
-function clearSave(){ try{ localStorage.removeItem(SAVEKEY); }catch(e){} }
-async function runCampaign(from, restored){
-  thread.innerHTML=''; replies.innerHTML=''; lastFrom=null; lastDelivered=null;
-  for(const k of Object.keys(vars)) delete vars[k]; if(restored) Object.assign(vars,restored);
-  for(let i=from;i<CAMPAIGN.order.length;i++){
-    sceneIdx=i; campaignEnd=false; loadScene(CAMPAIGN.order[i]); checkpoint();
-    if(restored&&i===from) stamp('<b>Resumed</b> · '+$('hudD').textContent);
-    await exec(S.script);
-    if(i<CAMPAIGN.order.length-1){ const next=sceneOf(CAMPAIGN.order[i+1]).head.title.replace(/^Off the Bus — /,''); await waitFor(choose([{kind:'hint',text:'Continue: '+next}])); }
+function startScene(i){ sceneIdx=i; loadScene(CAMPAIGN.order[i]); frames=[{scene:SNAME,code:'main',pc:0}]; }
+async function interpret(){
+  while(frames.length){
+    const f=frames[frames.length-1], c=code(f.scene,f.code);
+    if(f.pc>=c.length){ frames.pop(); if(f.nested){ nestDepth--; loadScene(f.caller); badgeText=f.badge; renderBadge(); near=f.near; refreshWorld(); } continue; }
+    const ins=c[f.pc];
+    switch(ins.cmd){
+      case 'if': f.pc=cond(ins.arg)?f.pc+1:ins.jump; continue;
+      case 'while': f.pc=cond(ins.arg)?f.pc+1:ins.jump; continue;
+      case 'else': f.pc=ins.jump; continue;
+      case 'end': f.pc=ins.loop!=null?ins.loop:f.pc+1; continue;
+      case 'do': f.pc++; frames.push({scene:f.scene,code:'macro:'+ins.arg.trim(),pc:0}); continue;
+      case 'play': { f.pc++; const fr={scene:ins.arg.trim(),code:'main',pc:0,nested:1,caller:SNAME,badge:badgeText,near:[...near]};
+        nestDepth++; loadScene(fr.scene); frames.push(fr); continue; }
+      case 'title': f.pc++; if(!nestDepth&&sceneIdx===CAMPAIGN.order.length-1) $('end').classList.add('show'); continue;
+      case 'checkpoint': f.pc++; continue;            // no longer needed: the whole state is saved
+      case 'replay':
+        if(nestDepth||CAMPAIGN.order.length>1){ f.pc++; continue; }
+        if(TEST){ TLOG.done=true; frames=[]; return; }
+        save(); { const parts=ins.arg.split('||').map(x=>x.split('=').map(y=>y.trim())); const i=await choose(parts.map(p=>({kind:'hint',text:p[0]})));
+          clearSave(); thread.innerHTML=''; for(const k of Object.keys(vars)) delete vars[k]; startScene(0);
+          const v=parts[i][1]; if(v){ const [k,n]=v.split(':'); vars[k]=+n; } } continue;
+    }
+    if(WAITS.has(ins.cmd)) save();                  // saved with pc at this step, so a restore redoes it
+    await run1(ins.cmd,ins.arg);
+    if(frames[frames.length-1]===f) f.pc++;
   }
-  clearSave(); $('end').classList.add('show');
-  if(TEST){ TLOG.done=true; return; }
-  await choose([{kind:'hint',text:'Start the campaign again'}]); runCampaign(0,null);
+}
+
+/* ----- saving and restoring ----- */
+const SAVEKEY='offthebus:'+(CAMPAIGN.name||'scene');
+let BUILD=0; { const t=Object.values(SCENE_TEXTS).join('\u0001')+'|engine-3'; for(let i=0;i<t.length;i++) BUILD=(BUILD*31+t.charCodeAt(i))|0; }
+function snapshot(){
+  return {v:1, build:BUILD, sceneIdx, nestDepth, scene:SNAME, frames, vars,
+    thread:thread.innerHTML,
+    world:{units, trees, tracks, gaps, cam:{fx:cam.tfx,fy:cam.tfy,z:cam.tz}, night:nightT, hudT:$('hudT').textContent, hudD:$('hudD').textContent,
+      badge:badgeText, tip:$('tip').hidden?'':$('tip').textContent, near, used:[...used]},
+    ac:{show:AC.classList.contains('show'), collapsed:AC.classList.contains('collapsed'), tag:acTag.textContent, bg:acTag.style.background,
+      text:acText.textContent, gl:acGl.textContent, por:acPor.className, img:acPor.style.backgroundImage},
+    lastAsked, end:$('end').classList.contains('show')};
+}
+let saveTimer=null;
+function save(){ if(TEST) return; try{ localStorage.setItem(SAVEKEY,JSON.stringify(snapshot())); }catch(e){} }
+function clearSave(){ try{ localStorage.removeItem(SAVEKEY); }catch(e){} }
+addEventListener('pagehide',save); document.addEventListener('visibilitychange',()=>{ if(document.hidden) save(); });
+function restore(sn){
+  sceneIdx=sn.sceneIdx; nestDepth=sn.nestDepth; for(const k of Object.keys(vars)) delete vars[k]; Object.assign(vars,sn.vars);
+  loadScene(sn.scene); frames=sn.frames;
+  const w=sn.world; units=w.units; for(const k in U) delete U[k]; for(const u of units) U[u.id]=u;
+  trees.length=0; trees.push(...w.trees); tracks.push(...w.tracks); gaps.push(...w.gaps);
+  cam.fx=cam.tfx=w.cam.fx; cam.fy=cam.tfy=w.cam.fy; cam.z=cam.tz=w.cam.z; night=nightT=w.night;
+  $('hudT').textContent=w.hudT; $('hudD').textContent=w.hudD; badgeText=w.badge; renderBadge(); tutorial(w.tip); near=w.near; used=new Set(w.used);
+  thread.innerHTML=sn.thread; thread.querySelectorAll('.b.typing').forEach(e=>e.closest('.row')?.remove()); lastDelivered=[...thread.querySelectorAll('.delivered')].pop()||null; lastFrom=null;
+  const a=sn.ac; if(a.show){ acShow(true); acTag.textContent=a.tag; acTag.style.background=a.bg; acText.textContent=a.text; acGl.textContent=a.gl; acPor.className=a.por; acPor.style.backgroundImage=a.img; setCollapsed(a.collapsed); }
+  lastAsked=sn.lastAsked; if(sn.end) $('end').classList.add('show'); refreshWorld(); scrollDown();
+}
+
+/* ----- the campaign ----- */
+async function play(){
+  for(;;){
+    await interpret();
+    if(sceneIdx<CAMPAIGN.order.length-1){
+      const next=sceneOf(CAMPAIGN.order[sceneIdx+1]).head.title.replace(/^Off the Bus — /,'');
+      SYNTH['continue']=['choose hint: Continue: '+next];
+      frames=[{scene:SNAME,code:'continue',pc:0}]; await interpret(); startScene(sceneIdx+1); continue;
+    }
+    if(CAMPAIGN.order.length>1){
+      $('end').classList.add('show'); if(TEST){ TLOG.done=true; return; }
+      SYNTH['again']=['choose hint: Start the campaign again']; frames=[{scene:SNAME,code:'again',pc:0}]; await interpret();
+      clearSave(); thread.innerHTML=''; for(const k of Object.keys(vars)) delete vars[k]; startScene(0); continue;
+    }
+    return;
+  }
 }
 async function start(){
-  if(CAMPAIGN.order.length>1){
-    const sv=loadSave();
-    if(sv){ applyChrome(); const i=await cards(`Off the Bus | Your campaign is saved. :: Continue | ${sv.label} | saved || Start again | From the beginning: Sennelager, 24 April. | new`);
-      if(i===0) return runCampaign(sv.idx,sv.vars); clearSave(); }
-    return runCampaign(0,null);
+  let sn=null; if(!TEST){ try{ sn=JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){} }
+  if(sn&&sn.v===1&&sn.build===BUILD){ try{ restore(sn); }catch(e){ console.warn('restore failed',e); sn=null; } if(sn) return play(); }
+  if(sn&&sn.v===1){                                // a save from an older build: keep progress, restart the scene it was in
+    thread.innerHTML=sn.thread; for(const k of Object.keys(vars)) delete vars[k]; Object.assign(vars,sn.vars);
+    startScene(Math.min(sn.sceneIdx,CAMPAIGN.order.length-1)); stamp('<b>The game was updated.</b> Picking up at the start of '+($('hudD').textContent||'this scene')+'.');
+    return play();
   }
-  thread.innerHTML=''; replies.innerHTML=''; lastFrom=null; lastDelivered=null;
-  for(const k of Object.keys(vars)) delete vars[k];
-  loadScene(SNAME); if(replayVal!=null){ const [k,v]=String(replayVal).split(':'); if(v!=null) vars[k]=+v; }
-  await exec(S.script);
+  thread.innerHTML=''; for(const k of Object.keys(vars)) delete vars[k]; startScene(0); return play();
 }
 resize(); requestAnimationFrame(frame); start();
 })();
