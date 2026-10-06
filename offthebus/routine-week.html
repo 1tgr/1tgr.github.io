@@ -418,7 +418,7 @@ var checks=0
 if $rain=1
 radio First parade in the rain. Everything takes longer and everyone is wet to the elbows.
 end
-choose act: First parade done || hint: Skip to the OG
+choose act: First parade done || hint: Skip to the O Group
 if $checks<3
 var debt+=1
 radio You sign off first parade with half of it unchecked. Somewhere in the engine decks, something will remember.
@@ -426,7 +426,7 @@ end
 stamp Breakfast
 near bv,notebook,hollis
 do brew
-stamp 0800 · OG
+stamp 0800 · O Group
 var oc=0
 if $og=0
 net Zero Alpha: Hello all stations, this is Zero Alpha. No change in state. Training as programmed. Troop leaders’ choice. Out.
@@ -440,11 +440,11 @@ if $og=2
 net Zero Alpha: Hello all stations, this is Zero Alpha. No change in state. Gas drill, all troops, this morning. Out.
 end
 if $og=3
-stamp The OG, in person, in Calloway’s hide
-radio Calloway gives the OG himself, standing by his tank with a mug he doesn’t drink from.
+stamp The O Group, in person, in Calloway’s hide
+radio Calloway gives the O Group himself, standing by his tank with a mug he doesn’t drink from.
 radio Yesterday, on the Sibbesse road: an accident that was not an accident. A Spetsnaz group, two civilians who were not what they seemed, and one who was. A girl of six, from Magdeburg.
 radio Calloway stops for about two seconds before he says “six”. Then he goes on: pairs, loaded weapons, no route twice.
-net Zero Alpha: Hello all stations, this is Zero Alpha. Confirming the OG. State unchanged. Troop leaders’ choice. Out.
+net Zero Alpha: Hello all stations, this is Zero Alpha. Confirming the O Group. State unchanged. Troop leaders’ choice. Out.
 end
 if $og=2
 do gasdrill
@@ -652,7 +652,7 @@ replay Play again
 kit: yes
 icon: 📓
 verb: Write in
-look: radio Your notebook. Saturday’s page: “Stand-to 0530. First parade. OG 0800. Training: ?”
+look: radio Your notebook. Saturday’s page: “Stand-to 0530. First parade. O Group 0800. Training: ?”
 use: radio You write the time the troop reported in position at stand-to, and next to it, smaller, the time you want.
 @bv the boiling vessel
 unit: p

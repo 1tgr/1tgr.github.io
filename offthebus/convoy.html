@@ -387,7 +387,7 @@ function parseScene(text){
     m=l.match(/^verb:\s*(.*)$/); if(m&&cur){ cur.verb=m[1]; continue; }
     m=l.match(/^(look|use):\s*(.*)$/); if(m&&cur){ cur[m[1]].push(m[2]); continue; }
     m=l.match(/^ask (.+?):\s*(.*)$/); if(m&&cur){ (cur.asks[m[1]]=cur.asks[m[1]]||[]).push(m[2]); } }
-  return { head, map:JSON.parse(mapText), script, macros, props, days, callsigns:lists('callsigns'), crew:lists('crew'), people,
+  return { head, map:JSON.parse(mapText), script, macros, props, days, legend, callsigns:lists('callsigns'), crew:lists('crew'), people,
     vars:Object.fromEntries(Object.entries(lists('vars')).map(([k,v])=>[k,Number(v)])) };
 }
 const S = parseScene(SCENE_TEXT);
@@ -717,7 +717,7 @@ async function run1(cmd,a){
     case 'wait': await sleep(+a); break;
     case 'var': { const m=a.match(/^\$?(\w+)\s*(\+?=)\s*(\$\w+|-?\d+)$/); const v=m[3].startsWith('$')?(vars[m[3].slice(1)]??0):+m[3]; vars[m[1]]=m[2]==='+='?(vars[m[1]]??0)+v:v; renderBadge(); break; }
     case 'do': await exec(S.macros[a.trim()]); break;
-    case 'today': { const row=S.days[vars[a.replace('$','').trim()]??0]||{}; for(const [k,v] of Object.entries(row)) if(k!=='label') vars[k]=v; break; }
+    case 'today': { const row=S.days[vars[a.replace('$','').trim()]??0]||{}; for(const k of Object.keys(S.legend||{})) vars[k]=0; for(const [k,v] of Object.entries(row)) if(k!=='label') vars[k]=v; used.clear(); refreshWorld(); break; }  // a new day: everything can be used again
     case 'random': { const [k,lo,hi]=a.replace('$','').split(/\s+/); vars[k]=Math.floor(Math.random()*(+hi-+lo+1))+(+lo); break; }
     case 'xp': { // xp <var> <points> <name>: award practice points, announce level-ups
       const m=a.match(/^\$?(\w+)\s+(-?\d+)\s+(.*)$/); const before=levelOf(vars[m[1]]??0); vars[m[1]]=(vars[m[1]]??0)+(+m[2]); const after=levelOf(vars[m[1]]);
