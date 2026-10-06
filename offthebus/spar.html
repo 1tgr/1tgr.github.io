@@ -449,9 +449,14 @@ use: radio You eat one. Crisp outside, soft inside, still faintly warm. The best
 (()=>{
 const SCENE_TEXT = document.getElementById('scene').textContent;
 const PORTRAITS = JSON.parse(document.getElementById('portraits').textContent);
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TESTARG = new URLSearchParams(location.search).get('test');
+const TEST = TESTARG!=null;                                  // ?test=<seed>: no pauses, instant moves, plays itself
+let tseed = (parseInt(TESTARG)||1)*7919; const trand = n => { tseed=(tseed*16807)%2147483647; return tseed % n; };
+const TLOG = window.__test = {done:false, steps:0, choices:[], errors:[]};
+if(TEST) window.addEventListener('error', e=>TLOG.errors.push(String(e.message)));
+const reduce = TEST || matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = id => document.getElementById(id);
-const sleep = ms => new Promise(r=>setTimeout(r, reduce?Math.min(ms,150):ms));
+const sleep = ms => new Promise(r=>setTimeout(r, TEST?0:reduce?Math.min(ms,150):ms));
 
 /* ================= universal objects: always to hand ================= */
 const UNIVERSAL_PROPS=`
@@ -591,6 +596,7 @@ function choose(opts){
       b.className='chip '+({net:'ch-net',ic:'ch-ic',act:'ch-act',hint:'hint'}[o.kind]);
       b.textContent=o.kind==='ic'?`“${o.text}”`:o.text; b.onclick=()=>pick(i); replies.appendChild(b); });
     mapPick=pick; scrollDown();
+    if(TEST){ const i=trand(opts.length); TLOG.choices.push(opts[i].text.slice(0,40)); setTimeout(()=>pick(i),0); }
   });
 }
 
@@ -612,12 +618,13 @@ async function acSay(name,text,gl){
     const ch=text[i]; let d=70; if(/[.!?…]/.test(ch)) d+=320; else if(/[,—–]/.test(ch)) d+=160; await new Promise(r=>setTimeout(r,d)); }
   acText.textContent=text; if(gl) acGl.textContent=gl;
   AC.classList.add('ready'); AC.focus({preventScroll:true});
-  await waitFor(new Promise(r=>{ acTap=()=>{ acTap=null; r(); }; }));
+  await waitFor(new Promise(r=>{ acTap=()=>{ acTap=null; r(); }; if(TEST) setTimeout(()=>acTap&&acTap(),0); }));
 }
 function acChoose(opts){
   return new Promise(res=>{ acOpts.innerHTML=''; acOpts.classList.add('show'); AC.classList.remove('ready'); acTap=null;
     opts.forEach((o,i)=>{ const b=document.createElement('button'); b.textContent=o.text;
-      b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus(),30); }); });
+      b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus(),30); });
+    if(TEST){ const i=trand(opts.length); TLOG.choices.push(opts[i].text.slice(0,40)); setTimeout(()=>{ acOpts.classList.remove('show'); res(i); },0); } });
 }
 const tutorial=t=>{ $('tip').textContent=t||''; $('tip').hidden=!t; };
 
@@ -785,7 +792,8 @@ function cards(arg){ const [headPart,list]=arg.split('::'); const [title,sub]=he
   return new Promise(res=>{ const sh=$('sheet'); sh.innerHTML=`<h2>${interp(title)}</h2><p>${interp(sub||'')}</p>`;
     items.forEach(([t,d,l],i)=>{ const b=document.createElement('button'); b.className='card'; b.innerHTML=`<span class="lvl">${interp(l||'')}</span><div class="ct">${t}</div><div class="cs">${d||''}</div>`;
       b.onclick=()=>{ $('scrim').classList.remove('show'); res(i); }; sh.appendChild(b); });
-    $('scrim').classList.add('show'); setTimeout(()=>sh.querySelector('.card')?.focus(),50); }); }
+    $('scrim').classList.add('show'); setTimeout(()=>sh.querySelector('.card')?.focus(),50);
+    if(TEST){ const i=trand(items.length); TLOG.choices.push(items[i][0].slice(0,40)); setTimeout(()=>{ $('scrim').classList.remove('show'); res(i); },0); } }); }
 const vars={};
 const pt=s=>s.split(',').map(Number);
 const ids=s=>s.split(',').map(x=>x.trim()).flatMap(x=>x==='all'?units.map(u=>u.id):[x]);
@@ -805,17 +813,18 @@ async function exec(lines){
   }
 }
 async function run1(cmd,a){
+  TLOG.steps++;
   switch(cmd){
     case 'stamp': stamp(interp(a)); break;
     case 'radio': radio(interp(a)); break;
     case 'gloss': gloss(a); break;
-    case 'net': { const [n,t]=nameText(a); await netIn(n,t); break; }
+    case 'net': { const [n,t]=nameText(a); await netIn(n,interp(t)); break; }
     case 'me': await netOut(a); break;
     case 'ic': { const [n,t]=nameText(a); await icIn(n,t); break; }
     case 'icme': await icOut(a); break;
     case 'hear': { const [n,t]=nameText(a); await hear(n,t); break; }
     case 'choose': vars.choice=await waitFor(choose(parseOpts(a))); break;
-    case 'say': { const [n,t]=nameText(a); const [txt,gl]=t.split(' | ');
+    case 'say': { const [n,t]=nameText(a); const [txt,gl]=interp(t).split(' | ');
       if(n===(S.head.player||'Pemberton') && !busy && txt!=='…' && !/^[“"]/.test(txt) && txt!==lastAsked){ lastAsked=null; const i=await waitFor(acChoose([{text:txt},{text:'Say nothing.'}])); if(i===1){ if(gl) await acSay(n,'…',gl); break; } }
       if(txt===lastAsked) lastAsked=null; await acSay(n,txt,gl); break; }
     case 'ask': { const os=parseOpts(a); vars.choice=await waitFor(acChoose(os)); lastAsked=os[vars.choice].text; break; }
@@ -824,6 +833,7 @@ async function run1(cmd,a){
     case 'var': { const m=a.match(/^\$?(\w+)\s*(\+?=)\s*(\$\w+|-?\d+)$/); const v=m[3].startsWith('$')?(vars[m[3].slice(1)]??0):+m[3]; vars[m[1]]=m[2]==='+='?(vars[m[1]]??0)+v:v; renderBadge(); break; }
     case 'do': await exec(S.macros[a.trim()]); break;
     case 'today': { const row=S.days[vars[a.replace('$','').trim()]??0]||{}; for(const k of Object.keys(S.legend||{})) vars[k]=0; for(const [k,v] of Object.entries(row)) if(k!=='label') vars[k]=v; used.clear(); refreshWorld(); break; }  // a new day: everything can be used again
+    case 'str': { const m=a.match(/^\$?(\w+)\s*=\s*(.*)$/); vars[m[1]]=interp(m[2]); break; }  // a text variable
     case 'random': { const [k,lo,hi]=a.replace('$','').split(/\s+/); vars[k]=Math.floor(Math.random()*(+hi-+lo+1))+(+lo); break; }
     case 'xp': { // xp <var> <points> <name>: award practice points, announce level-ups
       const m=a.match(/^\$?(\w+)\s+(-?\d+)\s+(.*)$/); const before=levelOf(vars[m[1]]??0); vars[m[1]]=(vars[m[1]]??0)+(+m[2]); const after=levelOf(vars[m[1]]);
@@ -833,10 +843,10 @@ async function run1(cmd,a){
     case 'cards': vars.choice=await cards(a); break;
     case 'badge': badgeText=a; renderBadge(); break;
     case 'move': { const parts=a.split(/\s+/); const who=ids(parts[0]); const pts=parts.slice(1).filter(p=>/^-?[\d.]+,-?[\d.]+$/.test(p)).map(pt); const o=kv(a);
-      who.forEach((id,k)=>{ const u=U[id]; u.path=pts.map(p=>[...p]); u.spd=o.speed??1; u.delay=(o.delay??0)+(o.stagger??0)*k; }); break; }
+      who.forEach((id,k)=>{ const u=U[id]; u.path=pts.map(p=>[...p]); u.spd=o.speed??1; u.delay=(o.delay??0)+(o.stagger??0)*k; if(TEST){ const l=u.path[u.path.length-1]; if(l){ u.x=l[0]; u.y=l[1]; } u.path=[]; u.delay=0; } }); break; }
     case 'to': { // to id x,y id x,y ... (each unit its own destination) [speed=] [stagger=]
       const parts=a.split(/\s+/).filter(p=>!p.includes('=')); const o=kv(a); let k=0;
-      for(let j=0;j<parts.length;j+=2){ const u=U[parts[j]]; u.path=[pt(parts[j+1])]; u.spd=o.speed??1; u.delay=(o.stagger??0)*k++; } break; }
+      for(let j=0;j<parts.length;j+=2){ const u=U[parts[j]]; u.path=[pt(parts[j+1])]; u.spd=o.speed??1; u.delay=(o.stagger??0)*k++; if(TEST){ [u.x,u.y]=u.path[0]; u.path=[]; u.delay=0; } } break; }
     case 'waitmove': { const w=ids(a||'all'); while(w.some(id=>U[id].path.length||U[id].delay>0)) await sleep(120); break; }
     case 'set': { const parts=a.split(/\s+/); const o=kv(a); for(const id of ids(parts[0])) Object.assign(U[id],o); break; }
     case 'teleport': { const parts=a.split(/\s+/); for(let j=0;j<parts.length;j+=2){ const u=U[parts[j]]; [u.x,u.y]=pt(parts[j+1]); u.path=[]; } break; }
@@ -859,10 +869,10 @@ async function run1(cmd,a){
     case 'tap': { const opts=a.split('||').map(o=>{ const [l,r]=o.split('='); return {targets:l.trim().split('|').map(s=>s.trim()),text:r.trim(),kind:'hint'}; });
       tapTargets=opts.map(o=>o.targets); vars.choice=await waitFor(choose(opts.map(o=>({kind:'hint',text:o.text})))); tapTargets=null; break; }
     case 'zoomgate': await waitFor(new Promise(res=>{ replies.innerHTML=''; const b=document.createElement('button'); b.className='chip hint'; b.textContent=a;
-      zoomWanted=()=>{ zoomWanted=null; replies.innerHTML=''; res(); }; b.onclick=()=>zoomWanted&&zoomWanted(); replies.appendChild(b); })); break;
+      zoomWanted=()=>{ zoomWanted=null; replies.innerHTML=''; res(); }; b.onclick=()=>zoomWanted&&zoomWanted(); replies.appendChild(b); if(TEST) setTimeout(()=>zoomWanted&&zoomWanted(),0); })); break;
     case 'near': near=a.split(',').map(x=>x.trim()).filter(Boolean); refreshWorld(); break;
     case 'title': $('end').classList.add('show'); break;
-    case 'replay': { // replay Raw=level:0 || Practised=level:1  (or just: replay Play again)
+    case 'replay': { if(TEST){ TLOG.done=true; return; } // replay Raw=level:0 || Practised=level:1  (or just: replay Play again)
       const parts=a.split('||').map(x=>x.split('=').map(y=>y.trim())); const i=await choose(parts.map(p=>({kind:'hint',text:p[0]})));
       replay(parts[i][1]??null); return; }
     default: console.warn('unknown command',cmd,a);
