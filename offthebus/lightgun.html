@@ -381,7 +381,8 @@ const QS=new URLSearchParams(location.search), RESTORE_AT=+(QS.get('restoreAt')|
 if(TEST) window.addEventListener('error', e=>TLOG.errors.push(String(e.message)));
 const reduce = TEST || matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = id => document.getElementById(id);
-const sleep = ms => new Promise(r=>setTimeout(r, TEST?0:reduce?Math.min(ms,150):ms));
+const soon = f => TEST ? Promise.resolve().then(f) : setTimeout(f,0);
+const sleep = ms => TEST ? Promise.resolve() : new Promise(r=>setTimeout(r, reduce?Math.min(ms,150):ms));
 
 /* ================= universal objects: always to hand ================= */
 const UNIVERSAL_PROPS=`
@@ -442,7 +443,7 @@ $('map').setAttribute('aria-label', S.head.maplabel||'Isometric map');
 const thread=$('thread'), replies=$('replies');
 let lastFrom=null, lastDelivered=null, skip=false, speaking=false;
 thread.addEventListener('click',()=>{ if(speaking) skip=true; });
-const scrollDown=()=>{ thread.scrollTop=thread.scrollHeight; };
+const scrollDown=()=>{ if(!TEST) thread.scrollTop=thread.scrollHeight; };
 function el(cls,txt,html){ const d=document.createElement('div'); d.className=cls; if(html!=null) d.innerHTML=html; else d.textContent=txt; return d; }
 function add(e){ thread.appendChild(e); scrollDown(); return e; }
 const NET_WPM=380, IC_WPM=250;
@@ -524,7 +525,7 @@ function choose(opts){
       b.className='chip '+({net:'ch-net',ic:'ch-ic',act:'ch-act',hint:'hint'}[o.kind]);
       b.textContent=o.kind==='ic'?`“${o.text}”`:o.text; b.onclick=()=>pick(i); replies.appendChild(b); });
     mapPick=pick; scrollDown();
-    if(TEST){ const i=trand(opts.length); TLOG.choices.push(opts[i].text.slice(0,40)); setTimeout(()=>pick(i),0); }
+    if(TEST){ const i=trand(opts.length); TLOG.choices.push(opts[i].text.slice(0,40)); soon(()=>pick(i)); }
   });
 }
 
@@ -546,13 +547,13 @@ async function acSay(name,text,gl){
     const ch=text[i]; let d=70; if(/[.!?…]/.test(ch)) d+=320; else if(/[,—–]/.test(ch)) d+=160; await new Promise(r=>setTimeout(r,d)); }
   acText.textContent=text; if(gl) acGl.textContent=gl;
   AC.classList.add('ready'); AC.focus({preventScroll:true});
-  await waitFor(new Promise(r=>{ acTap=()=>{ acTap=null; r(); }; if(TEST) setTimeout(()=>acTap&&acTap(),0); }));
+  await waitFor(new Promise(r=>{ acTap=()=>{ acTap=null; r(); }; if(TEST) soon(()=>acTap&&acTap()); }));
 }
 function acChoose(opts){
   return new Promise(res=>{ acOpts.innerHTML=''; acOpts.classList.add('show'); AC.classList.remove('ready'); acTap=null;
     opts.forEach((o,i)=>{ const b=document.createElement('button'); b.textContent=o.text;
       b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus(),30); });
-    if(TEST){ const i=trand(opts.length); TLOG.choices.push(opts[i].text.slice(0,40)); setTimeout(()=>{ acOpts.classList.remove('show'); res(i); },0); } });
+    if(TEST){ const i=trand(opts.length); TLOG.choices.push(opts[i].text.slice(0,40)); soon(()=>{ acOpts.classList.remove('show'); res(i); }); } });
 }
 const tutorial=t=>{ $('tip').textContent=t||''; $('tip').hidden=!t; };
 
@@ -670,6 +671,7 @@ function step(dt){
 }
 let last=performance.now();
 function frame(now){
+  if(TEST) return;                                 // nothing to watch in a test
   const dt=Math.min(.05,(now-last)/1000); last=now; step(dt);
   for(const k of ['fx','fy','z']) cam[k]+=(cam['t'+k]-cam[k])*Math.min(1,dt*2.2);
   night+=(nightT-night)*Math.min(1,dt*1.5);
@@ -721,7 +723,7 @@ function cards(arg){ const [headPart,list]=arg.split('::'); const [title,sub]=he
     items.forEach(([t,d,l],i)=>{ const b=document.createElement('button'); b.className='card'; b.innerHTML=`<span class="lvl">${interp(l||'')}</span><div class="ct">${t}</div><div class="cs">${d||''}</div>`;
       b.onclick=()=>{ $('scrim').classList.remove('show'); res(i); }; sh.appendChild(b); });
     $('scrim').classList.add('show'); setTimeout(()=>sh.querySelector('.card')?.focus(),50);
-    if(TEST){ const i=trand(items.length); TLOG.choices.push(items[i][0].slice(0,40)); setTimeout(()=>{ $('scrim').classList.remove('show'); res(i); },0); } }); }
+    if(TEST){ const i=trand(items.length); TLOG.choices.push(items[i][0].slice(0,40)); soon(()=>{ $('scrim').classList.remove('show'); res(i); }); } }); }
 const vars={};
 const pt=s=>s.split(',').map(Number);
 const ids=s=>s.split(',').map(x=>x.trim()).flatMap(x=>x==='all'?units.map(u=>u.id):[x]);
@@ -797,7 +799,7 @@ async function run1(cmd,a){
     case 'tap': { const opts=a.split('||').map(o=>{ const [l,r]=o.split('='); return {targets:l.trim().split('|').map(s=>s.trim()),text:r.trim(),kind:'hint'}; });
       tapTargets=opts.map(o=>o.targets); vars.choice=await waitFor(choose(opts.map(o=>({kind:'hint',text:o.text})))); tapTargets=null; break; }
     case 'zoomgate': await waitFor(new Promise(res=>{ replies.innerHTML=''; const b=document.createElement('button'); b.className='chip hint'; b.textContent=a;
-      zoomWanted=()=>{ zoomWanted=null; replies.innerHTML=''; res(); }; b.onclick=()=>zoomWanted&&zoomWanted(); replies.appendChild(b); if(TEST) setTimeout(()=>zoomWanted&&zoomWanted(),0); })); break;
+      zoomWanted=()=>{ zoomWanted=null; replies.innerHTML=''; res(); }; b.onclick=()=>zoomWanted&&zoomWanted(); replies.appendChild(b); if(TEST) soon(()=>zoomWanted&&zoomWanted()); })); break;
     case 'near': near=a.split(',').map(x=>x.trim()).filter(Boolean); refreshWorld(); break;
     case 'title': case 'checkpoint': case 'replay': case 'play': break;   // handled by the interpreter
     default: console.warn('unknown command',cmd,a);
