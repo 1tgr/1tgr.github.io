@@ -366,6 +366,55 @@ end
 endtalk
 enddef
 
+def ogroup
+str g=no change
+if $weather=1
+str g=no change; the tracks into the hides are soft after the rain
+end
+if $alert=1
+str g=no change; the Sibbesse road is closed to single vehicles
+end
+str sit=Enemy: Soviet exercises continue east of the border. Friendly: no change.
+if $drift=1
+str sit=Enemy: a Spetsnaz group ambushed one of our troops on the Sibbesse road yesterday; expect more. Friendly: no change.
+end
+if $drift=2
+str sit=Enemy: exercises continue east of the border, with more traffic on the roads at night. Friendly: no change.
+end
+if $drift=3
+str sit=Enemy: heavy movement towards the border; expect jamming. Friendly: 1 and 4 Divisions report all positions occupied.
+end
+if $drift=4
+str sit=Enemy: the Bundeswehr report that the exercises are not exercises. Friendly: the covering force is forward.
+end
+str m=B Squadron trains in its hides, ready to move at one hour’s notice.
+if $og=2
+str m=B Squadron practises NBC drills in its hides, ready to move at one hour’s notice.
+end
+if $alert=1
+str m=B Squadron holds its hides, ready to move at thirty minutes’ notice.
+end
+str x=Troop leaders’ choice of drill this morning.
+if $og=1
+str x=Troop leaders’ choice of drill. I shall visit troops.
+end
+if $og=2
+str x=Gas drill, all troops, from 0830.
+end
+if $alert=1
+str x=Moves in pairs only, weapons loaded, no route used twice. {$x}
+end
+str ss=Replen at 1700.
+if $aft=1
+str ss=Mail and rations with the four-tonner at 1400. Replen at 1700.
+end
+str cs=Frequencies and callsigns unchanged.
+if $aft=5
+str cs=Expect jamming. Change to frequency two on codeword WINDMILL.
+end
+net Zero Alpha: Hello all stations, this is Zero Alpha. O Group. Ground: {$g}. Situation: {$sit} Mission: {$m} I say again: {$m} Execution: {$x} Service support: {$ss} Command and signal: {$cs} Out.
+enddef
+
 def routineday
 hud 0525 | {date:$day}
 night 0.55
@@ -428,23 +477,21 @@ near bv,notebook,hollis
 do brew
 stamp 0800 · O Group
 var oc=0
-if $og=0
-net Zero Alpha: Hello all stations, this is Zero Alpha. No change in state. Training as programmed. Troop leaders’ choice. Out.
-end
 if $og=1
 var oc=1
-net Zero Alpha: Hello all stations, this is Zero Alpha. No change in state. Troop leaders’ choice. I shall be visiting troops this morning. Out.
-gloss Calloway will watch your training slot.
-end
-if $og=2
-net Zero Alpha: Hello all stations, this is Zero Alpha. No change in state. Gas drill, all troops, this morning. Out.
 end
 if $og=3
 stamp The O Group, in person, in Calloway’s hide
 radio Calloway gives the O Group himself, standing by his tank with a mug he doesn’t drink from.
 radio Yesterday, on the Sibbesse road: an accident that was not an accident. A Spetsnaz group, two civilians who were not what they seemed, and one who was. A girl of six, from Magdeburg.
-radio Calloway stops for about two seconds before he says “six”. Then he goes on: pairs, loaded weapons, no route twice.
-net Zero Alpha: Hello all stations, this is Zero Alpha. Confirming the O Group. State unchanged. Troop leaders’ choice. Out.
+radio Calloway stops for about two seconds before he says “six”. Then he goes on, in the usual order, and repeats it all on the net for the record.
+end
+do ogroup
+if $day=0
+gloss O Group — orders group, always in the same order: ground, situation, mission (said twice), execution, service support, command and signal.
+end
+if $oc=1
+gloss Calloway will watch your training slot.
 end
 if $og=2
 do gasdrill
@@ -553,8 +600,9 @@ do farmer
 end
 if $aft=5
 radio The squadron net is full of hiss and a wavering tone, then music, then hiss. Somebody east of the border is practising jamming.
-choose One One, One Two, One Zero. Change to frequency two on my codeword. Out. || hint: Ride it out
+choose One One, One Two, One Zero. WINDMILL. Out. || hint: Ride it out
 if $choice=0
+gloss WINDMILL — the codeword from this morning’s O Group: every station changes to frequency two.
 xp contact 5 Net drill under jamming
 end
 end
@@ -1096,7 +1144,7 @@ async function run1(cmd,a){
     case 'stamp': stamp(interp(a)); break;
     case 'radio': radio(interp(a)); break;
     case 'gloss': gloss(a); break;
-    case 'net': { const [n,t]=nameText(a); await netIn(n,t); break; }
+    case 'net': { const [n,t]=nameText(a); await netIn(n,interp(t)); break; }
     case 'me': await netOut(a); break;
     case 'ic': { const [n,t]=nameText(a); await icIn(n,t); break; }
     case 'icme': await icOut(a); break;
@@ -1111,6 +1159,7 @@ async function run1(cmd,a){
     case 'var': { const m=a.match(/^\$?(\w+)\s*(\+?=)\s*(\$\w+|-?\d+)$/); const v=m[3].startsWith('$')?(vars[m[3].slice(1)]??0):+m[3]; vars[m[1]]=m[2]==='+='?(vars[m[1]]??0)+v:v; renderBadge(); break; }
     case 'do': await exec(S.macros[a.trim()]); break;
     case 'today': { const row=S.days[vars[a.replace('$','').trim()]??0]||{}; for(const k of Object.keys(S.legend||{})) vars[k]=0; for(const [k,v] of Object.entries(row)) if(k!=='label') vars[k]=v; used.clear(); refreshWorld(); break; }  // a new day: everything can be used again
+    case 'str': { const m=a.match(/^\$?(\w+)\s*=\s*(.*)$/); vars[m[1]]=interp(m[2]); break; }  // a text variable
     case 'random': { const [k,lo,hi]=a.replace('$','').split(/\s+/); vars[k]=Math.floor(Math.random()*(+hi-+lo+1))+(+lo); break; }
     case 'xp': { // xp <var> <points> <name>: award practice points, announce level-ups
       const m=a.match(/^\$?(\w+)\s+(-?\d+)\s+(.*)$/); const before=levelOf(vars[m[1]]??0); vars[m[1]]=(vars[m[1]]??0)+(+m[2]); const after=levelOf(vars[m[1]]);
