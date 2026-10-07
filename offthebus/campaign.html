@@ -1579,7 +1579,7 @@ levels: 40,100
 calendar: Friday 27 April 1990 | Saturday 28 April 1990 | Sunday 29 April 1990 | Monday 30 April 1990 | Tuesday 1 May 1990 | Wednesday 2 May 1990 | Thursday 3 May 1990 | Friday 4 May 1990 | Saturday 5 May 1990 | Sunday 6 May 1990 | Monday 7 May 1990 | Tuesday 8 May 1990 | Wednesday 9 May 1990
 callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12
 crew: Gunner=G, Loader=L, Driver=D
-people: Maj Calloway=#6a7f9a:calloway, Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Pemberton=#5aa7e0:pemberton, The farmer=#8a6d3b, Capt Davies=#e59b3a:davies
+people: Maj Calloway=#6a7f9a:calloway, Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Pemberton=#5aa7e0:pemberton, The farmer=#8a6d3b, Capt Davies=#e59b3a:davies, Hptm Weber=#5b6b4a
 vars: deleg=0, tcw=0, tpairs=0, hrun=0, hmissed=0, cnoted=0, ogseen=0, obs=0, knowtracks=0, posrange=0, posgood=0, sawmerc=0, foundvan=0, ourroute=0, logbridge=0, logjunction=0, day=0, crash=10, gas=0, gun=0, contact=0, fatigue=0, debt=0, rain=0, oc=0, checks=0
 ---map
 {"bg": "#7a9a52", "ground": {"x": [-6, 22], "y": [-6, 22], "c": ["#97b45d", "#9dba62"], "rects": [{"x": [-6, 5], "y": [-6, 22], "c": ["#4f7334", "#557a37"]}, {"x": [10, 22], "y": [-6, 22], "c": ["#a9bf6d", "#afc472"]}, {"x": [8, 8], "y": [-6, 22], "c": ["#bfae84", "#c4b388"]}, {"x": [11, 11], "y": [1, 5], "c": ["#d8c844", "#dccd4a"]}]}, "trees": [{"x": [-6, 6.3], "y": [-5, 20], "n": 110, "seed": 7, "s": [0.7, 1.2]}], "keep": [[2.6, 3.8, 0.8], [2.4, 7, 0.8], [2.8, 10.2, 0.8], [6.3, 3.6, 0.8], [6.4, 7, 0.8], [6.3, 10.4, 0.8]], "units": [{"id": "a", "type": "challenger", "x": 2.6, "y": 3.8, "label": "11", "me": 0, "open": 1}, {"id": "p", "type": "challenger", "x": 2.4, "y": 7, "label": "10", "me": 1, "open": 1}, {"id": "b", "type": "challenger", "x": 2.8, "y": 10.2, "label": "12", "me": 0, "open": 1}]}
@@ -2217,8 +2217,12 @@ xp contact 5 Net drill under jamming
 end
 end
 if $aft=6
-radio A Bundeswehr Iltis stops at the track: Hauptmann Weber, the liaison officer, on his rounds. He doesn’t get out.
-radio “Herr Leutnant. My people say the exercises over there are not exercises. I thought you should hear it from somebody.” He nods, and drives on.
+radio A Bundeswehr Iltis stops at the track: Hauptmann Weber, on his rounds. He doesn’t get out.
+say Hptm Weber: Herr Leutnant.
+say Hptm Weber: My people say the exercises over there are not exercises.
+say Hptm Weber: I thought you should hear it from somebody.
+endtalk
+radio He nods, and drives on.
 end
 if $aft=4
 radio A car comes slowly along the far road: an olive Mercedes with odd number plates, two men in it, one with a camera. It stops by the field gate, then drives on.
