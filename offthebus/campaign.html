@@ -512,7 +512,7 @@ radio Three days at Stand-To-Charlie. The artillery to the east has been continu
 near notebook,rangecard,periscope,telegraph,bv
 wait 900
 net Zero Alpha: Hello all stations, this is Zero Alpha. Today is the day. Sunray reports OMG forward elements have penetrated to within five kilometres of our screen. First contact expected before noon. Stand to. Crews mounted. Arcs confirmed. Mortar section on standby on frequency four. Out.
-gloss OMG — Operational Manoeuvre Group: Soviet forces sent deep, past the front, to break up the defence. Sunray — the commander; here, the commanding officer.
+gloss OMG — Operational Manoeuvre Group: Soviet forces sent deep, past the front, to break up the defence.
 choose One Zero. Wilco, out.
 net One One: One One. Wilco, out.
 net One Two: One Two. Standing to, hatches manned, mortar section on four. Out.
@@ -563,6 +563,8 @@ gloss Passage of lines — one unit passing back through another’s position. 1
 net One One: One One. Range markers confirmed.
 if $posrange=1
 radio Your range card from the high seat is taped inside the cupola: field gate six hundred, track junction nine hundred, farm fourteen hundred.
+else
+gloss Range card — a sketch of known ranges to features in your arc, made in advance so the fire order needs no guesswork.
 end
 choose One One, right arc. One Two, left arc. I’ll take centre. Engage on my order. Out.
 
@@ -677,7 +679,6 @@ icon: 📏
 verb: Check
 look: radio Your range card: a sketch of the field from your hide, the farm track at eight hundred, the lone bush at eleven hundred, the rise at fourteen hundred. Hollis paced the first two himself.
 use: radio You check the range card against the ground. Eight hundred, the track. Eleven hundred, the bush. Fourteen hundred, the rise. Nothing has moved but the light.
-use: gloss Range card — a sketch of known ranges to features in your arc, made in advance so the fire order needs no guesswork.
 @periscope the periscope
 unit: p
 icon: 🔭
@@ -2551,7 +2552,7 @@ say Capt Davies: Actually, lucky. Plans have changed. You’re being moved on.
 say Capt Davies: You’ll be glad of the rounds.
 say Capt Davies: Squadron’s deploying ahead of schedule.
 say Capt Davies: Square your lot away, then bring them to the workshop at Detmold.
-say Capt Davies: Captain Holley’s expecting you. He’ll have your orders. | Square away — get sorted out: clean up, stow kit, ready for the next move.
+say Capt Davies: Captain Holley’s expecting you. He’ll have your orders.
 say Capt Davies: Crews all right? | He taps the roof. The Lance Corporal starts the engine.
 say Pemberton: All present, sir.
 move rover 2.5,7.45 2.5,18 speed=2.2
@@ -3017,13 +3018,14 @@ end
 say Maj Calloway: Good. Time check. The time is now 1731. That’s all. | Watches checked. The troop leaders go back to their troops.
 endtalk
 radio As the group breaks up, the German captain comes over to you. Grey-green uniform, a beret, a careful handshake.
+gloss Hptm, Hauptmann: captain.
 say Hptm Weber: Lieutenant Pemberton. Klaus Weber.
 say Hptm Weber: I command the Heimatschutz company in your sector.
 say Hptm Weber: We will see each other often.
 ask Say “Sir” || Ask “Do you know this ground?”
 if $choice=1
 say Pemberton: Do you know this ground, sir?
-say Hptm Weber: I was born in Salzgitter. Yes, I know this ground. | Hauptmann: captain. He says it as a statement of fact, not a boast.
+say Hptm Weber: I was born in Salzgitter. Yes, I know this ground. | He says it as a statement of fact, not a boast.
 else
 say Pemberton: Sir.
 say Hptm Weber: … | A small nod. He walks back to his Iltis.
