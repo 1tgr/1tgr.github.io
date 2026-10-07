@@ -3660,7 +3660,7 @@ const io={
   orders(page,review){ return waitFor(new Promise(res=>{ const sh=$('sheet');   // the O Group as written in the notebook
     sh.innerHTML=`<h2>${page.title}</h2><p>${review?'Your notebook: the last orders you wrote down.':'Your notebook. Tap “No change” to see what you wrote last time.'}</p>`;
     for(const it of page.items){ const d=document.createElement(it.same?'button':'div'); d.className='oi'+(it.same?' same':'');
-      const tx=it.h==='Mission'?`<div class="ot mission">${it.t}</div><div class="ot mission">${it.t}</div>`:`<div class="ot">${it.same?'No change':it.t}</div>`;
+      const tx=it.h==='Mission'?`<div class="ot mission">${it.t}</div>`:`<div class="ot">${it.same?'No change':it.t}</div>`;
       d.innerHTML=`<div class="oh">${it.h}</div>${tx}`;
       if(it.same){ d.setAttribute('aria-expanded','false'); d.onclick=()=>{ const open=d.getAttribute('aria-expanded')==='true'; d.setAttribute('aria-expanded',String(!open)); d.querySelector('.ot').textContent=open?'No change':'No change: '+it.t; }; }
       sh.appendChild(d); }
