@@ -499,7 +499,7 @@ stamp <b>Saturday 12 May 1990</b> · 0700<br>The hides, south of Hildesheim · D
 radio Three days at Stand-To-Charlie. The artillery to the east has been continuous and distant. Nothing has come near the troop. 2nd Troop is out in front on the ridge, as the squadron’s screen.
 near notebook,rangecard,periscope,telegraph,bv
 wait 900
-net Zero Alpha: Hello all stations, this is Zero Alpha. Today is the day. Sunray reports OMG forward elements have penetrated to within five kilometres of our screen. First contact expected before noon. Stand to. Crews mounted. Sectors of fire confirmed. Mortar section on standby on frequency four. Out.
+net Zero Alpha: Hello all stations, this is Zero Alpha. Today is the day. Sunray reports OMG forward elements have penetrated to within five kilometres of our screen. First contact expected before noon. Stand to. Crews mounted. Arcs confirmed. Mortar section on standby on frequency four. Out.
 gloss OMG — Operational Manoeuvre Group: Soviet forces sent deep, past the front, to break up the defence. Sunray — the commander; here, the commanding officer.
 choose One Zero. Wilco, out.
 net One One: One One. Wilco, out.
@@ -549,7 +549,7 @@ net Two Zero: One Zero, Two Zero. They’re four minutes behind us. T-80 leading
 net Zero: Two Zero, Zero. On the bus, next bound. Out.
 gloss Passage of lines — one unit passing back through another’s position. 1st Troop is now the squadron’s front edge.
 net One One: One One. Range markers confirmed.
-choose One One, take the right axis. One Two, left. I’ll take centre. Engage on my order. Out.
+choose One One, right arc. One Two, left arc. I’ll take centre. Engage on my order. Out.
 
 stamp 0930
 hud 0930
@@ -844,7 +844,7 @@ look: radio A map in chalk on the tarmac: Detmold marked “we are here”; a li
 @rover the Land Rover
 unit: rover
 icon: 🚙
-look: radio A Land Rover 110 in green-and-black, whip antenna up, “44” stencilled on the door, parked at an angle. A watercolour box is wedged behind the passenger seat, half under a map case.
+look: radio A Land Rover 110 in green-and-black, whip aerial up, “44” stencilled on the door, parked at an angle. A watercolour box is wedged behind the passenger seat, half under a map case.
 @reme the REME crews
 at: 4.3,4.9
 icon: 🔧
@@ -1277,8 +1277,8 @@ def gasdrill
 choose Gas! Gas! Gas!
 if $gas<40
 radio Respirators on. You count. Seven. Eight. Nine.
-net One One: One One. Masked.
-net One Two: One Two… masked.
+net One One: One One. Respirators on.
+net One Two: One Two… respirators on.
 radio Eleven seconds for One Two. The standard is nine.
 choose One One, One Two, One Zero. Close down. NBC pack on. Out.
 set a,p,b open=0
@@ -1286,8 +1286,8 @@ net One One: One One. Closed down.
 net One Two: One Two. Closed down.
 else
 radio Eight seconds. Seven for One Two, who has been practising in his sleep.
-net One One: One One. Masked. Closed down.
-net One Two: One Two. Masked. Closed down.
+net One One: One One. Respirators on. Closed down.
+net One Two: One Two. Respirators on. Closed down.
 end
 choose All clear. Unmask. Out.
 set a,p,b open=1
@@ -1716,7 +1716,7 @@ if $aft=0
 radio A quiet afternoon. Kit, letters, the notebook. Somewhere east, artillery is practising.
 end
 if $aft=1
-radio The mail comes up with the ration truck: blueys, a parcel for One Two, a Telegraph four days old.
+radio The mail comes up with the four-tonner: blueys, a parcel for One Two, a Telegraph four days old.
 near telegraph,notebook
 choose act: Read your letter || act: Leave it till tonight
 if $choice=0
@@ -1945,8 +1945,7 @@ wait 900
 # Step 1: sitrep and the move to the firing positions
 net Zero: One Zero, this is Zero. Apologies for the wait. Sitrep when ready, over.
 gloss Sitrep — situation report.
-choose Zero, One Zero. Crews mounted, all up. Ready, over.
-gloss All up — all present and ready.
+choose Zero, One Zero. Crews mounted. Ready, over.
 net Zero: Move to firing positions, line abreast. Send when in position. Out.
 gloss Line abreast — side by side, facing forward. Out — “I’m done; no reply needed.”
 tutorial Tap a firing position to move the troop
@@ -2074,7 +2073,7 @@ say Capt Davies: Squadron’s deploying ahead of schedule.
 say Capt Davies: Square your lot away, then bring them to the workshop at Detmold.
 say Capt Davies: Captain Holley’s expecting you. He’ll have your orders. | Square away — get sorted out: clean up, stow kit, ready for the next move.
 say Capt Davies: Crews all right? | He taps the roof. The Lance Corporal starts the engine.
-say Pemberton: All up, sir.
+say Pemberton: All present, sir.
 move rover 2.5,7.45 2.5,18 speed=2.2
 say Capt Davies: Right then. On the bus. Don’t dally. | On the bus, off the bus — army slang for order and counter-order: told to get on the bus, told to get off it, and nothing happens. Today, the bus is going somewhere.
 endtalk
@@ -2517,7 +2516,7 @@ var tq2=1
 end
 if $choice=2
 say Pemberton: Will we get a fourth tank, sir?
-say Maj Calloway: When the pipeline gives us one.
+say Maj Calloway: When the regiment finds us one.
 say Maj Calloway: Until then you’re three. Plan for three.
 var tq3=1
 end
