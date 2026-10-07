@@ -15,20 +15,20 @@
   --bg:#ffffff; --fg:#000000; --muted:#8a8a8e; --hair:#d8d8dc;
   --in:#e9e9eb; --in-fg:#000; --out:#0a84ff; --out-fg:#fff;
   --chip:#f2f2f7; --chip-fg:#0a84ff; --bar:#f7f7f9;
-  --sheet:#ffffff; --scrim:rgba(0,0,0,.35);
+  --sheet:#ffffff; --scrim:rgba(0,0,0,.35); --hl:rgba(238,240,70,.8);
   color-scheme:light dark;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#000000; --fg:#ffffff; --muted:#8d8d93; --hair:#2c2c2e;
     --in:#26252a; --in-fg:#fff; --chip:#1c1c1e; --chip-fg:#4aa3ff; --bar:#121214;
-    --sheet:#1c1c1e; --scrim:rgba(0,0,0,.55);
+    --sheet:#1c1c1e; --scrim:rgba(0,0,0,.55); --hl:rgba(190,195,40,.42);
   }
 }
 :root[data-theme="dark"]{
   --bg:#000000; --fg:#ffffff; --muted:#8d8d93; --hair:#2c2c2e;
   --in:#26252a; --in-fg:#fff; --chip:#1c1c1e; --chip-fg:#4aa3ff; --bar:#121214;
-  --sheet:#1c1c1e; --scrim:rgba(0,0,0,.55);
+  --sheet:#1c1c1e; --scrim:rgba(0,0,0,.55); --hl:rgba(190,195,40,.42);
 }
 *,*::before,*::after{box-sizing:inherit}
 html,body{height:100%;margin:0}
@@ -91,13 +91,13 @@ canvas{display:block;width:100%;height:100%}
 .card .cs{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.35}
 .card .lvl{float:right;font-size:12px;color:var(--muted);font-weight:500}
 .sheet{max-height:88%;overflow-y:auto}
-/* the O Group page: changed headings edged amber, unchanged ones grey and tappable, the mission underlined */
+/* the O Group page: changed headings edged amber, unchanged ones grey and tappable, the mission highlighted as with a marker pen */
 .oi{display:block;width:100%;text-align:left;border:1px solid var(--hair);border-left:4px solid #e3a33a;background:var(--bg);color:var(--fg);border-radius:10px;padding:8px 12px;margin-top:7px;font:inherit}
 .oi.same{border-left-color:var(--hair);cursor:pointer}
 .oi .oh{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 .oi .ot{font-size:14.5px;line-height:1.4;margin-top:2px}
 .oi.same .ot{color:var(--muted)}
-.oi .ot.mission{text-decoration:underline;text-underline-offset:3px}
+.oi .ot.mission .hl{background:linear-gradient(transparent 30%,var(--hl) 30%,var(--hl) 94%,transparent 94%);-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 2px;margin:0 -2px}
 .card.chk{display:flex;align-items:center;gap:10px}
 .card.chk .box{flex:none;width:22px;height:22px;border:2px solid var(--muted);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
 .card.chk[aria-pressed="true"] .box{background:var(--out);border-color:var(--out);color:#fff}
@@ -981,7 +981,7 @@ const io={
   orders(page,review){ return waitFor(new Promise(res=>{ const sh=$('sheet');   // the O Group as written in the notebook
     sh.innerHTML=`<h2>${page.title}</h2><p>${review?'Your notebook: the last orders you wrote down.':'Your notebook. Tap “No change” to see what you wrote last time.'}</p>`;
     for(const it of page.items){ const d=document.createElement(it.same?'button':'div'); d.className='oi'+(it.same?' same':'');
-      const tx=it.h==='Mission'?`<div class="ot mission">${it.t}</div>`:`<div class="ot">${it.same?'No change':it.t}</div>`;
+      const tx=it.h==='Mission'?`<div class="ot mission"><span class="hl">${it.t}</span></div>`:`<div class="ot">${it.same?'No change':it.t}</div>`;
       d.innerHTML=`<div class="oh">${it.h}</div>${tx}`;
       if(it.same){ d.setAttribute('aria-expanded','false'); d.onclick=()=>{ const open=d.getAttribute('aria-expanded')==='true'; d.setAttribute('aria-expanded',String(!open)); d.querySelector('.ot').textContent=open?'No change':'No change: '+it.t; }; }
       sh.appendChild(d); }
