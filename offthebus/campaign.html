@@ -90,6 +90,18 @@ canvas{display:block;width:100%;height:100%}
 .card .ct{font-size:15.5px;font-weight:600}
 .card .cs{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.35}
 .card .lvl{float:right;font-size:12px;color:var(--muted);font-weight:500}
+.sheet{max-height:88%;overflow-y:auto}
+/* the O Group page: changed headings edged amber, unchanged ones grey and tappable, the mission underlined */
+.oi{display:block;width:100%;text-align:left;border:1px solid var(--hair);border-left:4px solid #e3a33a;background:var(--bg);color:var(--fg);border-radius:10px;padding:8px 12px;margin-top:7px;font:inherit}
+.oi.same{border-left-color:var(--hair);cursor:pointer}
+.oi .oh{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.oi .ot{font-size:14.5px;line-height:1.4;margin-top:2px}
+.oi.same .ot{color:var(--muted)}
+.oi .ot.mission{text-decoration:underline;text-underline-offset:3px}
+.card.chk{display:flex;align-items:center;gap:10px}
+.card.chk .box{flex:none;width:22px;height:22px;border:2px solid var(--muted);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+.card.chk[aria-pressed="true"] .box{background:var(--out);border-color:var(--out);color:#fff}
+.card.go{text-align:center;background:var(--out);border-color:var(--out);color:#fff}
 @media (prefers-reduced-motion:reduce){.b.typing span{animation:none}}
 
 .gloss{align-self:flex-start;max-width:80%;margin:2px 0 4px 42px;font-size:12.5px;line-height:1.35;color:var(--muted);font-style:italic}
@@ -1568,7 +1580,7 @@ calendar: Friday 27 April 1990 | Saturday 28 April 1990 | Sunday 29 April 1990 |
 callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12
 crew: Gunner=G, Loader=L, Driver=D
 people: Maj Calloway=#6a7f9a:calloway, Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Pemberton=#5aa7e0:pemberton, The farmer=#8a6d3b, Capt Davies=#e59b3a:davies
-vars: deleg=0, hrun=0, hmissed=0, cnoted=0, ogseen=0, obs=0, knowtracks=0, posrange=0, posgood=0, sawmerc=0, foundvan=0, ourroute=0, logbridge=0, logjunction=0, day=0, crash=10, gas=0, gun=0, contact=0, fatigue=0, debt=0, rain=0, oc=0, checks=0
+vars: deleg=0, tcw=0, tpairs=0, hrun=0, hmissed=0, cnoted=0, ogseen=0, obs=0, knowtracks=0, posrange=0, posgood=0, sawmerc=0, foundvan=0, ourroute=0, logbridge=0, logjunction=0, day=0, crash=10, gas=0, gun=0, contact=0, fatigue=0, debt=0, rain=0, oc=0, checks=0
 ---map
 {"bg": "#7a9a52", "ground": {"x": [-6, 22], "y": [-6, 22], "c": ["#97b45d", "#9dba62"], "rects": [{"x": [-6, 5], "y": [-6, 22], "c": ["#4f7334", "#557a37"]}, {"x": [10, 22], "y": [-6, 22], "c": ["#a9bf6d", "#afc472"]}, {"x": [8, 8], "y": [-6, 22], "c": ["#bfae84", "#c4b388"]}, {"x": [11, 11], "y": [1, 5], "c": ["#d8c844", "#dccd4a"]}]}, "trees": [{"x": [-6, 6.3], "y": [-5, 20], "n": 110, "seed": 7, "s": [0.7, 1.2]}], "keep": [[2.6, 3.8, 0.8], [2.4, 7, 0.8], [2.8, 10.2, 0.8], [6.3, 3.6, 0.8], [6.4, 7, 0.8], [6.3, 10.4, 0.8]], "units": [{"id": "a", "type": "challenger", "x": 2.6, "y": 3.8, "label": "11", "me": 0, "open": 1}, {"id": "p", "type": "challenger", "x": 2.4, "y": 7, "label": "10", "me": 1, "open": 1}, {"id": "b", "type": "challenger", "x": 2.8, "y": 10.2, "label": "12", "me": 0, "open": 1}]}
 ---script
@@ -1762,12 +1774,12 @@ endtalk
 enddef
 
 def ogroup
-str g=no change
+str g=The Hildesheimer Wald. 1st Troop on the south-east edge, by the field.
 if $weather=1
-str g=no change; the tracks into the hides are soft after the rain
+str g={$g} The tracks into the hides are soft after the rain.
 end
 if $alert=1
-str g=no change; the Sibbesse road is closed to single vehicles
+str g={$g} The Sibbesse road is closed to single vehicles.
 end
 str sit=Enemy: Soviet exercises continue east of the border. Friendly: no change.
 if $drift=1
@@ -1790,20 +1802,26 @@ if $alert=1
 str m=B Squadron holds its hides, ready to move at thirty minutes’ notice.
 end
 str x=Troop leaders’ choice of drill this morning.
+str td=Training this morning. I’ll tell you what in a minute.
 if $og=1
 str x=Troop leaders’ choice of drill. I shall visit troops.
+str td=Training this morning, and the Squadron Leader is visiting troops.
 end
 if $og=2
 str x=Gas drill, all troops, from 0830.
+str td=Gas drill this morning, all troops, from 0830.
 end
 if $aft=7
 str x={$x} 1st Troop learns the tracks out of the wood this afternoon.
+str tp=This afternoon, a Land Rover patrol: the tracks out of the wood.
 end
 if $aft=8
 str x={$x} 1st Troop recces fire positions north-east of the wood this afternoon.
+str tp=This afternoon, a Land Rover recce of fire positions to the north-east.
 end
 if $night=2
 str x={$x} 1st Troop patrols the lanes south of the wood tonight.
+str tp=Tonight, a patrol in two Land Rovers, on the lanes south of the wood.
 end
 if $alert=1
 str x=Moves in pairs only, weapons loaded, no route used twice. {$x}
@@ -1812,16 +1830,14 @@ str ss=Replen at 1700.
 if $aft=1
 str ss=Mail and rations with the four-tonner at 1400. Replen at 1700.
 end
-str cs=Frequencies and callsigns unchanged.
+str cs=Squadron net. Listening silence in the hides: stand-to, contact and casualties only.
 if $aft=5
-str cs=Expect jamming. Change to frequency two on codeword WINDMILL.
-end
-str cwt=
-if $aft=5
-str cwt=, and the codeword, WINDMILL
+str cs={$cs} Expect jamming: on codeword WINDMILL, change to frequency two.
 end
 net Zero Alpha: Hello all stations, this is Zero Alpha. O Group, my location, 0800. Out.
+hud 0800
 radio You walk across to Calloway’s tank with your map and notebook. The other troop leaders are already there. The map is spread on the engine decks.
+say Maj Calloway: Right. Gather round.
 if $og=3
 say Maj Calloway: Before the orders.
 say Maj Calloway: Yesterday, on the Sibbesse road, an accident that was not an accident.
@@ -1835,13 +1851,8 @@ say Maj Calloway: I see a lot of Sergeant Hollis at stand-to, Pemberton. | Said 
 var cnoted=1
 end
 end
-say Maj Calloway: Ground. {$g} | His finger moves over the map: the hides, the wood edge, the field, the roads east.
-say Maj Calloway: Situation. {$sit}
-say Maj Calloway: Mission. {$m}
-say Maj Calloway: Mission. {$m} | The mission, said twice: the one sentence nobody can mishear.
-say Maj Calloway: Execution. {$x}
-say Maj Calloway: Service support. {$ss}
-say Maj Calloway: Command and signal. {$cs}
+radio Calloway gives his orders in the same order as every morning, and you write them down as he goes.
+orders O Group · {date:$day} · 0800 :: Ground | {$g} || Situation | {$sit} || Mission | {$m} || Execution | {$x} || Service support | {$ss} || Command and signal | {$cs}
 if $day=4
 if $ourroute=1
 say Maj Calloway: Route cards.
@@ -1914,15 +1925,45 @@ endtalk
 stamp 0820 · Troop orders
 radio Hollis and Baxter come over to your tank. Now it is your turn.
 say Sgt Hollis: Sir.
-ask Give brief orders || Give full orders
-var full=$choice
-if $full=1
-say Pemberton: In order: ground, situation, mission, execution, service support, command and signal. | You give it all: the ground, what Calloway said about the enemy, the mission twice, the drill, the replen, the frequencies{$cwt}.
-say Sgt Hollis: Sir. | Baxter is writing it all down.
-else
+pick Troop orders | What do your crews need from this morning? Everything you pass on takes a moment to say. :: Situation=tsit || Mission=tmis || Today’s training=ttrg || Replen and mail=tss || {$alert=1} Moves in pairs, weapons loaded=tpairs || {$aft=5} Codeword WINDMILL=tcw || {$aft=7} This afternoon’s patrol=tpat || {$aft=8} This afternoon’s patrol=tpat || {$night=2} Tonight’s patrol=tpat
+var tn=$tsit
+var tn+=$tmis
+var tn+=$ttrg
+var tn+=$tss
+var tn+=$tpairs
+var tn+=$tcw
+var tn+=$tpat
+if $tn=0
 say Pemberton: Same as yesterday. Training this morning.
 say Cpl Baxter: Right you are, sir.
+end
+if $tsit=1
+say Pemberton: Situation, from the Squadron Leader. | {$sit}
+end
+if $tmis=1
+say Pemberton: Mission. {$m}
+say Pemberton: Mission. {$m} | Twice, as Calloway gave it.
+end
+if $ttrg=1
+say Pemberton: {$td}
+end
+if $tpat=1
+say Pemberton: {$tp}
+end
+if $tpairs=1
+say Pemberton: Moves in pairs, weapons loaded, never the same route twice.
+end
+if $tcw=1
+say Pemberton: Expect jamming. On WINDMILL, change to frequency two.
+end
+if $tss=1
+say Pemberton: {$ss}
+end
+if $tn>0
+say Sgt Hollis: Sir. | Baxter is writing it down.
+end
 if $alert=1
+if $tpairs=0
 say Sgt Hollis: And the pairs, sir? Weapons loaded, no route twice? | Hollis was at the last orders too, in his way. He doesn’t miss much.
 end
 end
@@ -2154,7 +2195,7 @@ if $aft=5
 radio The squadron net is full of hiss and a wavering tone, then music, then hiss. Somebody east of the border is practising jamming.
 choose One One, One Two, One Zero. WINDMILL. Out. || hint: Ride it out
 if $choice=0
-if $full=0
+if $tcw=0
 net One Two: One Two. Say again codeword? Over.
 net One One: One Two, One One. Frequency two. Now.
 radio One Two was never told the codeword. Two minutes of jammed net while Hollis sorts it out.
@@ -2264,7 +2305,7 @@ replay Play again
 kit: yes
 icon: 📓
 verb: Write in
-look: radio Your notebook. Saturday’s page: “Stand-to 0530. First parade. O Group 0800. Training: ?”
+look: lastorders Your notebook. A new page, and nothing on it yet.
 use: radio You write the time the troop reported in position at stand-to, and next to it, smaller, the time you want.
 @bv the boiling vessel
 unit: p
@@ -2920,6 +2961,8 @@ say Maj Calloway: Mail when it comes. It will come.
 say Maj Calloway: Command and signal. Squadron net from now on.
 say Maj Calloway: Listening silence in the hides: stand-to, contact and casualties only.
 say Maj Calloway: I’m at the command post. Captain Davies is Zero Bravo.
+# the page these orders make in Pemberton's notebook: the first morning O Group in the hides is compared against it
+orders quiet O Group · Thursday 26 April 1990 · 1700 :: Ground | The Hildesheimer Wald. 1st Troop on the south-east edge, by the field. || Situation | Enemy: Third Shock Army mobilised, forward elements in assembly areas. Friendly: 1 and 4 Divisions in front; 3 Division the corps reserve. || Mission | {$m} || Execution | Dig in, cam up, learn every track out of the wood. Monday: route recces south through Sibbesse. Route cards to the Squadron Leader on Tuesday. || Service support | Replen at 1700. || Command and signal | Squadron net. Listening silence in the hides: stand-to, contact and casualties only.
 gloss O Group: orders group, always in the same order: ground, situation, mission (said twice), execution, service support, command and signal.
 var ogseen=1
 say Maj Calloway: Questions?
@@ -3019,6 +3062,7 @@ look: radio A Bundeswehr Iltis, the German army’s small four-wheel-drive: canv
    the caller: the page (ui.js) animates and waits for taps; the test harness answers instantly.
 
    io: print(entry) · choose(opts, {targets}) → i · ask(opts) → i · say(ac) · tap() · cards(title, sub, items) → i
+       orders(page, review) · pick(title, sub, items) → [0|1, …]
        zoom(label) · wait(ms) · waitMoves(ids) · effect(ev) · update() · persist(json) · end(kind)
    All io methods may return promises. */
 (function(root){
@@ -3081,8 +3125,13 @@ function compile(lines){
   });
   return out;
 }
+function parsePick(arg){ const [headPart,list]=arg.split('::'); const [title,sub]=headPart.split('|').map(x=>x.trim());
+  const items=list.split('||').map(o=>{ o=o.trim(); let when=null; const w=o.match(/^\{(\$\w+\s*(?:=|!=|<|>)\s*-?\d+)\}\s*(.*)$/); if(w){ when=w[1]; o=w[2]; } const k=o.lastIndexOf('=');
+    return {label:o.slice(0,k).trim(), v:o.slice(k+1).trim().replace('$',''), when}; });
+  return {title, sub:sub||'', items}; }
+function setPicked(vars,items,chosen){ for(const o of items) vars[o.v]=0; items.forEach((o,i)=>{ if(chosen[i]) vars[o.v]=1; }); }
 const LEVELS=['Raw','Practised','Drilled'];
-const WAITS=new Set(['net','me','ic','icme','hear','choose','ask','say','wait','waitmove','cards','tap','zoomgate','replay']);
+const WAITS=new Set(['net','me','ic','icme','hear','choose','ask','say','wait','waitmove','cards','tap','zoomgate','replay','orders','pick']);
 const SPEECH={net:'net',me:'out',ic:'ic',icme:'icout',hear:'hear'};
 
 function createCore({scenes, campaign, io}){
@@ -3181,6 +3230,20 @@ function createCore({scenes, campaign, io}){
       case 'cards': { state.pemSpoke=false; const [headPart,list]=a.split('::'); const [title,sub]=headPart.split('|').map(x=>x.trim());
         const items=list.split('||').map(c=>c.split('|').map(x=>x.trim())).map(([t,d,l])=>({title:t,desc:d||'',label:interp(l||'')}));
         const i=await io.cards(interp(title),interp(sub||''),items); hook.choice&&hook.choice(i); vars.choice=i; break; }
+      case 'orders': {                                 // the O Group, written up in the notebook: headings unchanged since the last page say "No change"
+        const quiet=/^quiet\s/.test(a); if(quiet) a=a.replace(/^quiet\s+/,'');
+        const [headPart,list]=a.split('::'), prev=state.lastorders;
+        const items=list.split('||').map(c=>{ const k=c.indexOf('|'), h=c.slice(0,k).trim(), t=interp(c.slice(k+1).trim()), old=prev&&prev.items.find(x=>x.h===h);
+          return {h,t,same:!!old&&old.t===t&&h!=='Mission'}; });
+        const page={title:interp(headPart.trim()),items};
+        if(quiet){ state.lastorders=page; break; }
+        state.pemSpoke=false; await emit({k:'orders',html:`📓 <b>${page.title}</b> · written up in your notebook`}); state.lastorders=page;
+        await io.orders(page,false); hook.choice&&hook.choice(0); break; }
+      case 'lastorders': if(state.lastorders) await io.orders(state.lastorders,true); else if(a) await emit({k:'radio',text:interp(a)}); break;
+      case 'pick': { state.pemSpoke=false; const pk=parsePick(a); const shown=pk.items.filter(o=>!o.when||cond(o.when));
+        const got=await io.pick(interp(pk.title),interp(pk.sub),shown.map(o=>({label:interp(o.label)})));
+        const chosen=pk.items.map(o=>shown.includes(o)&&got[shown.indexOf(o)]?1:0);
+        hook.choice&&hook.choice(chosen); setPicked(vars,pk.items,chosen); state.lastAsked=true; io.update(); break; }   // what Pemberton says next was chosen here
       case 'badge': w.badge=a; io.update(); break;
       case 'move': { const parts=a.split(/\s+/); const who=ids(parts[0]); const pts=parts.slice(1).filter(p=>/^-?[\d.]+,-?[\d.]+$/.test(p)).map(pt); const o=kv(a);
         who.forEach((id,k)=>{ const u=unit(id); u.path=pts.map(p=>[...p]); u.spd=o.speed??1; u.delay=(o.delay??0)+(o.stagger??0)*k; }); break; }
@@ -3229,6 +3292,7 @@ function createCore({scenes, campaign, io}){
     if(ins.cmd==='choose'){ const o=parseOpts(ins.arg)[d.chosen]; state.vars.choice=d.chosen; if(!d.printed){ await chooseEffect(o); f.done.printed=1; save(); } return; }
     if(ins.cmd==='ask'){ state.vars.choice=d.chosen; state.lastAsked=true; return; }
     if(ins.cmd==='tap'||ins.cmd==='cards'){ state.vars.choice=d.chosen; return; }
+    if(ins.cmd==='pick'){ setPicked(state.vars,parsePick(ins.arg).items,d.chosen); state.lastAsked=true; return; }
   }
   async function interpret(){
     while(state.frames.length){
@@ -3253,7 +3317,7 @@ function createCore({scenes, campaign, io}){
       if(f.done){ await resumeDone(f,ins); delete f.done; f.pc++; continue; }
       if(WAITS.has(ins.cmd)) save();
       hook={ printed: (SPEECH[ins.cmd]||ins.cmd==='say') ? ()=>{ f.done={printed:1}; save(); } : null,
-             choice: ['choose','ask','cards','tap'].includes(ins.cmd) ? i=>{ f.done={chosen:i}; save(); hook.printed=()=>{ f.done.printed=1; save(); }; } : null };
+             choice: ['choose','ask','cards','tap','orders','pick'].includes(ins.cmd) ? i=>{ f.done={chosen:i}; save(); hook.printed=()=>{ f.done.printed=1; save(); }; } : null };
       await run1(ins.cmd,ins.arg);
       hook=H();
       if(state.frames[state.frames.length-1]===f){ delete f.done; f.pc++; }
@@ -3282,7 +3346,7 @@ function createCore({scenes, campaign, io}){
     get state(){ return state; }, scene:()=>S(), sceneOf, treesOf, interp,
     start(){ state=fresh(); startScene(0); io.update(); return play(); },
     resume(sn){ restore(sn); return play(); },
-    restartScene(sn,note){ state=fresh(); state.thread=sn.thread; state.vars=sn.vars; if(note) state.thread.push({k:'stamp',html:note}); startScene(Math.min(sn.sceneIdx,campaign.order.length-1)); return play(); },
+    restartScene(sn,note){ state=fresh(); state.thread=sn.thread; state.vars=sn.vars; state.lastorders=sn.lastorders; if(note) state.thread.push({k:'stamp',html:note}); startScene(Math.min(sn.sceneIdx,campaign.order.length-1)); return play(); },
     snapshot, tick, finishMoves, useVerb, verbsOf, nearProps, kitProps, LEVELS,
   };
 }
@@ -3495,7 +3559,7 @@ function drawStatic(e){                            // a restored entry: drawn at
 async function draw(e,animate){
   const sc=SC();
   switch(e.k){
-    case 'stamp': add(el('stamp',null,e.html)); lastFrom=null; break;
+    case 'stamp': case 'orders': add(el('stamp',null,e.html)); lastFrom=null; break;
     case 'act': add(el('stamp',null,'<b>'+e.text+'</b>')); lastFrom=null; break;
     case 'xp': add(el('stamp xp',null,e.html)); lastFrom=null; break;
     case 'levelup': add(el('stamp levelup',null,e.html)); lastFrom=null; break;
@@ -3593,6 +3657,23 @@ const io={
     items.forEach((it,i)=>{ const b=document.createElement('button'); b.className='card'; b.innerHTML=`<span class="lvl">${it.label}</span><div class="ct">${it.title}</div><div class="cs">${it.desc}</div>`;
       b.onclick=()=>{ $('scrim').classList.remove('show'); res(i); }; sh.appendChild(b); });
     $('scrim').classList.add('show'); setTimeout(()=>sh.querySelector('.card')?.focus(),50); })); },
+  orders(page,review){ return waitFor(new Promise(res=>{ const sh=$('sheet');   // the O Group as written in the notebook
+    sh.innerHTML=`<h2>${page.title}</h2><p>${review?'Your notebook: the last orders you wrote down.':'Your notebook. Tap “No change” to see what you wrote last time.'}</p>`;
+    for(const it of page.items){ const d=document.createElement(it.same?'button':'div'); d.className='oi'+(it.same?' same':'');
+      const tx=it.h==='Mission'?`<div class="ot mission">${it.t}</div><div class="ot mission">${it.t}</div>`:`<div class="ot">${it.same?'No change':it.t}</div>`;
+      d.innerHTML=`<div class="oh">${it.h}</div>${tx}`;
+      if(it.same){ d.setAttribute('aria-expanded','false'); d.onclick=()=>{ const open=d.getAttribute('aria-expanded')==='true'; d.setAttribute('aria-expanded',String(!open)); d.querySelector('.ot').textContent=open?'No change':'No change: '+it.t; }; }
+      sh.appendChild(d); }
+    const b=document.createElement('button'); b.className='card go'; b.innerHTML=`<div class="ct">${review?'Close the notebook':'Done'}</div>`;
+    b.onclick=()=>{ $('scrim').classList.remove('show'); res(); }; sh.appendChild(b);
+    $('scrim').classList.add('show'); sh.scrollTop=0; setTimeout(()=>b.focus({preventScroll:true}),50); })); },
+  pick(title,sub,items){ return waitFor(new Promise(res=>{ const sh=$('sheet'), on=items.map(()=>0); sh.innerHTML=`<h2>${title}</h2><p>${sub}</p>`;
+    items.forEach((it,i)=>{ const b=document.createElement('button'); b.className='card chk'; b.setAttribute('aria-pressed','false');
+      const draw=()=>{ b.innerHTML=`<span class="box">${on[i]?'✓':''}</span><div class="ct">${it.label}</div>`; b.setAttribute('aria-pressed',String(!!on[i])); };
+      b.onclick=()=>{ on[i]=on[i]?0:1; draw(); }; draw(); sh.appendChild(b); });
+    const g=document.createElement('button'); g.className='card go'; g.innerHTML='<div class="ct">Give orders</div>';
+    g.onclick=()=>{ $('scrim').classList.remove('show'); res(on); }; sh.appendChild(g);
+    $('scrim').classList.add('show'); sh.scrollTop=0; setTimeout(()=>sh.querySelector('.card')?.focus(),50); })); },
   zoom(label){ return waitFor(new Promise(res=>{ replies.innerHTML=''; const b=document.createElement('button'); b.className='chip hint'; b.textContent=label;
     zoomWanted=()=>{ zoomWanted=null; replies.innerHTML=''; res(); }; b.onclick=()=>zoomWanted&&zoomWanted(); replies.appendChild(b); })); },
   wait(ms){ return sleep(ms); },
