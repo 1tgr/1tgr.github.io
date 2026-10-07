@@ -1782,17 +1782,27 @@ if $alert=1
 str g={$g} The Sibbesse road is closed to single vehicles.
 end
 str sit=Enemy: Soviet exercises continue east of the border. Friendly: no change.
+str se=Soviet exercises continue east of the border.
+str sf=No change.
 if $drift=1
 str sit=Enemy: a Spetsnaz group ambushed one of our troops on the Sibbesse road yesterday; expect more. Friendly: no change.
+str se=A Spetsnaz group ambushed one of our troops on the Sibbesse road yesterday; expect more.
+str sf=No change.
 end
 if $drift=2
 str sit=Enemy: exercises continue east of the border, with more traffic on the roads at night. Friendly: no change.
+str se=Exercises continue east of the border, with more traffic on the roads at night.
+str sf=No change.
 end
 if $drift=3
 str sit=Enemy: heavy movement towards the border; expect jamming. Friendly: 1 and 4 Divisions report all positions occupied.
+str se=Heavy movement towards the border; expect jamming.
+str sf=1 and 4 Divisions report all positions occupied.
 end
 if $drift=4
 str sit=Enemy: the Bundeswehr report that the exercises are not exercises. Friendly: the covering force is forward.
+str se=The Bundeswehr report that the exercises are not exercises.
+str sf=The covering force is forward.
 end
 str m=B Squadron trains in its hides, ready to move at one hour’s notice.
 if $og=2
@@ -1938,7 +1948,9 @@ say Pemberton: Same as yesterday. Training this morning.
 say Cpl Baxter: Right you are, sir.
 end
 if $tsit=1
-say Pemberton: Situation, from the Squadron Leader. | {$sit}
+say Pemberton: Situation. Enemy first.
+say Pemberton: {$se}
+say Pemberton: Friendly forces. {$sf}
 end
 if $tmis=1
 say Pemberton: Mission. {$m}
@@ -1957,7 +1969,7 @@ if $tcw=1
 say Pemberton: Expect jamming. On WINDMILL, change to frequency two.
 end
 if $tss=1
-say Pemberton: {$ss}
+say Pemberton: Service support. {$ss}
 end
 if $tn>0
 say Sgt Hollis: Sir. | Baxter is writing it down.
