@@ -549,6 +549,9 @@ net Two Zero: One Zero, Two Zero. They’re four minutes behind us. T-80 leading
 net Zero: Two Zero, Zero. On the bus, next bound. Out.
 gloss Passage of lines — one unit passing back through another’s position. 1st Troop is now the squadron’s front edge.
 net One One: One One. Range markers confirmed.
+if $posrange=1
+radio Your range card from the high seat is taped inside the cupola: field gate six hundred, track junction nine hundred, farm fourteen hundred.
+end
 choose One One, right arc. One Two, left arc. I’ll take centre. Engage on my order. Out.
 
 stamp 0930
@@ -557,6 +560,11 @@ set t80,bmp1,bmp2,bmp3,bmp4 hidden=0
 move t80 12.6,7.0 speed=0.55
 radio A whine carries before the dust: a gas turbine. A T-80 crests the rise at fourteen hundred metres. It is on the move and has not seen you.
 gloss T-80 — Soviet main battle tank, gas-turbine engine. Engage with FIN.
+if $obs>39
+radio You had it identified before anyone called it. A fortnight of looking at fields has taught your eyes what belongs in them.
+else
+radio For a long second you aren’t sure it isn’t one of ours. Then the low turret, the long gun: a T-80.
+end
 wait 1800
 choose Engage. || hint: Wait.
 if $choice=1
@@ -1018,6 +1026,343 @@ unit: g3
 icon: 🔩
 look: radio Brass cartridge cases stacked by each gun, still smoking faintly in the cold air.
 </script>
+<script type="text/plain" class="scene" data-name="patrol-night">title: Off the Bus — night patrol
+hud: 2300 | 7 May 1990
+endcard: Off the Bus | Night patrol
+maplabel: Isometric view of lanes south of the wood at night: two Land Rovers, a farmhouse with one light, a crossroads, and a track into the trees
+camera: 2,8,7
+night: 0.75
+net: B Squadron net | Zero is the squadron · you are One Zero | 0
+callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12
+crew: Driver=D
+levels: 40,100
+people: Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Pemberton=#5aa7e0:pemberton, The farmer=#8a6d3b
+vars: obs=0, foundvan=0
+---map
+{"bg": "#557a37", "ground": {"x": [-4, 30], "y": [-4, 22], "c": ["#8fae5a", "#97b660"], "rects": [{"x": [-4, 30], "y": [-4, 22], "c": ["#9dba62", "#a5c069"]}, {"x": [-4, 30], "y": [8, 8], "c": ["#9b9a94", "#a3a29c"]}, {"x": [18, 18], "y": [8, 22], "c": ["#9b9a94", "#a3a29c"]}, {"x": [20, 30], "y": [10, 22], "c": ["#4f7334", "#557a37"]}, {"x": [-4, 12], "y": [-4, 6], "c": ["#4f7334", "#557a37"]}, {"x": [20, 24], "y": [13, 13], "c": ["#8a7a5a", "#927f5f"]}]}, "trees": [{"x": [20, 30], "y": [10, 22], "n": 110, "seed": 51}, {"x": [-4, 12], "y": [-4, 6], "n": 70, "seed": 53}], "keep": [[19.5, 13.5, 1.0], [20.5, 13.5, 1.0], [21.5, 13.5, 1.0], [22.5, 13.5, 1.0], [23.5, 13.5, 1.0], [24.5, 13.5, 1.0], [25.5, 13.5, 1.0]], "marks": [], "units": [{"id": "lr1", "type": "rover", "x": -2, "y": 8.5, "label": "10"}, {"id": "lr2", "type": "rover", "x": -3.6, "y": 8.5, "label": "12"}, {"id": "farmhouse", "type": "house", "x": 10, "y": 12, "L": 2, "Wd": 1.6, "h": 1.2, "wall": "#efe2c8", "roof": "#a8432e"}, {"id": "oldman", "type": "person", "x": 16, "y": 8.6, "col": "#5a5040", "hidden": 1}, {"id": "van", "type": "car", "x": 25, "y": 13.4, "col": "#e0e0d8", "hidden": 1}]}
+---script
+stamp <b>Monday 7 May 1990</b> · 2300<br>Night patrol
+radio Calloway wants the lanes south of the wood watched tonight. Since the ambush: two vehicles, weapons loaded, never the same route twice. Hollis drives you. Baxter has the second Land Rover.
+choose hint: Go yourself || hint: Send Hollis
+if $choice=1
+radio Hollis takes the patrol. They are back at three. Nothing to report but deer.
+else
+near notebook
+move lr1 6,8.5 speed=0.5
+move lr2 4.4,8.5 speed=0.5 delay=0.6
+cam 6,8,6.5
+radio No lights. The lane is a paler strip between black hedges. An owl calls from the trees, the long wavering hoot of a tawny owl.
+waitmove lr1,lr2
+radio Something barks in the dark beside the lane, hoarse and loud. Baxter’s Land Rover brakes hard.
+net One Two: One Two. Contact left! … Wait.
+choose One Two, One Zero. Roe deer. Out. || hint: Say nothing
+if $choice=0
+net One Two: One Two. Roger. … Sorry.
+xp obs 5 Knew the deer
+else
+radio A long minute. Then a white rump bounding away across the field, and Baxter’s voice, embarrassed, on the net: “One Two. Deer. Out.”
+end
+gloss Roe deer bark when alarmed: a hoarse cough in the dark that has startled a great many sentries.
+move lr1 14,8.5 speed=0.5
+move lr2 12.4,8.5 speed=0.5 delay=0.6
+waitmove lr1,lr2
+set oldman hidden=0
+move oldman 15.4,8.6 speed=0.3
+radio A torch on the lane ahead, swinging. Someone is walking towards you.
+choose act: Stop and challenge || act: Drive up and look
+if $choice=0
+say Pemberton: Halt! Wer da?
+say The farmer: Nur der Bauer! Nur der Bauer! | “Only the farmer! Only the farmer!”
+say The farmer: Meine Kuh kalbt. | “My cow is calving.” He points the torch at the farmhouse.
+net One Two: One Two. Weapon made safe.
+xp obs 5 Challenged correctly
+else
+radio You drive up on him without lights. He jumps into the ditch. In the second Land Rover, Baxter has his rifle up before Hollis shouts.
+say The farmer: Mein Gott! Ich bin der Bauer! | “My God! I’m the farmer!”
+end
+endtalk
+radio The old man walks back to his barn. One light in the farmhouse, until long after you have gone.
+move lr1 18,8.5 18,13 speed=0.5
+move lr2 18,8.5 18,11.4 speed=0.5 delay=1
+cam 19,12,6.5
+waitmove lr1,lr2
+radio The crossroads two kilometres south of the Sibbesse road. Hollis switches off and sits. “Smell that, sir? Somebody’s been smoking here.”
+choose act: Search with the torch || hint: Drive on
+if $choice=0
+near tyres,butts,notebook
+tutorial Look around: tap what you see, and note anything worth noting
+choose act: Finish the search
+tutorial
+else
+radio You drive on. Hollis says nothing, and lights a cigarette of his own.
+end
+if $foundvan=1
+choose Zero, One Zero. Abandoned van in the trees, south of the Sibbesse road. Hannover plates. Believed connected to the ambush. Over.
+net Zero: One Zero, Zero. Roger. Stay with it. Feldjäger on their way. Out.
+radio The Feldjäger come at one in the morning, in a Unimog, and take the van apart by torchlight. They don’t say what they find.
+else
+radio Nothing else on the lanes. Back to the hides by three.
+end
+end
+title
+replay Play again
+---props
+@notebook your notebook
+kit: yes
+icon: 📓
+verb: Write in
+look: radio Your notebook, by the red light of a torch: the route, the times, the farmer.
+use: radio You write: 2340, farmer on lane, calving cow. Not a threat.
+@butts the cigarette ends
+at: 19,13.6
+icon: 🔍
+verb: Note
+look: radio Cigarette ends in the verge at the crossroads, a dozen of them, not old. Somebody waited here a long time.
+use: radio You pick one up in your handkerchief. The brand is printed in Cyrillic.
+use: xp obs 5 Read the ground
+@tyres the tyre tracks
+at: 20.4,13.2
+icon: 🔍
+verb: Follow
+look: radio Tyre tracks off the lane into the trees, a few days old. A heavy vehicle, driven in carefully.
+use: radio You follow them in. Twenty metres into the trees, under cut branches: a white van.
+use: set van hidden=0
+use: var foundvan=1
+use: xp obs 15 Found the van
+</script>
+<script type="text/plain" class="scene" data-name="patrol-positions">title: Off the Bus — fire positions
+hud: 1430 | 2 May 1990
+endcard: Off the Bus | Fire positions
+maplabel: Isometric view of the wood edge looking north-east over open fields: three possible fire positions, a high seat, a farm track with a parked car, an asparagus field with pickers, a roadside stall and a church tower beyond
+camera: 8,8,7.5
+net: B Squadron net | Zero is the squadron · you are One Zero | 0
+callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12
+crew: Driver=D
+levels: 40,100
+people: Sgt Hollis=#7d8f4e:hollis, Pemberton=#5aa7e0:pemberton
+vars: obs=0, posrange=0, posgood=0, sawmerc=0
+---map
+{"bg": "#557a37", "ground": {"x": [-6, 30], "y": [-4, 24], "c": ["#8fae5a", "#97b660"], "rects": [{"x": [-6, 6], "y": [-4, 24], "c": ["#4f7334", "#557a37"]}, {"x": [7, 30], "y": [-4, 24], "c": ["#9dba62", "#a5c069"]}, {"x": [14, 22], "y": [12, 20], "c": ["#c9c2a8", "#bfb79c"]}, {"x": [7, 30], "y": [8, 8], "c": ["#8a7a5a", "#927f5f"]}, {"x": [12, 12], "y": [8, 22], "c": ["#8a7a5a", "#927f5f"]}, {"x": [24, 24], "y": [-4, 24], "c": ["#9b9a94", "#a3a29c"]}]}, "trees": [{"x": [-6, 5.8], "y": [-4, 24], "n": 150, "seed": 41}], "hedge": [{"from": [7, 2], "to": [7, 6.5]}, {"from": [7, 10], "to": [7, 16]}], "keep": [[3, 8.5, 1.2], [5.2, 9, 1.2]], "marks": [{"type": "peg", "id": "pos1", "x": 9, "y": 3, "text": "knoll"}, {"type": "peg", "id": "pos2", "x": 6.4, "y": 11, "text": "hedge"}, {"type": "peg", "id": "pos3", "x": 6.2, "y": 5, "text": "bank"}, {"type": "sign", "x": 23, "y": 10.4, "text": "SPARGEL", "col": "#f2f2ea"}], "units": [{"id": "lr", "type": "rover", "x": 3, "y": 8.5, "label": "10"}, {"id": "farm", "type": "house", "x": 20, "y": 4, "L": 2, "Wd": 1.6, "h": 1.2, "wall": "#efe2c8", "roof": "#a8432e"}, {"id": "church", "type": "house", "x": 28, "y": 2, "L": 1.6, "Wd": 1.2, "h": 1.4, "wall": "#e6d9bc", "roof": "#5f646b", "spire": 1}, {"id": "merc", "type": "car", "x": 13, "y": 8.5, "col": "#a9aca8"}, {"id": "spy1", "type": "person", "x": 13.6, "y": 9.3, "col": "#4a4a52"}, {"id": "spy2", "type": "person", "x": 12.4, "y": 9.4, "col": "#5a5040"}, {"id": "pick1", "type": "person", "x": 16, "y": 14, "col": "#6a5a8a"}, {"id": "pick2", "type": "person", "x": 18, "y": 16, "col": "#8a4a3a"}, {"id": "pick3", "type": "person", "x": 20, "y": 13.5, "col": "#3a5a7a"}, {"id": "stallcar", "type": "car", "x": 23, "y": 11, "col": "#d9d4c8"}, {"id": "stallwoman", "type": "person", "x": 22.8, "y": 12, "col": "#8a3b5b"}, {"id": "deer1", "type": "deer", "x": 6.6, "y": 17.5, "col": "#9a6a3a"}, {"id": "deer2", "type": "deer", "x": 6.9, "y": 18.2, "col": "#9a6a3a"}, {"id": "highseat", "type": "highseat", "x": 5.2, "y": 9}]}
+---script
+stamp <b>Wednesday 2 May 1990</b> · 1430<br>Fire positions
+radio From this morning’s O Group: recce fire positions covering the way out of the wood to the north-east, where the squadron would fight if Corps commits it. Rain on the windscreen.
+choose hint: Go yourself || hint: Send Hollis
+if $choice=1
+radio Hollis comes back soaked, with a fire position at the hedge corner and a range card to every landmark from the church tower in.
+var posrange=1
+var posgood=1
+else
+near notebook
+move lr 5,8.5 speed=0.6
+waitmove lr
+cam 7,8,7
+radio The wood edge. Beyond it, open fields under rain, a farm, a church tower on the skyline. You need a place a tank can sit hull-down and see all of it.
+tutorial Tap a fire position, or its label
+tap pos1=The knoll || pos2=The hedge corner || pos3=The bank by the track
+tutorial
+var pick=$choice
+if $pick=0
+say Sgt Hollis: You’ll be skylined there, sir. | The knoll stands up against the sky. A tank on it is a target for anyone east.
+end
+if $pick=2
+say Sgt Hollis: Can’t see past the hedge from there, sir. | The bank hides you, and hides everything else too.
+end
+if $pick=1
+say Sgt Hollis: Hedge corner. That’s the one, sir. | Hull-down behind the bank, turret clear of the hedge, the whole field in front.
+var posgood=1
+xp obs 5 Chose a fire position
+else
+ask Take the hedge corner || Keep your choice
+if $choice=0
+say Pemberton: Hedge corner, then.
+var posgood=1
+else
+say Pemberton: We’ll keep it.
+say Sgt Hollis: Sir. | He writes it down, carefully, so that it is clear whose choice it was.
+end
+end
+endtalk
+radio At the wood edge, a hunter’s high seat looks out over the whole of the ground.
+choose act: Climb the high seat || hint: Stay below
+if $choice=0
+cam 14,10,8
+radio From the top, the fields are a map. You fill in the range card: church tower 2100, farm 1400, track junction 900, field gate 600.
+var posrange=1
+xp obs 10 Range card
+gloss Range card: a sketch of the arc in front of a fire position, with the ranges to landmarks, so the crew can engage without working it out under fire.
+stamp From the high seat
+near merc,pickers,stall,deer,notebook
+tutorial Look around: tap what you see, and note anything worth noting
+choose act: Climb down
+tutorial
+else
+radio You leave the high seat alone. Hollis paces the ranges instead, counting under his breath in the rain.
+end
+if $sawmerc=1
+choose Zero, One Zero. Grey Mercedes, H plates, two men with binoculars, farm track north-east of the wood. Over. || hint: Leave it for the O Group
+if $choice=0
+net Zero: One Zero, Zero. Roger. Probably the liaison mission again. Noted. Out.
+radio Probably.
+end
+end
+choose Zero, One Zero. Fire positions recced. Range card done. Returning. Over.
+net Zero: One Zero, Zero. Roger. Out.
+end
+title
+replay Play again
+---props
+@notebook your notebook
+kit: yes
+icon: 📓
+verb: Write in
+look: radio Your notebook: the wood edge, three positions, and the hedge corner ringed.
+use: radio You write the time and the weather. Rain, all afternoon.
+@merc the grey Mercedes
+unit: merc
+icon: 🚘
+verb: Note
+look: radio A grey Mercedes saloon on the farm track, engine off. Two men beside it with binoculars, looking this way more than at any birds.
+use: radio You write down the plate: H, for Hannover. A minute later the men get back in the car and leave, without hurrying.
+use: var sawmerc=1
+use: xp obs 10 Logged the Mercedes
+@pickers the pickers
+unit: pick2
+icon: 🌱
+verb: Note
+look: radio Pickers bent along the ridged rows in the rain, cutting the white spears before daylight can turn them green.
+use: radio You note them: three pickers and a tractor, the same every day this week, by the look of the rows.
+use: xp obs 5 Logged the pickers
+@stall the stall
+unit: stallwoman
+icon: 🥬
+verb: Visit
+look: radio A table at the field gate under an umbrella. SPARGEL, chalked on a board. A woman is selling white asparagus by the pound.
+use: radio Hollis buys two bundles for the cook. “Can’t fight a war on compo, sir.”
+use: gloss Spargelzeit: the white asparagus season, from spring until midsummer’s day. All Germany eats it.
+@deer the deer
+unit: deer1
+icon: 🦌
+verb: Note
+look: radio Two roe deer at the wood edge, watching you for exactly as long as you watch them.
+use: radio You note them: deer at the wood edge, so nobody else is there.
+use: xp obs 5 Read the deer
+</script>
+<script type="text/plain" class="scene" data-name="patrol-tracks">title: Off the Bus — the tracks out
+hud: 1430 | 27 April 1990
+endcard: Off the Bus | The tracks out
+maplabel: Isometric view of the Hildesheimer Wald from above: three forestry tracks running east from the squadron's hides to the B-road, a high seat at a clearing, and the troop Land Rover
+camera: 6,6,7
+net: B Squadron net | Zero is the squadron · you are One Zero | 0
+callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12
+crew: Driver=D
+levels: 40,100
+people: Sgt Hollis=#7d8f4e:hollis, Pemberton=#5aa7e0:pemberton, The forester=#4f6b3a
+vars: obs=0, knowtracks=0
+---map
+{"bg": "#557a37", "ground": {"x": [-4, 30], "y": [-4, 22], "c": ["#8fae5a", "#97b660"], "rects": [{"x": [-4, 26], "y": [-4, 22], "c": ["#4f7334", "#557a37"]}, {"x": [24, 24], "y": [-4, 22], "c": ["#9b9a94", "#a3a29c"]}, {"x": [2, 23], "y": [2, 2], "c": ["#8a7a5a", "#927f5f"]}, {"x": [2, 23], "y": [10, 10], "c": ["#8a7a5a", "#927f5f"]}, {"x": [2, 23], "y": [18, 18], "c": ["#8a7a5a", "#927f5f"]}, {"x": [2, 2], "y": [2, 18], "c": ["#8a7a5a", "#927f5f"]}, {"x": [25, 30], "y": [-4, 22], "c": ["#a9bf6d", "#afc472"]}, {"x": [13, 15], "y": [1, 3], "c": ["#7a5e3a", "#83653f"]}]}, "trees": [{"x": [-4, 24], "y": [-4, 22], "n": 260, "seed": 31, "s": [0.7, 1.2]}, {"x": [-4, 24], "y": [-4, 22], "n": 90, "seed": 37, "kind": "pine"}], "keep": [[2.5, 2.5, 1.0], [3.5, 2.5, 1.0], [4.5, 2.5, 1.0], [5.5, 2.5, 1.0], [6.5, 2.5, 1.0], [7.5, 2.5, 1.0], [8.5, 2.5, 1.0], [9.5, 2.5, 1.0], [10.5, 2.5, 1.0], [11.5, 2.5, 1.0], [12.5, 2.5, 1.0], [13.5, 2.5, 1.0], [14.5, 2.5, 1.0], [15.5, 2.5, 1.0], [16.5, 2.5, 1.0], [17.5, 2.5, 1.0], [18.5, 2.5, 1.0], [19.5, 2.5, 1.0], [20.5, 2.5, 1.0], [21.5, 2.5, 1.0], [22.5, 2.5, 1.0], [23.5, 2.5, 1.0], [24.5, 2.5, 1.0], [2.5, 10.5, 1.0], [3.5, 10.5, 1.0], [4.5, 10.5, 1.0], [5.5, 10.5, 1.0], [6.5, 10.5, 1.0], [7.5, 10.5, 1.0], [8.5, 10.5, 1.0], [9.5, 10.5, 1.0], [10.5, 10.5, 1.0], [11.5, 10.5, 1.0], [12.5, 10.5, 1.0], [13.5, 10.5, 1.0], [14.5, 10.5, 1.0], [15.5, 10.5, 1.0], [16.5, 10.5, 1.0], [17.5, 10.5, 1.0], [18.5, 10.5, 1.0], [19.5, 10.5, 1.0], [20.5, 10.5, 1.0], [21.5, 10.5, 1.0], [22.5, 10.5, 1.0], [23.5, 10.5, 1.0], [24.5, 10.5, 1.0], [2.5, 18.5, 1.0], [3.5, 18.5, 1.0], [4.5, 18.5, 1.0], [5.5, 18.5, 1.0], [6.5, 18.5, 1.0], [7.5, 18.5, 1.0], [8.5, 18.5, 1.0], [9.5, 18.5, 1.0], [10.5, 18.5, 1.0], [11.5, 18.5, 1.0], [12.5, 18.5, 1.0], [13.5, 18.5, 1.0], [14.5, 18.5, 1.0], [15.5, 18.5, 1.0], [16.5, 18.5, 1.0], [17.5, 18.5, 1.0], [18.5, 18.5, 1.0], [19.5, 18.5, 1.0], [20.5, 18.5, 1.0], [21.5, 18.5, 1.0], [22.5, 18.5, 1.0], [23.5, 18.5, 1.0], [24.5, 18.5, 1.0], [2.5, 2.5, 1.0], [2.5, 3.5, 1.0], [2.5, 4.5, 1.0], [2.5, 5.5, 1.0], [2.5, 6.5, 1.0], [2.5, 7.5, 1.0], [2.5, 8.5, 1.0], [2.5, 9.5, 1.0], [2.5, 10.5, 1.0], [2.5, 11.5, 1.0], [2.5, 12.5, 1.0], [2.5, 13.5, 1.0], [2.5, 14.5, 1.0], [2.5, 15.5, 1.0], [2.5, 16.5, 1.0], [2.5, 17.5, 1.0], [2.5, 18.5, 1.0], [11, 4.4, 1.2], [17.2, 1.2, 1.0]], "marks": [{"type": "sign", "x": 24.6, "y": 10, "text": "B-road"}], "units": [{"id": "lr", "type": "rover", "x": 2.5, "y": 6, "label": "10"}, {"id": "forester", "type": "person", "x": 22, "y": 2.5, "col": "#4f6b3a", "hidden": 1}, {"id": "deer", "type": "deer", "x": 19, "y": 18.6, "col": "#9a6a3a", "hidden": 1}, {"id": "highseat", "type": "highseat", "x": 11, "y": 4.4}]}
+---script
+stamp <b>Friday 27 April 1990</b> · 1430<br>The tracks out
+radio Calloway’s task from last night: learn every track out of this wood. You take the troop Land Rover. Hollis takes the map.
+choose hint: Go yourself || hint: Send Hollis
+if $choice=1
+radio Hollis takes the Land Rover and comes back at teatime with three tracks marked in pencil, mud to the axles, and a word from the forester: the north track goes soft in rain.
+var knowtracks=1
+else
+near notebook
+move lr 2.5,2.5 8,2.5 speed=0.7
+cam 9,3,6.5
+radio The north track: forestry gravel, then mud. The Land Rover slithers, and Hollis holds on to the map with both hands.
+waitmove lr
+radio Ahead the track rises to a crest between the beeches. You can’t see what’s over it.
+choose act: Stop short of the crest and walk up || act: Drive over the top
+if $choice=1
+radio You crest it at speed. A forestry tractor coming the other way stops dead, its driver open-mouthed.
+radio Hollis says nothing, which is worse. Had it been a BRDM, you would both be dead.
+else
+radio You stop below the crest and walk up the last twenty metres. Nothing over the top but more track, and a clearing.
+net One One: One One. That’s the way, sir.
+xp obs 5 Stopped short of the crest
+end
+move lr 12,2.5 speed=0.6
+waitmove lr
+stamp Halt · the clearing
+near rooting,highseat,jay,notebook
+tutorial Look around: tap what you see, and note anything worth noting
+choose act: Drive on
+tutorial
+set forester hidden=0
+move forester 16,2.6 speed=0.4
+radio A man in green loden comes round the bend, a rifle on his shoulder and a dachshund at his heel. He looks at the Land Rover, then at the ruts it has made.
+waitmove forester
+say The forester: Sie sind von den Panzern? | “You’re with the tanks?”
+ask Say “Ja. Pemberton.” || Say “Sorry, no German”
+if $choice=0
+say Pemberton: Ja. Pemberton.
+else
+say Pemberton: Sorry. No German.
+end
+say The forester: English. Good. My English is from school.
+say The forester: This track, north. After rain it is porridge. | He stirs the air with his stick.
+say The forester: The south track has stone under it. Your tanks will not stick.
+say The forester: And please, not through my young spruce.
+ask Ask “May I mark it on my map?” || Say “Danke”
+if $choice=0
+say Pemberton: May I mark that on my map?
+say The forester: Of course. It is the same map as mine, I think. | He looks at your map, then taps two places on it with a gloved finger.
+else
+say Pemberton: Danke.
+end
+endtalk
+radio You write it down: north track, porridge in rain; south track, stone. Hollis nods.
+var knowtracks=1
+xp obs 10 Local knowledge
+gloss Förster: the forester, who manages the state forest and its hunting. He knows the wood better than any map.
+move forester 22,2.6 speed=0.4
+move lr 13,2.5 13,10.5 speed=0.7
+cam 14,10,6.5
+radio The middle track, back down to the B-road. Wild garlic along the verge, strong enough to taste through the open window.
+waitmove lr
+set deer hidden=0
+move deer 19,17 19.6,15.6 speed=1.6
+radio Somewhere in the beeches, the first cuckoo.
+move lr 13,18.5 20,18.5 23.5,18.5 speed=0.7
+cam 18,17,6.5
+radio The south track. Stone under the leaf litter, as promised. A roe deer crosses ahead in two bounds and is gone. Hollis doesn’t look up.
+waitmove lr
+choose Zero, One Zero. Tracks recce complete. Three routes out. North track unusable in rain. Over.
+net Zero: One Zero, Zero. Roger. Good. Out.
+end
+title
+replay Play again
+---props
+@notebook your notebook
+kit: yes
+icon: 📓
+verb: Write in
+look: radio Your notebook: three tracks sketched out of the wood, with crests, a clearing and the B-road.
+use: radio You add the time and the distance to the road: four minutes by the south track.
+@rooting the churned earth
+at: 13,3.2
+icon: 🔍
+verb: Note
+look: radio Earth turned over in strips across the track, leaf litter flung aside, the soil still dark and wet.
+use: radio You note it. Hollis crouches beside you: “Pig, sir. Wild boar. Boots go in a line, pigs go everywhere.”
+use: xp obs 5 Read the ground
+@highseat the high seat
+unit: highseat
+icon: 🪜
+verb: Note
+look: radio A hunter’s high seat at the edge of the clearing: a wooden box on four legs, a ladder, a view down two tracks at once.
+use: radio You mark it on the map. A ready-made observation post, and somebody else’s.
+use: xp obs 5 Noted an observation post
+@jay the jay
+at: 17,1.6
+icon: 🐦
+verb: Listen to
+look: radio A jay, screeching somewhere ahead along the track. Then another.
+use: radio You keep still and listen. Jays shout when something moves through the wood. Something is coming.
+use: xp obs 5 Heard the jays
+</script>
 <script type="text/plain" class="scene" data-name="road-east">title: Off the Bus — the road east
 hud: 1800 | 25 April 1990
 endcard: Off the Bus | Next: the squadron
@@ -1223,7 +1568,7 @@ calendar: Friday 27 April 1990 | Saturday 28 April 1990 | Sunday 29 April 1990 |
 callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12
 crew: Gunner=G, Loader=L, Driver=D
 people: Maj Calloway=#6a7f9a:calloway, Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Pemberton=#5aa7e0:pemberton, The farmer=#8a6d3b, Capt Davies=#e59b3a:davies
-vars: ogseen=0, ourroute=0, logbridge=0, logjunction=0, day=0, crash=10, gas=0, gun=0, contact=0, fatigue=0, debt=0, rain=0, oc=0, checks=0
+vars: ogseen=0, obs=0, knowtracks=0, posrange=0, posgood=0, sawmerc=0, foundvan=0, ourroute=0, logbridge=0, logjunction=0, day=0, crash=10, gas=0, gun=0, contact=0, fatigue=0, debt=0, rain=0, oc=0, checks=0
 ---map
 {"bg": "#7a9a52", "ground": {"x": [-6, 22], "y": [-6, 22], "c": ["#97b45d", "#9dba62"], "rects": [{"x": [-6, 5], "y": [-6, 22], "c": ["#4f7334", "#557a37"]}, {"x": [10, 22], "y": [-6, 22], "c": ["#a9bf6d", "#afc472"]}, {"x": [8, 8], "y": [-6, 22], "c": ["#bfae84", "#c4b388"]}, {"x": [11, 11], "y": [1, 5], "c": ["#d8c844", "#dccd4a"]}]}, "trees": [{"x": [-6, 6.3], "y": [-5, 20], "n": 110, "seed": 7, "s": [0.7, 1.2]}], "keep": [[2.6, 3.8, 0.8], [2.4, 7, 0.8], [2.8, 10.2, 0.8], [6.3, 3.6, 0.8], [6.4, 7, 0.8], [6.3, 10.4, 0.8]], "units": [{"id": "a", "type": "challenger", "x": 2.6, "y": 3.8, "label": "11", "me": 0, "open": 1}, {"id": "p", "type": "challenger", "x": 2.4, "y": 7, "label": "10", "me": 1, "open": 1}, {"id": "b", "type": "challenger", "x": 2.8, "y": 10.2, "label": "12", "me": 0, "open": 1}]}
 ---script
@@ -1432,6 +1777,15 @@ end
 if $og=2
 str x=Gas drill, all troops, from 0830.
 end
+if $aft=7
+str x={$x} 1st Troop learns the tracks out of the wood this afternoon.
+end
+if $aft=8
+str x={$x} 1st Troop recces fire positions north-east of the wood this afternoon.
+end
+if $night=2
+str x={$x} 1st Troop patrols the lanes south of the wood tonight.
+end
 if $alert=1
 str x=Moves in pairs only, weapons loaded, no route used twice. {$x}
 end
@@ -1472,6 +1826,13 @@ end
 if $ourroute=0
 say Maj Calloway: Route cards. 1st Troop’s is thin, Pemberton.
 say Maj Calloway: 3rd Troop’s route goes further round, but it’s fully logged, so that’s the one we’ll use. | An incomplete route card can’t be planned on. Calloway picks the longer road that someone did log.
+end
+end
+if $day=11
+if $foundvan=1
+say Maj Calloway: 1st Troop found a van in the woods last night.
+say Maj Calloway: The Feldjäger say it was the ambush party’s.
+say Maj Calloway: Well done, Pemberton. | Said once, flatly, and then he moves on. From Calloway, that is a lot.
 end
 end
 say Maj Calloway: Questions?
@@ -1588,6 +1949,10 @@ net Zero Alpha: Hello all stations, this is Zero Alpha. Stand to. Out.
 do crashmove
 if $rain=1
 xp crash 20 Crash move, in the rain
+if $knowtracks=1
+radio The north track is porridge, as the forester said. Hollis takes the stone track without being told.
+xp crash 5 Knew the tracks
+end
 else
 xp crash 10 Crash move
 end
@@ -1696,6 +2061,9 @@ end
 if $choice=2
 radio Hollis puts himself on two till four. In the morning he looks exactly the same as always.
 end
+if $night=2
+play patrol-night
+end
 if $night=1
 wait 800
 hud 0310
@@ -1712,6 +2080,12 @@ end
 enddef
 
 def afternoon
+if $aft=7
+play patrol-tracks
+end
+if $aft=8
+play patrol-positions
+end
 if $aft=0
 radio A quiet afternoon. Kit, letters, the notebook. Somewhere east, artillery is practising.
 end
@@ -1797,6 +2171,9 @@ play spar
 else
 if $day=7
 stamp <b>Friday 4 May 1990</b><br>The Spetsnaz ambush — a scripted scene
+if $sawmerc=1
+stamp A grey Mercedes with H plates, across the road ahead. You have seen it before: the farm track, two days ago.
+end
 wait 1200
 else
 do routineday
@@ -1906,18 +2283,18 @@ use: radio You read it cover to cover, including the crossword clues you can’t
 
 ---days
 # One row per day of the week, in order. Every routine day is the same template; the row says which variation it carries.
-legend: weather dry=0 rain=1 | og choice=0 visit=1 gas=2 ambush=3 | brew tea=0 letters=1 bfbs=2 convoys=3 | aft quiet=0 mail=1 short=2 farmer=3 liaison=4 jamming=5 weber=6 | night quiet=0 alarm=1 | drift none=0 patten=1 adjourned=2 calm=3 stockholm=4 | alert no=0 yes=1
-Fri 27 Apr: weather=dry og=choice brew=tea aft=mail night=quiet
+legend: weather dry=0 rain=1 | og choice=0 visit=1 gas=2 ambush=3 | brew tea=0 letters=1 bfbs=2 convoys=3 | aft quiet=0 mail=1 short=2 farmer=3 liaison=4 jamming=5 weber=6 tracks=7 positions=8 | night quiet=0 alarm=1 patrol=2 | drift none=0 patten=1 adjourned=2 calm=3 stockholm=4 | alert no=0 yes=1
+Fri 27 Apr: weather=dry og=choice brew=tea aft=tracks night=quiet
 Sat 28 Apr: weather=dry og=choice brew=letters aft=farmer night=quiet
 Sun 29 Apr: weather=rain og=visit brew=bfbs aft=short night=quiet
 Mon 30 Apr: weather=dry og=choice brew=tea aft=quiet night=quiet
 Tue 1 May: weather=dry og=gas brew=convoys aft=mail night=quiet
-Wed 2 May: weather=rain og=choice brew=tea aft=quiet night=alarm
+Wed 2 May: weather=rain og=choice brew=tea aft=positions night=alarm
 Thu 3 May: weather=dry og=visit brew=letters aft=liaison night=quiet
 Fri 4 May: weather=dry og=choice brew=tea aft=quiet night=quiet
 Sat 5 May: weather=dry og=ambush brew=convoys aft=quiet night=quiet drift=patten alert=yes
 Sun 6 May: weather=rain og=choice brew=tea aft=mail night=alarm drift=adjourned alert=yes
-Mon 7 May: weather=dry og=gas brew=convoys aft=jamming night=quiet drift=calm
+Mon 7 May: weather=dry og=gas brew=convoys aft=jamming night=patrol drift=calm
 Tue 8 May: weather=dry og=choice brew=tea aft=weber night=quiet drift=stockholm
 </script>
 <script type="text/plain" class="scene" data-name="sennelager">title: Off the Bus — Sennelager range
@@ -2739,7 +3116,7 @@ function createCore({scenes, campaign, io}){
       case 'me': case 'icme': await emit({k:SPEECH[cmd],text:a}); hook.printed&&hook.printed(); break;
       case 'choose': { state.pemSpoke=false; const opts=parseOpts(a); const i=await io.choose(opts,{}); hook.choice&&hook.choice(i); vars.choice=i; await chooseEffect(opts[i]); hook.printed&&hook.printed(); break; }
       case 'say': { const [n,t]=nameText(a); const [txt,gl]=interp(t).split(' | '); const me=S().head.player||'Pemberton';
-        if(n===me && !inVerb && txt!=='…' && !/^[“"]/.test(txt) && !state.lastAsked && !state.pemSpoke){ await io.ask([{text:txt}]); }
+        if(n===me && !inVerb && state.ac.show && txt!=='…' && !/^[“"]/.test(txt) && !state.lastAsked && !state.pemSpoke){ await io.ask([{text:txt}]); }   // a line that opens a conversation was already chosen
         if(n===me){ state.lastAsked=false; state.pemSpoke=true; } else state.pemSpoke=false;
         state.ac={show:true,name:n,text:txt,gloss:gl||'',collapsed:false}; await io.say(state.ac); hook.printed&&hook.printed(); await io.tap(); break; }
       case 'ask': { state.pemSpoke=false; const os=parseOpts(a); const shown=os.map((o,i)=>[o,i]).filter(([o])=>!o.when||cond(o.when)); const j=await io.ask(shown.map(([o])=>o)); const i=shown[j][1];
@@ -2976,6 +3353,16 @@ const DRAW={
     cx.fillStyle=cd; cx.beginPath(); cx.ellipse(sx-s*.17,b-fh*.35,s*.08,s*.16,0,0,7); cx.fill();
     cx.strokeStyle=cu; cx.lineWidth=Math.max(2,s*.06); cx.lineCap='round'; cx.beginPath(); cx.moveTo(sx+s*.07,b-fh*.68); cx.lineTo(sx+s*.16,b-fh*1.0); cx.stroke();
     cx.strokeStyle='#d9e2de'; cx.lineWidth=Math.max(1.5,s*.035); cx.beginPath(); cx.moveTo(sx+s*.16,b-fh*1.0); cx.lineTo(sx+s*.18,b-fh*1.55); cx.stroke(); },
+  // a roe deer: small brown body on thin legs, white rump
+  deer(u){ const s=tw*.3,[sx,sy]=iso(u.x,u.y); cx.fillStyle='rgba(0,0,0,.14)'; cx.beginPath(); cx.ellipse(sx,sy,s*.35,s*.12,0,0,7); cx.fill();
+    cx.strokeStyle='#5a3a22'; cx.lineWidth=1.3; cx.beginPath(); for(const dx of [-.18,-.1,.1,.18]){ cx.moveTo(sx+s*dx,sy); cx.lineTo(sx+s*dx,sy-s*.32); } cx.stroke();
+    cx.fillStyle='#9a6a3a'; cx.beginPath(); cx.ellipse(sx,sy-s*.4,s*.24,s*.1,0,0,7); cx.fill(); cx.fillStyle='#f2ead8'; cx.beginPath(); cx.arc(sx-s*.22,sy-s*.42,s*.05,0,7); cx.fill();
+    cx.strokeStyle='#9a6a3a'; cx.lineWidth=2; cx.beginPath(); cx.moveTo(sx+s*.18,sy-s*.45); cx.lineTo(sx+s*.26,sy-s*.68); cx.stroke(); cx.fillStyle='#8a5a30'; cx.beginPath(); cx.arc(sx+s*.28,sy-s*.7,s*.06,0,7); cx.fill(); },
+  // a hunter's high seat: a wooden box on four legs, with a ladder
+  highseat(u){ const s=tw*.42,[sx,sy]=iso(u.x,u.y); cx.fillStyle='rgba(0,0,0,.14)'; cx.beginPath(); cx.ellipse(sx,sy,s*.4,s*.16,0,0,7); cx.fill();
+    cx.strokeStyle='#6b4a2a'; cx.lineWidth=Math.max(1.5,s*.05); cx.beginPath(); for(const dx of [-.22,.22]){ cx.moveTo(sx+s*dx,sy); cx.lineTo(sx+s*dx*.7,sy-s*1.3); } cx.stroke();
+    cx.lineWidth=1; cx.beginPath(); for(let i=1;i<6;i++){ const y=sy-s*1.3*i/6; cx.moveTo(sx-s*.2+s*.06*i/6,y); cx.lineTo(sx+s*.2-s*.06*i/6,y); } cx.stroke();
+    cx.fillStyle='#7d5a36'; cx.fillRect(sx-s*.24,sy-s*1.62,s*.48,s*.34); cx.fillStyle='#2a2016'; cx.fillRect(sx-s*.16,sy-s*1.56,s*.32,s*.1); cx.fillStyle='#5a3e22'; cx.fillRect(sx-s*.28,sy-s*1.68,s*.56,s*.07); },
   // a gate barrier on a post: down across the road, or raised
   barrier(u){ const s=tw*.5,[sx,sy]=iso(u.x,u.y); cx.fillStyle='#555'; cx.fillRect(sx-2,sy-s*.5,4,s*.5);
     const a=u.up?-1.25:0, L=s*1.6, ex=sx+Math.cos(a)*L*.9, ey=sy-s*.42+Math.sin(a)*L*.9+(u.up?0:L*.45);
