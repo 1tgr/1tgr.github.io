@@ -207,6 +207,436 @@ canvas{display:block;width:100%;height:100%}
   <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
   <div class="ac" id="ac" role="dialog" aria-live="polite" tabindex="0"><div class="portrait" id="acPortrait" role="img"></div><div class="opts" id="acOpts"></div><div class="bal"><button class="hidebtn" id="acHide" aria-label="Hide the conversation">⌄ Hide</button><span class="tag" id="acTag"></span><span id="acText"></span><span class="gl" id="acGl"></span><span class="more">▼</span></div></div>
 </div>
+<script type="text/plain" class="scene" data-name="ambush">title: Off the Bus — the Sibbesse road
+hud: 1650 | 4 May 1990
+endcard: Off the Bus | The Sibbesse road
+net: B Squadron net | Zero is the squadron · you are One Zero | 0
+maplabel: Isometric view of the Sibbesse road at a bend: pines close on the right, a field on the left, a Mercedes and a Trabant across the road, and 1st Troop in line ahead
+camera: 3,7.1,6.4
+callsigns: Zero=0, One One=11, One Two=12
+crew: Gunner=G, Loader=L, Driver=D
+people: Sgt Hollis=#7d8f4e:hollis, Pemberton=#5aa7e0:pemberton
+vars: closed=0, smoked=0, dec=0, out=0, bxkia=0, iqwia=0, iqkia=0, pemwound=0, childok=0, mumcap=0, mumkia=0, fathercap=0, driverkia=0, spk=0, sawmerc=0, contact=0
+---map
+{"bg": "#8fae5a", "ground": {"x": [-10, 40], "y": [-8, 24], "c": ["#a3bf66", "#a9c46b"], "rects": [{"x": [-10, 40], "y": [-8, 6], "c": ["#7f9c4c", "#85a250"]}, {"x": [-10, 40], "y": [7, 7], "c": ["#9b9a94", "#a3a29c"]}, {"x": [-10, 40], "y": [8, 8], "c": ["#93a95c", "#98ae60"]}, {"x": [-10, 40], "y": [9, 22], "c": ["#b7c97a", "#bdce7f"]}]}, "trees": [{"x": [14, 34], "y": [-6, 6.2], "n": 120, "seed": 21, "kind": "pine"}, {"x": [-10, 8], "y": [-6, 6.2], "n": 40, "seed": 7}, {"x": [34, 40], "y": [9, 20], "n": 12, "seed": 5}], "keep": [[-10, 7.5, 1.2], [-8, 7.5, 1.2], [-6, 7.5, 1.2], [-4, 7.5, 1.2], [-2, 7.5, 1.2], [0, 7.5, 1.2], [2, 7.5, 1.2], [4, 7.5, 1.2], [6, 7.5, 1.2], [8, 7.5, 1.2], [10, 7.5, 1.2], [12, 7.5, 1.2], [14, 7.5, 1.2], [16, 7.5, 1.2], [18, 7.5, 1.2], [20, 7.5, 1.2], [22, 7.5, 1.2], [24, 7.5, 1.2], [26, 7.5, 1.2], [28, 7.5, 1.2], [30, 7.5, 1.2], [32, 7.5, 1.2], [34, 7.5, 1.2], [36, 7.5, 1.2], [38, 7.5, 1.2], [22.5, 5.6, 0.5], [23.8, 5.2, 0.5], [25.5, 4.6, 0.5], [27, 5.4, 0.5]], "marks": [{"type": "sign", "x": 7, "y": 6.6, "text": "Sibbesse 3", "col": "#f5d33c"}], "units": [{"id": "b", "type": "challenger", "x": 3.8, "y": 7.5, "label": "12", "open": 1}, {"id": "a", "type": "challenger", "x": 2.4, "y": 7.5, "label": "11", "open": 1}, {"id": "p", "type": "challenger", "x": 1.0, "y": 7.5, "label": "10", "me": 1, "open": 1}, {"id": "merc", "type": "car", "x": 19.1, "y": 7.3, "col": "#b9bcc0"}, {"id": "trabant", "type": "car", "x": 19.8, "y": 7.75, "col": "#4f6fa3", "rack": 1}, {"id": "mdriver", "type": "person", "x": 18.7, "y": 6.6, "col": "#2f3640"}, {"id": "father", "type": "person", "x": 20.4, "y": 6.7, "col": "#5b5446"}, {"id": "mother", "type": "person", "x": 20.6, "y": 8.4, "col": "#9a6b8a"}, {"id": "child", "type": "person", "x": 20.9, "y": 8.5, "col": "#c9a24a"}, {"id": "bxf", "type": "person", "x": 15, "y": 7.9, "col": "#4a5634", "hidden": 1}, {"id": "iqf", "type": "person", "x": 15.2, "y": 7.3, "col": "#4a5634", "hidden": 1}, {"id": "sm1", "type": "smoke", "x": 9.8, "y": 6.1, "hidden": 1}, {"id": "sm2", "type": "smoke", "x": 12.5, "y": 6.0, "hidden": 1}, {"id": "sm3", "type": "smoke", "x": 15.2, "y": 6.1, "hidden": 1}, {"id": "sm4", "type": "smoke", "x": 17.9, "y": 6.2, "hidden": 1}, {"id": "rpg", "type": "person", "x": 22.5, "y": 5.6, "col": "#3a4430", "enemy": 1, "hidden": 1}, {"id": "mg", "type": "person", "x": 23.8, "y": 5.2, "col": "#3a4430", "enemy": 1, "hidden": 1}, {"id": "snp", "type": "person", "x": 25.5, "y": 4.6, "col": "#3a4430", "enemy": 1, "hidden": 1}, {"id": "flank", "type": "person", "x": 27, "y": 5.4, "col": "#3a4430", "enemy": 1, "hidden": 1}]}
+---script
+stamp <b>Friday 4 May 1990</b> · 1650<br>The Sibbesse road
+radio A courier run: the week’s int summaries to a Bundeswehr Panzergrenadier company in the next valley, and back to the hides by stand-to. Nine days of routine. Hatches open, heads out, the sun low behind the pines.
+near notebook
+choose One One, One Two, One Zero. Line ahead. One Two lead. Out.
+to b 11,7.5 a 9.6,7.5 p 8.2,7.5 speed=0.8 stagger=0.3
+cam 8,7.1,6.4
+wait 1800
+radio Baxter’s tank leads, then Hollis, then you. The road bends right around a stand of pines.
+if $sawmerc=1
+stamp A grey Mercedes with H plates, across the road ahead. You have seen it before: the farm track, two days ago.
+end
+waitmove b,a,p
+cam 17.5,7.4,6
+near merc,trabant,plate,suitcase,mother,child,father,drivers,road,treeline,notebook
+radio Round the bend, the road is blocked. A Mercedes has nudged the rear corner of a Trabant. Both cars are at an angle across the road. Nobody is hurt.
+hear Mercedes driver: Sind Sie blind?
+gloss “Are you blind?”
+hear Trabant driver: Nein. Nein.
+radio Two men argue in the road. A woman and a little girl stand on the verge by the Trabant. A suitcase has burst on the grass.
+wait 1200
+net One One: One Zero, One One. Hold on a minute. Take a look.
+wait 1600
+net One One: That’s the same as outside Detmold. Same cars. Same family. Tenner says it isn’t.
+radio Hollis doesn’t usually say anything he doesn’t have to.
+choose One One, One Two, One Zero. Close down. Out. || hint: Stay up and look
+if $choice=0
+var closed=1
+set a,p,b open=0
+radio Hatches shut. Through the periscope the scene is smaller and greener, and still there.
+end
+radio Eighty metres. The tanks are still rolling.
+choose One Two, One Zero. Bypass right, over the verge, as before. Out. || One One, One Two, One Zero. Halt. Observe. Out. || One One, One Two, One Zero. Reverse, back round the bend. Out. || One Two, One Zero. Dismount and check it, on foot. Out. || One One, One Two, One Zero. Treeline right. Coax. Fire. Out.
+var dec=$choice
+if $dec=0
+var out=1
+end
+if $dec=2
+var out=3
+end
+if $dec=3
+var out=4
+end
+if $dec=4
+var out=5
+end
+
+# Halt and observe: a second decision
+if $dec=1
+to b 14,7.5 a 12.6,7.5 p 11.2,7.5 speed=0.5
+waitmove b,a,p
+radio The troop stops seventy metres short. You look. Nobody in the road looks back at you.
+wait 1600
+radio The father lifts a hand to the side of his head, as if to brush away a fly. In the pines behind him, something moves that is not a branch.
+net One One: One Zero, One One. Movement, treeline right. Not wind.
+choose One One, One Two, One Zero. Treeline right. Engage. Out. || One One, One Two, One Zero. Reverse. Now. Out. || hint: Keep watching
+if $choice=0
+var out=6
+end
+if $choice=1
+var out=3
+end
+if $choice=2
+var out=7
+end
+end
+
+# 1 · Bypass over the verge, as on 24 April
+if $out=1
+set b trail=1
+move b 15,8.3 17.5,8.6 speed=0.6
+wait 1400
+burst 17.5,8.6 shake
+set b smoke=1
+move b 17.5,8.6
+radio The verge lifts under One Two. A column of earth and smoke, and the tank lurches and stops with a track off.
+set rpg hidden=0
+missile rpg 17.6,8.4
+wait 1200
+burst 17.6,8.4 shake
+radio From the pines, a flash and a streak of smoke into One Two’s side, behind the turret.
+do immediate
+do sniper
+do grenades
+do reaction
+net One One: One Zero, One One. Contact. Treeline, north. One Two’s been hit.
+radio The Mercedes driver has a rifle out from under his coat. Hollis’s coax finds him before he can use it.
+set mdriver hidden=1
+var driverkia=1
+move father 21.5,5.6 22.5,4 speed=1.2
+move mother 21.6,6 22.6,4.4 speed=0.9
+radio The father and the mother run for the pines. They are gone before anyone can turn a gun on them.
+wait 1600
+set father,mother hidden=1
+net One Two: One Two. Commander’s dead. Loader and driver hit. Wait out.
+radio It isn’t Baxter’s voice. It is Watts, his gunner.
+var bxkia=1
+var iqwia=1
+radio When the firing stops, the child is lying on the verge by the Trabant. She is not moving.
+set child hidden=1
+end
+
+# 4 · Dismount and check it on foot
+if $out=4
+to b 15,7.5 a 13.6,7.5 p 12.2,7.5 speed=0.5
+waitmove b,a,p
+set bxf,iqf hidden=0
+radio Baxter climbs down with his loader and walks forward along the road, out of the tank, into the open. Rifles slung.
+net One One: One Zero, One One. Don’t like this.
+move bxf 18,7.9 speed=0.5
+move iqf 18.2,7.2 speed=0.5
+wait 2200
+radio The mother takes a step back. The father’s hand goes inside his jacket.
+fire father,mdriver at bxf light
+wait 300
+fire father,mdriver at iqf light
+set bxf,iqf hidden=1
+radio Two short bursts. Baxter and Iqbal go down in the road.
+set rpg hidden=0
+missile rpg 15.2,7.6
+wait 1200
+burst 15.2,7.6 shake
+radio An RPG from the pines bursts against One Two’s front. The armour holds.
+do immediate
+do sniper
+do reaction
+radio The Mercedes driver is caught in the road by Hollis’s coax.
+set mdriver hidden=1
+var driverkia=1
+move father 21.5,5.6 22.5,4 speed=1.2
+move mother 21.6,6 22.6,4.4 speed=0.9
+radio The father and the mother run for the pines and are gone.
+wait 1600
+set father,mother hidden=1
+net One Two: One Two. Commander and loader down. They’re not moving. Wait out.
+radio Watts, Baxter’s gunner, on the net.
+var bxkia=1
+var iqkia=1
+radio When the firing stops, the child is lying on the verge by the Trabant. She is not moving.
+set child hidden=1
+end
+
+# 7 · Kept watching: the trap is sprung at range
+if $out=7
+wait 1200
+radio The father drops his hand.
+set rpg hidden=0
+missile rpg 14.2,7.4
+wait 1200
+burst 14.2,7.4 shake
+radio An RPG from the pines bursts on One Two’s front plate. The tank rocks. The armour holds.
+do immediate
+do sniper
+do grenades
+var iqwia=1
+do reaction
+radio The Mercedes driver is cut down in the road by Hollis’s coax.
+set mdriver hidden=1
+var driverkia=1
+move father 21.5,5.6 22.5,4 speed=1.2
+move mother 21.6,6 22.6,4.4 speed=0.9
+radio The father and the mother run for the pines and are gone.
+wait 1600
+set father,mother hidden=1
+net One Two: One Two. Loader hit, not bad. Still in action. Out.
+radio When the firing stops, the child is lying on the verge by the Trabant. She is not moving.
+set child hidden=1
+end
+
+# 5 and 6 · Engage the treeline first
+if $out=5
+to b 14,7.5 a 12.6,7.5 p 11.2,7.5 speed=0.7
+waitmove b,a,p
+end
+if $out>4
+if $out<7
+fire a,p,b at 23.5,5.2 light
+wait 300
+fire p at 22.5,5.6
+burst 22.5,5.6
+wait 300
+fire b at 25.5,4.6
+burst 25.5,4.6
+set rpg,mg,snp,flank hidden=0
+radio Coax and HESH into the pines. Splinters and smoke where the trees meet the road. Figures that were not there a moment ago are moving in them.
+radio The Mercedes driver pulls a rifle from under his coat. Hollis’s coax cuts him down.
+set mdriver hidden=1
+var driverkia=1
+missile rpg 16.5,9.5
+wait 1200
+burst 16.5,9.5
+radio An RPG streaks out of the pines and bursts in the field behind One Two. It was laid for a tank that stopped where it was meant to.
+radio The father has something in his hand and is pressing it. Nothing happens. One Two is twenty metres short of where he wanted it.
+if $out=5
+do sniper
+do grenades
+var iqwia=1
+end
+fire a at 21.2,7.6 light
+radio A burst of coax goes across the road at the father as he runs. He goes down, still moving. The burst goes on past him.
+set father hidden=1
+var fathercap=1
+set rpg,snp hidden=1
+radio Three of them stay in the pines. The rest are gone, north, at a run.
+var spk=3
+wait 1600
+radio When the firing stops, the mother is lying beside the Trabant, and so is the child. Neither of them is moving.
+set mother,child hidden=1
+var mumkia=1
+if $out=5
+net One Two: One Two. Loader hit, not bad. Out.
+end
+end
+end
+
+# 3 · Reverse and call it in
+if $out=3
+set sm2,sm3,sm4 hidden=0
+radio Smoke grenades from all three turrets. A white wall goes up between the road and the pines, and the troop reverses behind it, back round the bend, and stops two hundred metres short.
+to b 6,7.5 a 4.6,7.5 p 3.2,7.5 speed=0.7
+cam 9,7.1,6.4
+waitmove b,a,p
+choose Zero, One Zero. Contact, wait out.
+choose Zero, One Zero. Suspected ambush, civilians as bait, Sibbesse road three kilometres short of the village. Pulled back round the bend. Request air and a reaction force. Over.
+net Zero: Zero. Lynx on its way. Hold where you are. Do not go forward. Out.
+wait 1600
+set rpg,mg,snp,flank hidden=0
+move rpg 23,2 speed=0.7
+move mg 24.2,2 speed=0.7
+move snp 25.8,1.8 speed=0.7
+move flank 27.4,2.2 speed=0.7
+set sm2,sm3,sm4 hidden=1
+radio The smoke thins. Through the gap at the bend: men in the pines, more than you thought, moving north and away from the road. They aren’t hurrying.
+move mdriver 21,5 22,3 speed=0.9
+move father 21.5,5.6 22.5,3 speed=0.9
+radio The Mercedes driver and the father walk, then run, into the trees.
+wait 2400
+set rpg,mg,snp,flank,mdriver,father hidden=1
+radio The woman sits down on the verge with the child. She does not try to go anywhere.
+var childok=1
+var mumcap=1
+end
+
+# Aftermath
+wait 1200
+stamp 1710 · Aftermath
+set sm1,sm2,sm3,sm4 hidden=1
+hud 1710
+radio A Lynx comes over the trees and circles. Twenty minutes later, the reaction force: a troop from another squadron, the Lower Saxony police, and the Feldjäger, the Bundeswehr’s military police.
+gloss Feldjäger — the Bundeswehr’s military police.
+if $bxkia=1
+radio A second Lynx lands in the field for the wounded. Then a Chieftain recovery vehicle, for One Two.
+else
+if $iqwia=1
+radio A second Lynx lands in the field for the wounded.
+end
+end
+if $pemwound=1
+radio A medic picks the splinters out of your cheek and puts a dressing on it. You stay with the troop.
+end
+radio An Intelligence Corps captain from Brigade comes in on the Lynx, young and quiet, and writes everything down.
+wait 1000
+if $driverkia=1
+stamp Under the Mercedes driver’s suit: Soviet army thermal underwear, Soviet army boots.
+end
+if $fathercap=1
+stamp The father is alive, hit in the legs. He says nothing in any language.
+end
+if $mumkia=1
+stamp Sewn into the mother’s dress: a camera, East German marks, and an identity card for Inge Hartmann, Magdeburg. The Feldjäger call it a forgery within the hour.
+end
+if $mumcap=1
+stamp Sewn into the woman’s dress: a camera, East German marks, and an identity card for Inge Hartmann, Magdeburg. The Feldjäger call it a forgery within the hour. They take her away in a car with the blinds down.
+end
+stamp Under the Trabant’s back seat: a false floor, rifles, maps, a list of telephone numbers. In the Mercedes boot: demolition charges, meant for a railway or a power line further west.
+if $out>1
+stamp The mine is under the gravel of the right-hand verge, where One Two would have gone round, as it did outside Detmold.
+end
+if $childok=1
+stamp The child will not say her name. She asks the Feldjäger woman when they are going home.
+else
+stamp The child has no papers. About six. Well fed, recently looked after. The Feldjäger write it all down.
+end
+if $bxkia=1
+radio Hollis takes Baxter’s things out of One Two’s turret himself, and won’t let anyone help.
+radio Watts has One Two now.
+end
+if $out=3
+say Sgt Hollis: Tenner, sir. When you’ve got it. | He doesn’t smile. You don’t either.
+endtalk
+end
+
+stamp 1900 · The hides
+hud 1900
+night 0.4
+radio BBC World Service: “Reports are emerging of an incident involving British forces in Lower Saxony this afternoon. The Foreign Office has confirmed the incident but declined to give details. We will bring you more as we have it.”
+wait 1400
+radio AFN: “American officials say the incident in northern Germany this afternoon involved an apparent ambush of a British military patrol by what U.S. intelligence describes as Soviet special forces personnel operating in civilian disguise. The Pentagon declined to confirm or deny the reports.”
+wait 1400
+radio BBC World Service, ten o’clock: “The Defence Secretary, Mr Patten, declined tonight to confirm reports of a ‘serious incident’ involving British forces in Germany. He will make a statement to the House tomorrow.”
+wait 1400
+title
+replay Play again
+
+def sniper
+if $smoked=1
+set snp hidden=0
+fire snp at p light miss
+radio A round cracks somewhere into the smoke. Whoever fired it can’t see you now.
+else
+if $closed=0
+set snp hidden=0
+fire snp at p light
+var pemwound=1
+radio Something cracks off the rim of your cupola, a hand’s width from your head. Your cheek is wet. Splinters.
+else
+set snp hidden=0
+fire snp at p light miss
+radio A round rings off your closed hatch.
+end
+end
+enddef
+
+def immediate
+choose ic: Smoke! || hint: Get fire down first
+if $choice=0
+var smoked=1
+set sm1,sm2,sm3,sm4 hidden=0
+radio The dischargers on all three turrets fire together. In three seconds there is a white wall between the troop and the pines.
+end
+enddef
+
+def grenades
+burst 13.2,6.9
+wait 400
+burst 14.6,8.2
+radio Grenades from the pines, small and flat, bursting between the tanks. One drops by One Two’s open loader’s hatch.
+enddef
+
+def reaction
+choose One One, One Two, One Zero. Contact. Treeline right. Coax. Fire. Out.
+fire a,p at 23.5,5.2 light
+wait 300
+fire a,p at 25.5,4.6 light
+set mg,flank hidden=0
+if $contact<40
+radio Action on contact was still Raw. Close to a minute before all three tanks had fire on the treeline, and by then the pines were emptying.
+else
+if $contact<100
+radio Action on contact was Practised. Fire on the treeline in twenty seconds, from all three tanks.
+var spk=1
+else
+radio Action on contact was Drilled. Fire on the treeline in under ten seconds, from all three tanks, before the second grenade landed.
+var spk=2
+end
+end
+move rpg,mg,snp,flank 25,1 speed=1.2
+wait 1800
+set rpg,mg,snp,flank hidden=1
+if $spk=0
+radio The rest of them are gone, north, through the trees.
+end
+if $spk=1
+radio One of them stays in the pines. The rest are gone, north, through the trees.
+end
+if $spk=2
+radio Two of them stay in the pines. The rest are gone, north, through the trees.
+end
+enddef
+
+---props
+@notebook your notebook
+kit: yes
+icon: 📓
+verb: Write in
+look: radio Your notebook. This morning’s orders, and under them: “Courier: int sums to PzGren coy. Back by 1900.”
+use: radio You write the time and the place. Then you sit with the pencil and write nothing else.
+@merc the Mercedes
+unit: merc
+icon: 🚘
+look: radio A light grey Mercedes saloon, a dent in the front wing.
+@trabant the Trabant
+unit: trabant
+icon: 🚙
+look: radio A Trabant 601, mid-blue, two suitcases strapped to the roof rack. It sits low at the back, as if the boot were full.
+@plate the number plates
+at: 19.5,8
+icon: 🔍
+look: radio The Mercedes has an H plate: Hannover. The Trabant has a DDR sticker, and a plate that looks newly washed.
+@suitcase the suitcase
+at: 18.6,8.4
+icon: 🧳
+look: radio A suitcase has burst on the verge. Children’s clothes beside it on the grass, folded, in a neat pile.
+@mother the woman
+unit: mother
+icon: 👩
+look: radio A woman in her thirties in a new anorak and clean white trainers, a handbag over her arm. She stands beside the child without touching her.
+@child the child
+unit: child
+icon: 👧
+look: radio A girl of about six in a winter coat too warm for May. She stands with her hands at her sides and looks at the road. She has not looked at the tanks.
+@father the father
+unit: father
+icon: 🧥
+look: radio A man in a quilted jacket zipped to the chin. He holds the right side of it against his hip, as if he were cold.
+@drivers the two drivers
+unit: mdriver
+icon: 🗣️
+look: radio The two men face each other a metre apart. Their voices carry. Their hands stay still.
+@road the road
+at: 23,7.5
+icon: 🛣️
+look: radio Beyond the cars the road is empty. Nobody has stopped behind them. Nobody is coming the other way.
+@treeline the pines
+at: 24,5
+icon: 🌲
+look: radio Pines on the right, close to the road at the bend, dark under the low sun. You can’t see ten metres into them.
+</script>
 <script type="text/plain" class="scene" data-name="convoy">title: Off the Bus — the convoy blockage
 hud: 1730 | 24 April 1990
 endcard: Off the Bus | Next: Detmold
@@ -524,7 +954,12 @@ net Zero Alpha: Hello all stations, this is Zero Alpha. Today is the day. Sunray
 gloss OMG — Operational Manoeuvre Group: Soviet forces sent deep, past the front, to break up the defence.
 choose One Zero. Wilco, out.
 net One One: One One. Wilco, out.
+if $bxkia=1
+net One Two: One Two. Standing to. Out.
+radio Watts, in One Two. He has said as little as that since the Sibbesse road.
+else
 net One Two: One Two. Standing to, hatches manned, mortar section on four. Out.
+end
 radio The waiting begins.
 wait 1400
 stamp 0900
@@ -1059,12 +1494,16 @@ callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12
 crew: Driver=D
 levels: 40,100
 people: Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Pemberton=#5aa7e0:pemberton, The farmer=#8a6d3b
-vars: obs=0, foundvan=0
+vars: obs=0, foundvan=0, bxkia=0
 ---map
 {"bg": "#557a37", "ground": {"x": [-4, 30], "y": [-4, 22], "c": ["#8fae5a", "#97b660"], "rects": [{"x": [-4, 30], "y": [-4, 22], "c": ["#9dba62", "#a5c069"]}, {"x": [-4, 30], "y": [8, 8], "c": ["#9b9a94", "#a3a29c"]}, {"x": [18, 18], "y": [8, 22], "c": ["#9b9a94", "#a3a29c"]}, {"x": [20, 30], "y": [10, 22], "c": ["#4f7334", "#557a37"]}, {"x": [-4, 12], "y": [-4, 6], "c": ["#4f7334", "#557a37"]}, {"x": [20, 24], "y": [13, 13], "c": ["#8a7a5a", "#927f5f"]}]}, "trees": [{"x": [20, 30], "y": [10, 22], "n": 110, "seed": 51}, {"x": [-4, 12], "y": [-4, 6], "n": 70, "seed": 53}], "keep": [[19.5, 13.5, 1.0], [20.5, 13.5, 1.0], [21.5, 13.5, 1.0], [22.5, 13.5, 1.0], [23.5, 13.5, 1.0], [24.5, 13.5, 1.0], [25.5, 13.5, 1.0]], "marks": [], "units": [{"id": "lr1", "type": "rover", "x": -2, "y": 8.5, "label": "10"}, {"id": "lr2", "type": "rover", "x": -3.6, "y": 8.5, "label": "12"}, {"id": "farmhouse", "type": "house", "x": 10, "y": 12, "L": 2, "Wd": 1.6, "h": 1.2, "wall": "#efe2c8", "roof": "#a8432e"}, {"id": "oldman", "type": "person", "x": 16, "y": 8.6, "col": "#5a5040", "hidden": 1}, {"id": "van", "type": "car", "x": 25, "y": 13.4, "col": "#e0e0d8", "hidden": 1}]}
 ---script
+str bx=Baxter
+if $bxkia=1
+str bx=Watts
+end
 stamp <b>Monday 7 May 1990</b> · 2300<br>Night patrol
-radio Calloway wants the lanes south of the wood watched tonight. Since the ambush: two vehicles, weapons loaded, never the same route twice. Hollis drives you. Baxter has the second Land Rover.
+radio Calloway wants the lanes south of the wood watched tonight. Since the ambush: two vehicles, weapons loaded, never the same route twice. Hollis drives you. {$bx} has the second Land Rover.
 choose hint: Go yourself || hint: Send Hollis
 if $choice=1
 radio Hollis takes the patrol. They are back at three. Nothing to report but deer.
@@ -1075,14 +1514,14 @@ move lr2 4.4,8.5 speed=0.5 delay=0.6
 cam 6,8,6.5
 radio No lights. The lane is a paler strip between black hedges. An owl calls from the trees, the long wavering hoot of a tawny owl.
 waitmove lr1,lr2
-radio Something barks in the dark beside the lane, hoarse and loud. Baxter’s Land Rover brakes hard.
+radio Something barks in the dark beside the lane, hoarse and loud. {$bx}’s Land Rover brakes hard.
 net One Two: One Two. Contact left! … Wait.
 choose One Two, One Zero. Roe deer. Out. || hint: Say nothing
 if $choice=0
 net One Two: One Two. Roger. … Sorry.
 xp obs 5 Knew the deer
 else
-radio A long minute. Then a white rump bounding away across the field, and Baxter’s voice, embarrassed, on the net: “One Two. Deer. Out.”
+radio A long minute. Then a white rump bounding away across the field, and {$bx}’s voice, embarrassed, on the net: “One Two. Deer. Out.”
 end
 gloss Roe deer bark when alarmed: a hoarse cough in the dark that has startled a great many sentries.
 move lr1 14,8.5 speed=0.5
@@ -1099,7 +1538,7 @@ say The farmer: Meine Kuh kalbt. | “My cow is calving.” He points the torch 
 net One Two: One Two. Weapon made safe.
 xp obs 5 Challenged correctly
 else
-radio You drive up on him without lights. He jumps into the ditch. In the second Land Rover, Baxter has his rifle up before Hollis shouts.
+radio You drive up on him without lights. He jumps into the ditch. In the second Land Rover, {$bx} has his rifle up before Hollis shouts.
 say The farmer: Mein Gott! Ich bin der Bauer! | “My God! I’m the farmer!”
 end
 endtalk
@@ -1592,8 +2031,8 @@ levels: 40,100
 calendar: Friday 27 April 1990 | Saturday 28 April 1990 | Sunday 29 April 1990 | Monday 30 April 1990 | Tuesday 1 May 1990 | Wednesday 2 May 1990 | Thursday 3 May 1990 | Friday 4 May 1990 | Saturday 5 May 1990 | Sunday 6 May 1990 | Monday 7 May 1990 | Tuesday 8 May 1990 | Wednesday 9 May 1990
 callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12
 crew: Gunner=G, Loader=L, Driver=D
-people: Maj Calloway=#6a7f9a:calloway, Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Pemberton=#5aa7e0:pemberton, The farmer=#8a6d3b, Capt Davies=#e59b3a:davies, Hptm Weber=#5b6b4a
-vars: deleg=0, tcw=0, tpairs=0, hrun=0, hmissed=0, cnoted=0, ogseen=0, obs=0, knowtracks=0, posrange=0, posgood=0, sawmerc=0, foundvan=0, ourroute=0, logbridge=0, logjunction=0, day=0, crash=10, gas=0, gun=0, contact=0, fatigue=0, debt=0, rain=0, oc=0, checks=0
+people: Maj Calloway=#6a7f9a:calloway, Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Tpr Watts=#8a7a5a, Pemberton=#5aa7e0:pemberton, The farmer=#8a6d3b, Capt Davies=#e59b3a:davies, Hptm Weber=#5b6b4a
+vars: bxkia=0, iqkia=0, iqwia=0, childok=0, deleg=0, tcw=0, tpairs=0, hrun=0, hmissed=0, cnoted=0, ogseen=0, obs=0, knowtracks=0, posrange=0, posgood=0, sawmerc=0, foundvan=0, ourroute=0, logbridge=0, logjunction=0, day=0, crash=10, gas=0, gun=0, contact=0, fatigue=0, debt=0, rain=0, oc=0, checks=0
 ---map
 {"bg": "#7a9a52", "ground": {"x": [-6, 22], "y": [-6, 22], "c": ["#97b45d", "#9dba62"], "rects": [{"x": [-6, 5], "y": [-6, 22], "c": ["#4f7334", "#557a37"]}, {"x": [10, 22], "y": [-6, 22], "c": ["#a9bf6d", "#afc472"]}, {"x": [8, 8], "y": [-6, 22], "c": ["#bfae84", "#c4b388"]}, {"x": [11, 11], "y": [1, 5], "c": ["#d8c844", "#dccd4a"]}]}, "trees": [{"x": [-6, 6.3], "y": [-5, 20], "n": 110, "seed": 7, "s": [0.7, 1.2]}], "keep": [[2.6, 3.8, 0.8], [2.4, 7, 0.8], [2.8, 10.2, 0.8], [6.3, 3.6, 0.8], [6.4, 7, 0.8], [6.3, 10.4, 0.8]], "units": [{"id": "a", "type": "challenger", "x": 2.6, "y": 3.8, "label": "11", "me": 0, "open": 1}, {"id": "p", "type": "challenger", "x": 2.4, "y": 7, "label": "10", "me": 1, "open": 1}, {"id": "b", "type": "challenger", "x": 2.8, "y": 10.2, "label": "12", "me": 0, "open": 1}]}
 ---script
@@ -1798,8 +2237,8 @@ str sit=Enemy: Soviet exercises continue east of the border. Friendly: no change
 str se=Soviet exercises continue east of the border.
 str sf=No change.
 if $drift=1
-str sit=Enemy: a Spetsnaz group ambushed one of our troops on the Sibbesse road yesterday; expect more. Friendly: no change.
-str se=A Spetsnaz group ambushed one of our troops on the Sibbesse road yesterday; expect more.
+str sit=Enemy: a Spetsnaz group ambushed 1st Troop on the Sibbesse road yesterday; expect more. Friendly: no change.
+str se=A Spetsnaz group ambushed 1st Troop on the Sibbesse road yesterday; expect more.
 str sf=No change.
 end
 if $drift=2
@@ -1865,8 +2304,25 @@ if $og=3
 say Maj Calloway: Before the orders.
 say Maj Calloway: Yesterday, on the Sibbesse road, an accident that was not an accident.
 say Maj Calloway: A Spetsnaz group.
-say Maj Calloway: Two civilians who were not what they seemed, and one who was.
-say Maj Calloway: A girl of six, from Magdeburg. | He stops for about two seconds before he says “six”. Nobody says anything.
+if $bxkia=1
+if $iqkia=1
+say Maj Calloway: Corporal Baxter and Trooper Iqbal were killed.
+else
+say Maj Calloway: Corporal Baxter was killed. Two of his crew are in hospital.
+end
+else
+if $iqwia=1
+say Maj Calloway: One Two’s loader is in hospital. He’ll be back.
+end
+end
+if $childok=1
+say Maj Calloway: They had a German child with them, about six. | He stops for about two seconds before he says “six”. Nobody says anything.
+say Maj Calloway: She’s alive. The Feldjäger have her.
+else
+say Maj Calloway: The dead included a German child of approximately six. | He stops for about two seconds before he says “six”. Nobody says anything.
+say Maj Calloway: We don’t have her family yet.
+end
+say Maj Calloway: That’s all I have for now.
 end
 if $hmissed>2
 if $cnoted=0
@@ -1885,6 +2341,13 @@ end
 if $ourroute=0
 say Maj Calloway: Route cards. 1st Troop’s is thin, Pemberton.
 say Maj Calloway: 3rd Troop’s route goes further round, but it’s fully logged, so that’s the one we’ll use. | An incomplete route card can’t be planned on. Calloway picks the longer road that someone did log.
+end
+end
+if $day=9
+if $childok=1
+stamp Int summary: the child from the Sibbesse road has a name now. Her family in Magdeburg is being told she is alive.
+else
+stamp Int summary: the child from the Sibbesse road has a name now. Her family in Magdeburg is being told.
 end
 end
 if $day=11
@@ -1946,7 +2409,11 @@ end
 say Maj Calloway: Good. Time check. The time is now 0812. That’s all. | Watches checked. The troop leaders go back to their troops.
 endtalk
 stamp 0820 · Troop orders
+if $bxkia=1
+radio Hollis and Watts come over to your tank. Now it is your turn.
+else
 radio Hollis and Baxter come over to your tank. Now it is your turn.
+end
 say Sgt Hollis: Sir.
 pick Troop orders | What do your crews need from this morning? Everything you pass on takes a moment to say. :: Situation=tsit || Mission=tmis || Today’s training=ttrg || Replen and mail=tss || {$alert=1} Moves in pairs, weapons loaded=tpairs || {$aft=5} Codeword WINDMILL=tcw || {$aft=7} This afternoon’s patrol=tpat || {$aft=8} This afternoon’s patrol=tpat || {$night=2} Tonight’s patrol=tpat
 var tn=$tsit
@@ -1958,7 +2425,11 @@ var tn+=$tcw
 var tn+=$tpat
 if $tn=0
 say Pemberton: Same as yesterday. Training this morning.
+if $bxkia=1
+say Tpr Watts: Sir.
+else
 say Cpl Baxter: Right you are, sir.
+end
 end
 if $tsit=1
 say Pemberton: Situation. Enemy first.
@@ -1985,7 +2456,11 @@ if $tss=1
 say Pemberton: Service support. {$ss}
 end
 if $tn>0
+if $bxkia=1
+say Sgt Hollis: Sir. | Watts is writing it down.
+else
 say Sgt Hollis: Sir. | Baxter is writing it down.
+end
 end
 if $alert=1
 if $tpairs=0
@@ -2202,7 +2677,11 @@ if $aft=0
 radio A quiet afternoon. Kit, letters, the notebook. Somewhere east, artillery is practising.
 end
 if $aft=1
+if $bxkia=1
+radio The mail comes up with the four-tonner: blueys, a Telegraph four days old, and a letter for Corporal Baxter in a girl’s handwriting, postmarked Coventry. Hollis takes it before anyone else sees it and walks it over to the Major.
+else
 radio The mail comes up with the four-tonner: blueys, a parcel for One Two, a Telegraph four days old.
+end
 near telegraph,notebook
 choose act: Read your letter || act: Leave it till tonight
 if $choice=0
@@ -2279,6 +2758,8 @@ endtalk
 enddef
 
 badge Crash move <b>{level:$crash}</b>{bar:$crash}
+str h12a=Good lad, sir. Keen. Too keen, some days.
+str h12b=He’ll be all right if nobody needs him to be all right in a hurry.
 radio Corps reserve, in hides in the Hildesheimer Wald since Thursday. A week of routine, until the SPAR route recce on Monday and whatever comes after.
 near notebook,bv,periscope
 while $day<12
@@ -2286,11 +2767,12 @@ if $day=3
 play spar
 else
 if $day=7
-stamp <b>Friday 4 May 1990</b><br>The Spetsnaz ambush — a scripted scene
-if $sawmerc=1
-stamp A grey Mercedes with H plates, across the road ahead. You have seen it before: the farm track, two days ago.
+play ambush
+if $bxkia=1
+stamp Overnight a replacement tank comes up for One Two from the regiment’s reserve, with new men from the echelon to make up the crew. Watts commands it.
+str h12a=Watts is doing it, sir. Ask me again in a month.
+str h12b=Baxter would have been all right, sir. Given time.
 end
-wait 1200
 else
 do routineday
 end
@@ -2387,8 +2869,8 @@ look: radio Two pairs of tank tracks across the corner of a field of green winte
 person: Sgt Hollis
 unit: a
 icon: 💬
-ask about One Two: say Sgt Hollis: Good lad, sir. Keen. Too keen, some days.
-ask about One Two: say Sgt Hollis: He’ll be all right if nobody needs him to be all right in a hurry.
+ask about One Two: say Sgt Hollis: {$h12a}
+ask about One Two: say Sgt Hollis: {$h12b}
 ask about the war: say Sgt Hollis: Same as the last war that didn’t happen, sir.
 ask about the war: say Sgt Hollis: We sit, we wait, we drink tea. Until we don’t.
 @telegraph the Telegraph
@@ -3427,6 +3909,7 @@ const tagCol=u=>u.me?'#0a84ff':u.enemy?'rgba(160,40,30,.85)':(u.tagcol||'rgba(20
 
 /* units */
 const DRAW={
+  smoke(u){},
   challenger(u){ tankBody(u,['#3c4a29','#33401f','#56683a'],['#3c4a29','#2f3b1c','#61753f'],true); },
   t80(u){ tankBody(u,['#56552f','#4a4a28','#6b6a3d'],['#56552f','#40401f','#77764a'],false); },
   bmp(u){ const s=tw*.3,h=s*.38; shadow(u,s); const c=box(u,.5,.3,h,['#56552f','#4a4a28','#6b6a3d']); const dir=u.gun??Math.PI;
@@ -3753,6 +4236,7 @@ function frame(now){
   items.sort((a,b)=>a.k-b.k).forEach(i=>i.f());
   for(const u of w.units){ if(u.hidden) continue; const p=iso(u.x,u.y);
     if(u.smoke&&Math.random()<dt*7) puff(p[0]+(Math.random()-.5)*6,p[1]-tw*.2,{r:3,grow:tw*.35,life:3,col:'55,50,46',a:.55,vy:-9});
+    if(u.type==='smoke'&&Math.random()<dt*14) puff(p[0]+(Math.random()-.5)*tw*2.2,p[1]-tw*.12+(Math.random()-.5)*tw*.5,{r:tw*.12,grow:tw*.8,life:4.5,col:'228,228,222',a:.75,vy:-3});
     if(u.blossom&&Math.random()<dt*1.5) puff(p[0]+(Math.random()-.5)*tw,p[1]-tw*.3,{r:1.5,grow:0,life:2.5,col:'245,200,215',a:.9,vy:4}); }
   for(const t of trees) if(t.blossom&&Math.random()<dt*1.5){ const p=iso(t.x+(Math.random()-.5),t.y+(Math.random()-.5)); puff(p[0],p[1]-tw*.3,{r:1.5,grow:0,life:2.5,col:'245,200,215',a:.9,vy:4}); }
   if(tracer){ tracer.t+=dt; const k=Math.min(1,tracer.t/.18), a=tracer.a, b=tracer.b(); cx.strokeStyle=`rgba(255,240,200,${Math.max(0,1-tracer.t*3)})`; cx.lineWidth=2; cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k); cx.stroke(); if(tracer.t>.35) tracer=null; }
