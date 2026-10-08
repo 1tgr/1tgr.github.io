@@ -233,7 +233,7 @@ cam 8,7.1,6.4
 wait 1800
 radio The road bends right around a stand of pines.
 if $sawmerc=1
-stamp A grey Mercedes with H plates, across the road ahead. You have seen it before: the farm track, two days ago.
+stamp A grey Mercedes with H plates, across the road ahead.
 end
 waitmove b,a,p
 cam 14.5,7.6,10.5
@@ -482,7 +482,7 @@ var smoked=1
 to b 6,7.5 a 4.6,7.5 p 3.2,7.5 speed=0.7
 cam 9,7.1,6.4
 waitmove b,a,p
-choose Zero, One Zero. Suspected ambush, civilians as bait, Sibbesse road three kilometres short of the village. Pulled back round the bend. Request air and a reaction force. Over.
+choose Zero, One Zero. Suspected ambush, civilians as bait, Sibbesse road three kilometres short of the village. Pulled back round the bend. Request air and infantry. Over.
 net Zero: Zero. Lynx, infantry and ATO on their way. Hold where you are. Do not go forward. Nobody goes near those cars. Out.
 wait 1600
 set rpg,mg,snp,flank hidden=0
@@ -790,7 +790,7 @@ var cas+=$bxkia
 var cas+=$iqkia
 if $cas>0
 str srr=Request casevac and the Feldjäger.
-str zr=Zero. Lynx on its way for your casualties. It will land behind you. Infantry and ATO on their way. Hold where you are. Nobody goes near those cars. Out.
+str zr=Zero. Lynx on its way for your casualties. Infantry and ATO on their way. Hold where you are. Nobody goes near those cars. Out.
 end
 str src=One child dead.
 if $mumkia=1
@@ -1265,7 +1265,7 @@ crew: Gunner=G, Loader=L, Driver=D
 {"bg": "#a7bd68", "ground": {"x": [-16, 32], "y": [-8, 24], "c": ["#a7bd68", "#adc26d"], "rects": [{"x": [-16, 2], "y": [-8, 24], "c": ["#456b30", "#4b7234"]}, {"x": [6, 15], "y": [-8, -1], "c": ["#9cb35f", "#a2b864"]}, {"x": [13, 14], "y": [-8, 24], "c": ["#97ad5c", "#9db260"]}, {"x": [4, 11], "y": [0, 0], "c": "#c9b97a"}, {"x": [4, 11], "y": [13, 13], "c": "#c9b97a"}]}, "trees": [{"x": [-14, 2.5], "y": [-4, 18], "n": 150, "seed": 33, "col": "#355e2c"}], "keep": [[3.2, 4.8, 1], [3.2, 7.2, 1], [3.2, 9.6, 1]], "marks": [{"type": "peg", "x": 6, "y": 12.2, "text": "800"}, {"type": "peg", "x": 9, "y": 12.2, "text": "1100"}, {"type": "peg", "x": 13, "y": 12.2, "text": "1400"}], "units": [{"id": "a", "type": "challenger", "x": 3.2, "y": 4.8, "label": "11"}, {"id": "p", "type": "challenger", "x": 3.2, "y": 7.2, "label": "10", "me": 1}, {"id": "b", "type": "challenger", "x": 3.2, "y": 9.6, "label": "12"}, {"id": "s0", "type": "challenger", "x": 11.0, "y": -3.6, "label": "20", "tagcol": "rgba(40,60,90,.8)", "gun": 0.8}, {"id": "s1", "type": "challenger", "x": 12.2, "y": -2.6, "label": "21", "tagcol": "rgba(40,60,90,.8)", "gun": 0.8}, {"id": "s2", "type": "challenger", "x": 13.2, "y": -1.4, "label": "22", "tagcol": "rgba(40,60,90,.8)", "gun": 0.8}, {"id": "s3", "type": "challenger", "x": 14.0, "y": -0.2, "label": "23", "tagcol": "rgba(40,60,90,.8)", "gun": 0.8}, {"id": "t80", "type": "t80", "x": 15.5, "y": 7.0, "label": "T-80", "enemy": 1, "gun": 3.1416, "hidden": 1}, {"id": "bmp1", "type": "bmp", "x": 17, "y": 5.2, "label": "BMP", "enemy": 1, "hidden": 1}, {"id": "bmp2", "type": "bmp", "x": 17.4, "y": 8.6, "label": "BMP", "enemy": 1, "hidden": 1}, {"id": "bmp3", "type": "bmp", "x": 18, "y": 6.6, "label": "BMP", "enemy": 1, "hidden": 1}, {"id": "bmp4", "type": "bmp", "x": 18.2, "y": 9.8, "label": "BMP", "enemy": 1, "hidden": 1}, {"id": "sp1", "type": "smoke", "x": 5.4, "y": 6.4, "hidden": 1}, {"id": "sp2", "type": "smoke", "x": 5.4, "y": 8.0, "hidden": 1}, {"id": "sm3", "type": "smoke", "x": 5.2, "y": 4.8, "hidden": 1}, {"id": "sm4", "type": "smoke", "x": 5.2, "y": 7.2, "hidden": 1}, {"id": "sm5", "type": "smoke", "x": 5.2, "y": 9.6, "hidden": 1}, {"id": "sm6", "type": "smoke", "x": 12.8, "y": -1.4, "hidden": 1}, {"id": "sm7", "type": "smoke", "x": 14.0, "y": -0.2, "hidden": 1}, {"id": "sm8", "type": "smoke", "x": 15.0, "y": 1.0, "hidden": 1}]}
 ---script
 stamp <b>Saturday 12 May 1990</b> · 0700<br>The hides, south of Hildesheim · Day 4 of the war
-radio Three days at Stand-To-Charlie. The artillery to the east has been continuous and distant. Nothing has come near the troop. 2nd Troop is out in front on the ridge, as the squadron’s screen.
+radio On combat watch since D-day. The artillery to the east has been continuous and distant. Nothing has come near the troop. 2nd Troop is out in front on the ridge, as the squadron’s screen.
 near notebook,rangecard,periscope,telegraph,bv
 wait 900
 net Zero Alpha: Hello all stations, this is Zero Alpha. Enemy reported at PUDDLEDUCK. TIGGYWINKLE, I say again, TIGGYWINKLE. Acknowledge, over.
@@ -1325,7 +1325,7 @@ net Zero: Two Zero, Zero. Roger. Out.
 gloss Bound — a move from one fire position to the next. 2nd Troop is now on your left, covering the same field from the flank.
 net One One: One One. Range markers confirmed.
 if $posrange=1
-radio Your range card from the high seat is taped inside the cupola: field gate six hundred, track junction nine hundred, farm fourteen hundred.
+radio Your range card from the high seat is taped inside the cupola: the farm track at eight hundred, the lone bush at eleven hundred, the rise at fourteen hundred.
 else
 gloss Range card — a sketch of known ranges to features in your arc, made in advance so the fire order needs no guesswork.
 end
@@ -1503,7 +1503,7 @@ icon: 🌡️
 verb: Look through
 look: radio TOGS — the Thermal Observation and Gunnery Sight. The gunner’s picture, repeated for you.
 use: radio In the thermal picture the field is grey and cold. Beyond the rise, too far for the eye, small white shapes are moving: engines, warm and getting warmer.
-use: gloss TOGS sees heat, not light. No Soviet tank of 1990 has anything like it.
+use: gloss TOGS sees heat, not light.
 @telegraph the Telegraph
 kit: yes
 icon: 📰
@@ -1535,7 +1535,7 @@ vars: hq1=0, hq2=0, hq3=0, hq4=0, hq5=0, hasked=0, hdone=0
 {"bg": "#8d8d86", "ground": {"x": [-8, 20], "y": [-6, 20], "c": ["#8d8d86", "#93938c"], "rects": [{"x": [-8, 20], "y": [-6, 0], "c": ["#6f8a4a", "#75904e"]}, {"x": [13, 20], "y": [-6, 20], "c": ["#6f8a4a", "#75904e"]}, {"x": [1, 7], "y": [1, 3], "c": ["#6b6b66", "#70706a"]}]}, "trees": [{"x": [-8, 20], "y": [-6, -0.5], "n": 40, "seed": 17, "s": [0.7, 1.1]}, {"x": [13.5, 20], "y": [0, 20], "n": 40, "seed": 23}], "marks": [{"type": "chalk", "x": 6.5, "y": 9.6, "text": "X  we are here", "pts": []}, {"type": "chalk", "x": 6.0, "y": 8.5, "text": "Hermann", "pts": [[5.7, 8.9], [6.0, 8.4], [6.3, 8.9], [5.7, 8.9]]}, {"type": "chalk", "x": 7.3, "y": 10.3, "pts": [[6.4, 10.4], [6.8, 10.1], [7.2, 10.4], [7.6, 10.1], [8.0, 10.4], [8.4, 10.1]]}, {"type": "chalk", "x": 7.4, "y": 9.0, "dash": 1, "pts": [[6.6, 9.5], [7.4, 9.1], [8.3, 8.8], [9.2, 8.3], [9.7, 8.1]]}, {"type": "chalk", "x": 8.3, "y": 9.2, "text": "Hameln", "pts": []}, {"type": "chalk", "x": 9.8, "y": 8.1, "text": "SQN", "pts": [[10.15, 8.1], [10.1, 8.28], [9.98, 8.4], [9.8, 8.45], [9.62, 8.4], [9.5, 8.28], [9.45, 8.1], [9.5, 7.92], [9.62, 7.8], [9.8, 7.75], [9.98, 7.8], [10.1, 7.92], [10.15, 8.1]]}, {"type": "chalk", "x": 11.2, "y": 9.0, "text": "3 SA", "pts": [[10.6, 6.8], [10.6, 11.2]]}, {"type": "chalk", "x": 7.6, "y": 8.4, "text": "50km", "pts": []}, {"type": "chalk", "x": 9.0, "y": 7.8, "text": "45km", "pts": []}], "units": [{"id": "shed", "type": "house", "x": 4.0, "y": 2.0, "L": 4.2, "Wd": 1.8, "h": 1.4, "wall": "#9a9a92", "roof": "#555a5e"}, {"id": "a", "type": "challenger", "x": -6, "y": 4.6, "label": "11", "open": 1}, {"id": "p", "type": "challenger", "x": -7.3, "y": 4.6, "label": "10", "me": 1, "open": 1}, {"id": "b", "type": "challenger", "x": -8.6, "y": 4.6, "label": "12", "open": 1}, {"id": "holley", "type": "person", "x": 7.6, "y": 7.6, "col": "#4f8a35"}, {"id": "rover", "type": "rover", "x": 8.8, "y": 7.0, "label": "44"}, {"id": "bedford", "type": "car", "x": 1.5, "y": 7.5, "col": "#56603e"}, {"id": "bowser", "type": "car", "x": 1.2, "y": 9.0, "col": "#6b6b5a"}, {"id": "staffy", "type": "person", "x": 3.0, "y": 6.5, "col": "#3c4a2c"}]}
 ---script
 stamp <b>Wednesday 25 April 1990</b> · 1630<br>Hobart Barracks, Detmold
-radio Late afternoon, low sun, long shadows. The troop moves across from the tank park to the workshop bay.
+radio Late afternoon, low sun, long shadows. The troop pulls into the workshop bay.
 to a 5.6,4.4 p 4.3,4.4 b 3,4.4 speed=1.3 stagger=0.4
 cam 5,6,7.5
 waitmove a,p,b
@@ -1891,7 +1891,7 @@ xp obs 5 Knew the deer
 else
 radio A long minute. Then a white rump bounding away across the field, and {$bx}’s voice on the net, quieter than before: “One Two. Deer. Out.”
 end
-gloss Roe deer bark when alarmed: a hoarse cough in the dark that has startled a great many sentries.
+gloss Roe deer bark when alarmed: a hoarse cough in the dark.
 move lr1 14,8.5 speed=0.5
 move lr2 12.4,8.5 speed=0.5 delay=0.6
 waitmove lr1,lr2
@@ -1915,7 +1915,7 @@ move lr1 18,8.5 18,13 speed=0.5
 move lr2 18,8.5 18,11.4 speed=0.5 delay=1
 cam 19,12,6.5
 waitmove lr1,lr2
-radio The crossroads two kilometres south of the Sibbesse road. Hollis switches off and sits. “Smell that, sir? Somebody’s been smoking here.”
+radio The crossroads two kilometres north of the Sibbesse road. Hollis switches off and sits. “Smell that, sir? Somebody’s been smoking here.”
 choose act: Search with the torch || hint: Drive on
 if $choice=0
 near tyres,butts,notebook
@@ -1926,7 +1926,7 @@ else
 radio You drive on. Hollis says nothing, and lights a cigarette of his own.
 end
 if $foundvan=1
-choose Zero, One Zero. Abandoned van in the trees, south of the Sibbesse road. Hannover plates. Believed connected to the ambush. Over.
+choose Zero, One Zero. Abandoned van in the trees at the crossroads. Request Feldjäger. Over.
 net Zero: One Zero, Zero. Roger. Stay with it. Feldjäger on their way. Out.
 radio The Feldjäger come at one in the morning, in a Unimog, and take the van apart by torchlight. They don’t say what they find.
 else
@@ -2279,7 +2279,7 @@ radio Below the bridge, the river is full of lorries. A line of M2 rigs, side fl
 gloss M2 rigs: bridging lorries that swim, and join up into a bridge or a ferry. 28 Amphibious Engineer Regiment, the Rubber Ducks, are based in Hameln.
 near rigs,notebook
 waitmove a,p,b,q1,q2,q3
-radio The bridge you are crossing is still there.
+radio Below the bridge, the rigs hold their line across the river.
 wait 1200
 teleport a 96,7.5 p 94.7,7.5 b 93.4,7.5 q1 92.1,7.5 q2 90.9,7.5 q3 89.7,7.5
 hud 1030
@@ -2556,7 +2556,7 @@ end
 end
 if $brew=1
 say Sgt Hollis: One Two’s been writing letters, sir. Four of them.
-say Sgt Hollis: His mum, his nan, two girls.
+say Sgt Hollis: His mum, his nan, and Sarah. Twice a week.
 ask Ask “Two girls?” || Say “Good for him”
 if $choice=0
 say Pemberton: Two girls?
@@ -3169,7 +3169,7 @@ hud 0400
 night 0.9
 radio To the east, the horizon flickers. No sound yet.
 wait 2200
-radio BG net, Zero: “Hello all stations, this is Zero. It’s started. Stand to. Confirm locations. Out.”
+radio BG net, Zero: “Hello all stations, this is Zero. It’s started. Stand to. Out.”
 wait 1400
 net Zero Alpha: Hello all stations, this is Zero Alpha. Stand-To-Charlie, I say again, Stand-To-Charlie. Acknowledge, over.
 choose One Zero, wilco.
@@ -3584,7 +3584,7 @@ cam 3,7.1,6.4
 waitmove a,p,b
 near disc,notebook,brook
 radio At the bridge, a yellow Military Load Class disc. Seventy. A Challenger weighs about sixty-two tonnes.
-gloss Military Load Class — the weight a West German bridge is rated for, posted on a yellow disc. Route recce means writing every one down.
+gloss Military Load Class — the weight a West German bridge is rated for, posted on a yellow disc.
 choose act: 📝 Log it: bridge, class seventy || act: Carry on
 if $choice=0
 var logbridge=1
@@ -3965,14 +3965,14 @@ const UNIVERSAL_PROPS=`
 kit: yes
 icon: 🔫
 verb: Clean
-use: radio You strip and clean your 9mm Browning — slide, barrel, spring, frame — and put it back together. It was clean before. It is cleaner now.
-use: gloss Clean your weapon whenever there is nothing else to do. There is always something else to do, and you clean it anyway.
+use: radio You strip and clean your 9mm Browning — slide, barrel, spring, frame — and put it back together. The barrel was already clean. You run the pull-through anyway.
+use: gloss Clean your weapon whenever there is nothing else to do.
 @socks your socks
 kit: yes
 icon: 🧦
 verb: Change
-use: radio You take off your boots and change your socks. Dry feet. For a few minutes, the world is a better place.
-use: gloss Foot care: every soldier is taught that wet feet end campaigns. Nobody needs to tell you twice.
+use: radio You take off your boots and change your socks. Dry feet. You wriggle your toes.
+use: gloss Foot care: every soldier is taught that wet feet end campaigns.
 `;
 
 function parseScene(text){
