@@ -3860,6 +3860,7 @@ function createCore({scenes, campaign, io}){
     if(v.once) state.world.used.push(v.key);
     await exec(v.lines);
     if(saved.show){ state.ac={...saved}; io.update(); }
+    else if(state.ac.show){ state.ac={...state.ac,show:false}; io.update(); }   // a verb that spoke outside a conversation closes its balloon
     save();
   }
 
