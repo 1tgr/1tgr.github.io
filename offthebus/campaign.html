@@ -3007,6 +3007,14 @@ radio Hollis takes last parade. Nothing to report.
 else
 choose act: Last parade done
 end
+hud 2030
+night 0.6
+stamp 2030 · Stand-to
+radio Last light. Every man at his tank, weapons manned, nobody talking until the light has gone.
+net Zero Alpha: Hello all stations, this is Zero Alpha. Stand down. Out.
+if $eve>0
+do rounds
+end
 hud 2300
 night 1
 if $deleg=1
@@ -3036,6 +3044,36 @@ to a 2.6,3.8 p 2.4,7 b 2.8,10.2 speed=0.9
 set a,p,b open=1
 radio Across the hide, Hollis: “Brew’s on.”
 end
+enddef
+
+def rounds
+near notebook
+radio Captain Davies comes down the track, hands in his pockets.
+say Capt Davies: Evening. Crews all right?
+if $eve=2
+radio Nobody answers straight away.
+say Sgt Hollis: Yes, sir.
+end
+radio He takes a flat silver flask from his smock.
+say Capt Davies: Sloe gin. Medicinal.
+ask Take a nip || Decline
+if $choice=0
+say Pemberton: Thank you, sir. | Sweet, then the burn.
+end
+if $choice=1
+say Pemberton: Not for me, thank you, sir.
+end
+if $bxkia=1
+radio The flask goes to Watts, and back.
+else
+say Cpl Baxter: Cheers, sir.
+end
+say Sgt Hollis: Not for me, sir.
+if $eve=2
+radio Davies screws the cap on and puts the flask in Hollis’s hand.
+end
+say Capt Davies: Goodnight, all. | He walks back up the track.
+endtalk
 enddef
 
 def afternoon
@@ -3264,16 +3302,16 @@ use: radio You read it cover to cover, including the crossword clues you can’t
 
 ---days
 # One row per day of the week, in order. Every routine day is the same template; the row says which variation it carries.
-legend: weather dry=0 rain=1 | og choice=0 visit=1 gas=2 ambush=3 | brew tea=0 letters=1 bfbs=2 convoys=3 | aft quiet=0 mail=1 short=2 farmer=3 liaison=4 jamming=5 weber=6 tracks=7 positions=8 | night quiet=0 alarm=1 patrol=2 | drift none=0 patten=1 adjourned=2 calm=3 stockholm=4 | alert no=0 yes=1
+legend: weather dry=0 rain=1 | og choice=0 visit=1 gas=2 ambush=3 | brew tea=0 letters=1 bfbs=2 convoys=3 | aft quiet=0 mail=1 short=2 farmer=3 liaison=4 jamming=5 weber=6 tracks=7 positions=8 | night quiet=0 alarm=1 patrol=2 | eve none=0 davies=1 aftermath=2 | drift none=0 patten=1 adjourned=2 calm=3 stockholm=4 | alert no=0 yes=1
 Fri 27 Apr: weather=dry og=choice brew=tea aft=tracks night=quiet
-Sat 28 Apr: weather=dry og=choice brew=letters aft=farmer night=quiet
+Sat 28 Apr: weather=dry og=choice brew=letters aft=farmer night=quiet eve=davies
 Sun 29 Apr: weather=rain og=visit brew=bfbs aft=short night=quiet
 Mon 30 Apr: weather=dry og=choice brew=tea aft=quiet night=quiet
 Tue 1 May: weather=dry og=gas brew=convoys aft=mail night=quiet
 Wed 2 May: weather=rain og=choice brew=tea aft=positions night=alarm
 Thu 3 May: weather=dry og=visit brew=letters aft=liaison night=quiet
 Fri 4 May: weather=dry og=choice brew=tea aft=quiet night=quiet
-Sat 5 May: weather=dry og=ambush brew=convoys aft=quiet night=quiet drift=patten alert=yes
+Sat 5 May: weather=dry og=ambush brew=convoys aft=quiet night=quiet eve=aftermath drift=patten alert=yes
 Sun 6 May: weather=rain og=choice brew=tea aft=mail night=alarm drift=adjourned alert=yes
 Mon 7 May: weather=dry og=gas brew=convoys aft=jamming night=patrol drift=calm
 Tue 8 May: weather=dry og=choice brew=tea aft=weber night=quiet drift=stockholm
