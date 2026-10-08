@@ -3872,7 +3872,8 @@ if(typeof module!=='undefined'&&module.exports) module.exports=API; else root.OT
 (()=>{
 const $ = id => document.getElementById(id);
 const SCENES = {}; document.querySelectorAll('script.scene').forEach(e=>SCENES[e.dataset.name]=e.textContent);
-const CAMPAIGN = JSON.parse($('campaign').textContent);
+const CAMPAIGN = (()=>{ const c=JSON.parse($('campaign').textContent), s=new URLSearchParams(location.search).get('scene');
+  return s&&SCENES[s]?{name:(c.name||'scene')+':'+s, order:[s]}:c; })();   // ?scene=<name> plays one scene on its own, with its own save
 const PORTRAITS = JSON.parse($('portraits').textContent);
 const QS = new URLSearchParams(location.search);
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -4264,7 +4265,7 @@ const SAVEKEY='offthebus:'+(CAMPAIGN.name||'scene');
 let BUILD=0; { const t=Object.values(SCENES).join('\u0001')+'|core-1'; for(let i=0;i<t.length;i++) BUILD=(BUILD*31+t.charCodeAt(i))|0; }
 function clearSave(){ try{ localStorage.removeItem(SAVEKEY); }catch(e){} }
 async function start(){
-  if(QS.has('reset')){ clearSave(); history.replaceState(null,'',location.pathname); }
+  if(QS.has('reset')){ clearSave(); history.replaceState(null,'',location.pathname+(QS.get('scene')?'?scene='+encodeURIComponent(QS.get('scene')):'')); }
   core=OTBCore.createCore({scenes:SCENES, campaign:CAMPAIGN, io});
   window.__core=core;
   let saved=null; try{ saved=JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){}
