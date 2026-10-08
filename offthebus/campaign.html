@@ -2965,7 +2965,11 @@ do contactdrill
 xp contact 15 Contact drill
 end
 if $oc=1
+if $rain=1
+say Capt Davies: … | Not Calloway: Davies, standing in for him in a green Barbour, hands in its pockets, watching. He says nothing until the end.
+else
 say Capt Davies: … | Not Calloway: Davies, standing in for him, hands in pockets, watching. He says nothing until the end.
+end
 say Capt Davies: Not bad. Not bad at all.
 say Capt Davies: Again tomorrow, and you’ll be dangerous.
 endtalk
@@ -3072,7 +3076,11 @@ say Sgt Hollis: Not for me, sir.
 if $eve=2
 radio Davies screws the cap on and puts the flask in Hollis’s hand.
 end
-say Capt Davies: Goodnight, all. | He walks back up the track.
+if $eve=2
+say Capt Davies: Goodnight, all. | He walks back up the track, hands in his smock pockets.
+else
+say Capt Davies: Goodnight, all. | He walks back up the track, hands in his smock pockets, whistling.
+end
 endtalk
 enddef
 
