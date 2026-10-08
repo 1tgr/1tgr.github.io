@@ -1273,7 +1273,7 @@ choose One Zero, wilco.
 net Two Zero: Two Zero, wilco.
 net Three Zero: Three Zero, wilco.
 net Zero Alpha: Zero Alpha, out.
-gloss PUDDLEDUCK — a report line on the map, five kilometres beyond the screen. TIGGYWINKLE — a codeword from last night’s orders: contact expected within the hour; engines warm, mortars on call.
+gloss PUDDLEDUCK and TIGGYWINKLE, from the orders of 26 April: a report line five kilometres east of the wood; contact within the hour, engines warm, mortars on call.
 if $bxkia=0
 net One Two: …
 gloss One Two pressed his pressel, the press-to-talk switch, and said nothing.
@@ -1483,7 +1483,7 @@ replay Play again
 kit: yes
 icon: 📓
 verb: Write in
-look: radio Your notebook, open on your knee. Under last night’s orders, two lines: “PUDDLEDUCK — report line, five kilometres beyond the screen. TIGGYWINKLE — contact within the hour: engines warm, mortars on call.” Today’s page has the date on it and nothing else.
+look: radio Your notebook, open on your knee. On the page from the first orders in the hides: “Report line PUDDLEDUCK: five kilometres east of the wood. TIGGYWINKLE: contact within the hour, engines warm, mortars on call. JEMIMA: stand down to combat watch.” Today’s page has the date on it and nothing else.
 use: radio You hold the pencil over the page for a long time. You write nothing.
 @rangecard your range card
 unit: p
@@ -2660,7 +2660,7 @@ str ss=Replen at 1700.
 if $aft=1
 str ss=Mail and rations with the four-tonner at 1400. Replen at 1700.
 end
-str cs=Squadron net. Minimise in the hides: essential traffic only.
+str cs=Squadron net. Minimise in the hides: essential traffic only. Report line PUDDLEDUCK: five kilometres east of the wood. Codewords: Stand-To-Charlie, hold present locations, closed down, hold fire unless fired on or ordered; TIGGYWINKLE, contact within the hour, engines warm, mortars on call; JEMIMA, stand down to combat watch, two crews up, one resting.
 if $aft=5
 str cs={$cs} Expect jamming: on codeword WINDMILL, change to frequency two.
 end
@@ -3179,7 +3179,7 @@ choose One Zero, wilco.
 net Two Zero: Two Zero, wilco.
 net Three Zero: Three Zero, wilco.
 net Zero Alpha: Zero Alpha, out.
-gloss Stand-To-Charlie — the alert state from last night’s orders: hold present locations, closed down, hold fire unless fired on or ordered.
+gloss Stand-To-Charlie — the alert state from the orders of 26 April: hold present locations, closed down, hold fire unless fired on or ordered.
 net One One: One One. That’s not exercise.
 wait 900
 if $crash<40
@@ -3854,9 +3854,14 @@ say Maj Calloway: Service support. Replen at 1700, daily.
 say Maj Calloway: Mail when it comes. It will come.
 say Maj Calloway: Command and signal. Squadron net from now on.
 say Maj Calloway: Minimise in the hides: essential traffic only.
+say Maj Calloway: Report line PUDDLEDUCK: five kilometres east of the wood.
+say Maj Calloway: Codewords.
+say Maj Calloway: Stand-To-Charlie: hold present locations, closed down, hold fire unless fired on or ordered.
+say Maj Calloway: TIGGYWINKLE: contact within the hour, engines warm, mortars on call.
+say Maj Calloway: JEMIMA: stand down to combat watch. Two crews up, one resting. | He reads the codewords without looking up. Captain Davies is looking at the trees.
 say Maj Calloway: I’m at the command post. Captain Davies is Zero Bravo.
 # the page these orders make in Pemberton's notebook: the first morning O Group in the hides is compared against it
-orders quiet O Group · Thursday 26 April 1990 · 1700 :: Ground | The Hildesheimer Wald. 1st Troop on the south-east edge, by the field. || Situation | Enemy: Third Shock Army mobilised, forward elements in assembly areas. Friendly: 1 and 4 Divisions in front; 3 Division the corps reserve. || Mission | {$m} || Execution | Dig in, cam up, learn every track out of the wood. Monday: route recces south through Sibbesse. Route cards to the Squadron Leader on Tuesday. || Service support | Replen at 1700. || Command and signal | Squadron net. Minimise in the hides: essential traffic only.
+orders quiet O Group · Thursday 26 April 1990 · 1700 :: Ground | The Hildesheimer Wald. 1st Troop on the south-east edge, by the field. || Situation | Enemy: Third Shock Army mobilised, forward elements in assembly areas. Friendly: 1 and 4 Divisions in front; 3 Division the corps reserve. || Mission | {$m} || Execution | Dig in, cam up, learn every track out of the wood. Monday: route recces south through Sibbesse. Route cards to the Squadron Leader on Tuesday. || Service support | Replen at 1700. || Command and signal | Squadron net. Minimise in the hides: essential traffic only. Report line PUDDLEDUCK: five kilometres east of the wood. Codewords: Stand-To-Charlie, hold present locations, closed down, hold fire unless fired on or ordered; TIGGYWINKLE, contact within the hour, engines warm, mortars on call; JEMIMA, stand down to combat watch, two crews up, one resting.
 gloss O Group: orders group, always in the same order: ground, situation, mission (said twice), execution, service support, command and signal.
 var ogseen=1
 say Maj Calloway: Questions?
