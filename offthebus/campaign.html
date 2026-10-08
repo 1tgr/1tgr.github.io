@@ -483,7 +483,7 @@ to b 6,7.5 a 4.6,7.5 p 3.2,7.5 speed=0.7
 cam 9,7.1,6.4
 waitmove b,a,p
 choose Zero, One Zero. Suspected ambush, civilians as bait, Sibbesse road three kilometres short of the village. Pulled back round the bend. Request air and infantry. Over.
-net Zero: Zero. Lynx, infantry and ATO on their way. Hold where you are. Do not go forward. Nobody goes near those cars. Out.
+net Zero: Zero. Help on its way. Hold where you are. Do not go forward. Nobody goes near those cars. Out.
 wait 1600
 set rpg,mg,snp,flank hidden=0
 move rpg 23,2 speed=0.7
@@ -502,7 +502,6 @@ var mumcap=1
 end
 
 # The response: casualties out first, then hold as the cordon, clear, and only then go in
-gloss ATO — Ammunition Technical Officer: the Army’s bomb-disposal officer.
 set pol hidden=0
 move pol 35,7.6 speed=1.2
 if $out=3
@@ -595,6 +594,7 @@ waitmove atolr
 set atop hidden=0
 move atop 6,7.9 16.6,7.9 speed=1.1
 radio A Land Rover comes up behind them and stops on the verge, well short of the gateway. One man gets out and walks forward to the cars, alone.
+gloss ATO — Ammunition Technical Officer: the Army’s bomb-disposal officer.
 waitmove atop
 wait 1600
 
@@ -771,7 +771,7 @@ str sre=Enemy in civilian clothes, three dead and one wounded prisoner, the rest
 end
 str sro=No casualties.
 str srr=Request the Feldjäger.
-str zr=Zero. Lynx, infantry and ATO on their way. Hold where you are. Nobody goes near those cars. Out.
+str zr=Zero. Help on its way. Hold where you are. Nobody goes near those cars. Out.
 if $iqwia=1
 str sro=One wounded.
 end
@@ -790,7 +790,7 @@ var cas+=$bxkia
 var cas+=$iqkia
 if $cas>0
 str srr=Request casevac and the Feldjäger.
-str zr=Zero. Lynx on its way for your casualties. Infantry and ATO on their way. Hold where you are. Nobody goes near those cars. Out.
+str zr=Zero. Help on its way for your casualties. Hold where you are. Nobody goes near those cars. Out.
 end
 str src=One child dead.
 if $mumkia=1
@@ -2158,7 +2158,7 @@ move lr 13,18.5 20,18.5 23.5,18.5 speed=0.7
 cam 18,17,6.5
 radio The south track. Stone under the leaf litter, as promised. A roe deer crosses ahead in two bounds and is gone. Hollis doesn’t look up.
 waitmove lr
-choose Zero, One Zero. Tracks recce complete. Three routes out. North track unusable in rain. Over.
+choose Zero, One Zero. Tracks recce complete. Details at the O Group. Over.
 net Zero: One Zero, Zero. Roger. Good. Out.
 end
 title
@@ -2660,7 +2660,7 @@ str ss=Replen at 1700.
 if $aft=1
 str ss=Mail and rations with the four-tonner at 1400. Replen at 1700.
 end
-str cs=Squadron net. Listening silence in the hides: stand-to, contact and casualties only.
+str cs=Squadron net. Minimise in the hides: essential traffic only.
 if $aft=5
 str cs={$cs} Expect jamming: on codeword WINDMILL, change to frequency two.
 end
@@ -3062,7 +3062,6 @@ end
 end
 if $aft=2
 radio One Two’s gunner has gone sick with something he ate. Baxter’s loader is covering. One Two is a man short until tomorrow.
-net One Two: One Two. Short a gunner till morning. Out.
 end
 if $aft=3
 do farmer
@@ -3073,7 +3072,7 @@ choose One One, One Two, One Zero. WINDMILL. Out. || hint: Ride it out
 if $choice=0
 if $tcw=0
 net One Two: One Two. Say again codeword? Over.
-net One One: One Two, One One. Frequency two. Now.
+net One One: One Two, One One. WINDMILL. Now.
 radio Two minutes of hiss on the old frequency, Baxter’s voice coming and going, before Hollis gets One Two across.
 end
 gloss WINDMILL — the codeword from this morning’s O Group: every station changes to frequency two.
@@ -3132,6 +3131,10 @@ enddef
 badge Crash move <b>{level:$crash}</b>{bar:$crash}
 str h12a=Good lad, sir. Keen. Too keen, some days.
 str h12b=He’ll be all right if nobody needs him to be all right in a hurry.
+if $bxkia=1
+str h12a=Watts is doing it, sir. Ask me again in a month.
+str h12b=Baxter would have been all right, sir. Given time.
+end
 radio Corps reserve, in hides in the Hildesheimer Wald since Thursday. A week of routine, until the SPAR route recce on Monday and whatever comes after.
 near notebook,bv,periscope
 while $day<12
@@ -3850,10 +3853,10 @@ say Maj Calloway: Route cards to me on Tuesday. | You write it down.
 say Maj Calloway: Service support. Replen at 1700, daily.
 say Maj Calloway: Mail when it comes. It will come.
 say Maj Calloway: Command and signal. Squadron net from now on.
-say Maj Calloway: Listening silence in the hides: stand-to, contact and casualties only.
+say Maj Calloway: Minimise in the hides: essential traffic only.
 say Maj Calloway: I’m at the command post. Captain Davies is Zero Bravo.
 # the page these orders make in Pemberton's notebook: the first morning O Group in the hides is compared against it
-orders quiet O Group · Thursday 26 April 1990 · 1700 :: Ground | The Hildesheimer Wald. 1st Troop on the south-east edge, by the field. || Situation | Enemy: Third Shock Army mobilised, forward elements in assembly areas. Friendly: 1 and 4 Divisions in front; 3 Division the corps reserve. || Mission | {$m} || Execution | Dig in, cam up, learn every track out of the wood. Monday: route recces south through Sibbesse. Route cards to the Squadron Leader on Tuesday. || Service support | Replen at 1700. || Command and signal | Squadron net. Listening silence in the hides: stand-to, contact and casualties only.
+orders quiet O Group · Thursday 26 April 1990 · 1700 :: Ground | The Hildesheimer Wald. 1st Troop on the south-east edge, by the field. || Situation | Enemy: Third Shock Army mobilised, forward elements in assembly areas. Friendly: 1 and 4 Divisions in front; 3 Division the corps reserve. || Mission | {$m} || Execution | Dig in, cam up, learn every track out of the wood. Monday: route recces south through Sibbesse. Route cards to the Squadron Leader on Tuesday. || Service support | Replen at 1700. || Command and signal | Squadron net. Minimise in the hides: essential traffic only.
 gloss O Group: orders group, always in the same order: ground, situation, mission (said twice), execution, service support, command and signal.
 var ogseen=1
 say Maj Calloway: Questions?
