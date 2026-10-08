@@ -1603,14 +1603,14 @@ say Capt Holley: Questions?
 while $hdone=0
 ask {$hq1=0} Ask “Comms?” || {$hq2=0} Ask “Civilians?” || {$hq3=0} Ask “The Bundeswehr?” || {$hq4=0} Ask “Trouble on the route?” || {$hq5=0} Ask “Air?” || {$hasked=0} Say “No questions, sir” || {$hasked>0} Say nothing
 if $choice=0
-say Pemberton: What if comms go down?
+say Pemberton: What if comms go down, sir?
 say Capt Holley: Make for the RV.
 say Capt Holley: Use ground signals if you have to — orange smoke for friendly, black for not.
 say Capt Holley: Major Calloway knows you’re coming.
 var hq1=1
 end
 if $choice=1
-say Pemberton: What about the civilians?
+say Pemberton: What about the civilians, sir?
 say Capt Holley: If a German Polizei vehicle wants you to stop, stop.
 say Capt Holley: Otherwise, drive on.
 say Capt Holley: If you think you’re seeing a threat, identify first.
@@ -1618,7 +1618,7 @@ say Capt Holley: We are not in the business of shooting refugees, and you do not
 var hq2=1
 end
 if $choice=2
-say Pemberton: What’s the situation with the Bundeswehr?
+say Pemberton: What’s the situation with the Bundeswehr, sir?
 say Capt Holley: They’re moving in parallel.
 say Capt Holley: You’ll see their kit on the autobahn.
 say Capt Holley: Stay out of each other’s way.
@@ -1626,7 +1626,7 @@ say Capt Holley: Their liaison is at Calloway’s harbour if you need anything.
 var hq3=1
 end
 if $choice=3
-say Pemberton: Are we expecting trouble on the route?
+say Pemberton: Are we expecting trouble on the route, sir?
 say Capt Holley: Spetsnaz are reported to be operating ahead of any crossing.
 say Capt Holley: We’ve had nothing solid in this sector.
 say Capt Holley: But you’ll want your hatches manned and your commanders alert.
@@ -1637,7 +1637,7 @@ say Capt Holley: You’ll work it out.
 var hq4=1
 end
 if $choice=4
-say Pemberton: What about air?
+say Pemberton: What about air, sir?
 say Capt Holley: RAF is up. The Soviets aren’t, yet.
 say Capt Holley: If you see a low-flying aircraft, identify before reacting.
 say Capt Holley: The Bundeswehr is moving Alpha Jets around at low level.
@@ -2555,12 +2555,12 @@ say Sgt Hollis: Same as yesterday, sir. Nothing’s happening, very loudly.
 end
 end
 if $brew=1
-say Sgt Hollis: One Two’s been writing letters, sir. Four of them.
+say Sgt Hollis: One Two’s been writing letters, sir. Six of them.
 say Sgt Hollis: His mum, his nan, and Sarah. Twice a week.
-ask Ask “Two girls?” || Say “Good for him”
+ask Ask “Every week?” || Say “Good for him”
 if $choice=0
-say Pemberton: Two girls?
-say Sgt Hollis: He’ll find out, sir. They always do.
+say Pemberton: Every week?
+say Sgt Hollis: Every week, sir. Regular as stand-to.
 end
 if $choice=1
 say Pemberton: Good for him.
@@ -2761,14 +2761,14 @@ ask Say nothing.
 end
 end
 if $pick=1
-say Pemberton: What’s the latest from Stockholm?
+say Pemberton: What’s the latest from Stockholm, sir?
 say Maj Calloway: Talks continue.
 say Maj Calloway: That’s all Brigade tells me, and I suspect it’s all they know.
 var q1=1
 say Maj Calloway: Any more questions?
 end
 if $pick=2
-say Pemberton: How long do we sit here?
+say Pemberton: How long do we sit here, sir?
 say Maj Calloway: As long as Corps wants a reserve.
 say Maj Calloway: Which is to say, until it doesn’t.
 var q2=1
@@ -3807,12 +3807,12 @@ move b 8.5,10.2 2.8,10.2 speed=0.5 delay=3
 say Capt Davies: Pemberton. You found us. Splendid.
 say Capt Davies: Yours is the far edge of the wood, by the field. Lovely spot.
 say Capt Davies: Nets up before dark, or the Boss will have kittens. | The Boss: the squadron leader, Major Calloway.
-ask Say “Thank you” || Ask “Crusher?”
+ask Say “Thank you, sir” || Ask “Crusher, sir?”
 if $choice=1
-say Pemberton: Crusher?
+say Pemberton: Crusher, sir?
 say Capt Davies: Lost in the mists of time. | He smooths the front of his smock.
 else
-say Pemberton: Thank you.
+say Pemberton: Thank you, sir.
 end
 say Capt Davies: O Group at the command post, seventeen hundred.
 say Capt Davies: He notices who’s late.
