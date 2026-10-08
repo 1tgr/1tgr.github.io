@@ -729,7 +729,7 @@ radio BBC World Service: “Reports are emerging of an incident involving Britis
 wait 1400
 radio AFN: “American officials say the incident in northern Germany this afternoon involved an apparent ambush of a British military patrol by what U.S. intelligence describes as Soviet special forces personnel operating in civilian disguise. The Pentagon declined to confirm or deny the reports.”
 wait 1400
-radio BBC World Service, ten o’clock: “The Defence Secretary, Mr Patten, declined tonight to confirm reports of a ‘serious incident’ involving British forces in Germany. He will make a statement to the House tomorrow.”
+radio BBC World Service, later: “The Defence Secretary, Mr Patten, declined tonight to confirm reports of a ‘serious incident’ involving British forces in Germany. He will make a statement to the House tomorrow.”
 wait 1400
 title
 replay Play again
@@ -1292,7 +1292,7 @@ hud 0915
 net Two Zero: Hello Zero, this is Two Zero. Contact, wait out.
 cam 9.3,5.2,13
 wait 700
-net Two Zero: Zero, Two Zero. Contact. Two BRDM, grid five four seven three one two, one thousand, moving west. Engaging. Out.
+net Two Zero: Zero, Two Zero. Contact. Two BRDM, one thousand, moving west. Engaging. Out.
 near togs,periscope,rangecard
 net One One: One One. Stand by.
 fire s0 at 18,2
@@ -1552,7 +1552,7 @@ say Capt Holley: Right. Come round here. Mind the map. | A map drawn in chalk, a
 say Capt Holley: You’ve come from Sennelager. Davies has spoken to you.
 say Capt Holley: He’s gone ahead. Left me his Rover and the stragglers.
 say Capt Holley: We are here. | His boot taps Detmold.
-say Capt Holley: Foreign Secretary in Stockholm, agreement within days.
+say Capt Holley: Foreign Secretary going to Stockholm, agreement within days.
 say Capt Holley: You’ll have noticed the squadron’s gone forward in a hurry, while the radio insists otherwise.
 say Capt Holley: Between you, me and Hermann, we don’t know. | His boot taps the little chalk figure on the peak.
 say Capt Holley: So we go forward. | He looks up from the map and holds your eye for a moment, then looks down again.
@@ -2397,7 +2397,7 @@ camera: 5.2,7.2,6.2
 night: 0.55
 levels: 40,100
 calendar: Friday 27 April 1990 | Saturday 28 April 1990 | Sunday 29 April 1990 | Monday 30 April 1990 | Tuesday 1 May 1990 | Wednesday 2 May 1990 | Thursday 3 May 1990 | Friday 4 May 1990 | Saturday 5 May 1990 | Sunday 6 May 1990 | Monday 7 May 1990 | Tuesday 8 May 1990 | Wednesday 9 May 1990
-callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12
+callsigns: Zero=0, Zero Alpha=0A, One One=11, One Two=12, Two Zero=20, Three Zero=30
 crew: Gunner=G, Loader=L, Driver=D
 people: Maj Calloway=#6a7f9a:calloway, Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Tpr Watts=#8a7a5a, Pemberton=#5aa7e0:pemberton, The farmer=#8a6d3b, Capt Davies=#e59b3a:davies, Hptm Weber=#5b6b4a
 vars: bxkia=0, iqkia=0, iqwia=0, drwia=0, childok=0, deleg=0, tcw=0, tpairs=0, hrun=0, hmissed=0, cnoted=0, ogseen=0, obs=0, knowtracks=0, posrange=0, posgood=0, sawmerc=0, foundvan=0, ourroute=0, logbridge=0, logjunction=0, day=0, crash=10, gas=0, gun=0, contact=0, fatigue=0, debt=0, rain=0, oc=0, checks=0
@@ -3171,7 +3171,12 @@ radio To the east, the horizon flickers. No sound yet.
 wait 2200
 radio BG net, Zero: “Hello all stations, this is Zero. It’s started. Stand to. Confirm locations. Out.”
 wait 1400
-net Zero Alpha: Hello all stations, this is Zero Alpha. Hold present locations. Closed down. Out.
+net Zero Alpha: Hello all stations, this is Zero Alpha. Stand-To-Charlie, I say again, Stand-To-Charlie. Acknowledge, over.
+choose One Zero, wilco.
+net Two Zero: Two Zero, wilco.
+net Three Zero: Three Zero, wilco.
+net Zero Alpha: Zero Alpha, out.
+gloss Stand-To-Charlie — the alert state from last night’s orders: hold present locations, closed down, hold fire unless fired on or ordered.
 net One One: One One. That’s not exercise.
 wait 900
 if $crash<40
