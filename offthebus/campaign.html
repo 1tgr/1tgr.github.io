@@ -469,7 +469,6 @@ end
 wait 1200
 stamp 1710
 hud 1710
-set sm1,sm2,sm3,sm4 hidden=1
 cam 19,8.8,9
 set lynx1 hidden=0
 move lynx1 15.5,12.5 speed=1.4
@@ -4207,7 +4206,7 @@ function drawGround(){ const g=SC().map.ground, [x0,x1]=g.x, [y0,y1]=g.y;
 
 /* effects */
 const fx=[];
-const puff=(x,y,o={})=>fx.push({x,y,r:o.r??6,grow:o.grow??40,life:o.life??1.4,t:0,col:o.col??'210,195,160',a:o.a??.75,vy:o.vy??-8});
+const puff=(x,y,o={})=>fx.push({x,y,r:o.r??6,grow:o.grow??40,life:o.life??1.4,t:0,col:o.col??'210,195,160',a:o.a??.75,vy:o.vy??-8,vx:o.vx??0});
 const flash=(x,y,r=14)=>fx.push({x,y,r,grow:-r*3,life:.25,t:0,col:'255,236,170',a:1,vy:0});
 let tracer=null, missile=null;
 
@@ -4416,15 +4415,18 @@ function frame(now){
   const items=[...trees.map(t=>({k:t.x+t.y,f:()=>drawTree(t)})),...(sc.map.marks||[]).filter(m=>m.type!=='pad'&&m.type!=='parapet'&&m.type!=='chalk').map(m=>({k:m.x+m.y,f:()=>drawMark(m)})),
     ...w.units.filter(u=>!u.hidden).map(u=>({k:u.x+u.y+.01,f:()=>DRAW[u.type](u)}))];
   items.sort((a,b)=>a.k-b.k).forEach(i=>i.f());
-  for(const u of w.units){ if(u.hidden) continue; const p=iso(u.x,u.y);
+  for(const u of w.units){ if(u.hidden){ if(u.type==='smoke') delete V(u).t0; continue; } const p=iso(u.x,u.y);
     if(u.smoke&&Math.random()<dt*7) puff(p[0]+(Math.random()-.5)*6,p[1]-tw*.2,{r:3,grow:tw*.35,life:3,col:'55,50,46',a:.55,vy:-9});
-    if(u.type==='smoke'&&Math.random()<dt*14) puff(p[0]+(Math.random()-.5)*tw*2.2,p[1]-tw*.12+(Math.random()-.5)*tw*.5,{r:tw*.12,grow:tw*.8,life:4.5,col:'228,228,222',a:.75,vy:-3});
+    if(u.type==='smoke'){   // one volley from the dischargers: blooms in ~3 s, holds, thins out by ~40 s, drifting downwind
+      const v=V(u); if(v.t0==null) v.t0=now; const age=(now-v.t0)/1000;
+      const rate=age<3?40:age<20?12:age<40?12*(40-age)/20:0;
+      if(Math.random()<dt*rate) puff(p[0]+(Math.random()-.5)*tw*2.2,p[1]-tw*.12+(Math.random()-.5)*tw*.5,{r:tw*(age<3?.2:.12),grow:tw*.9,life:6,col:'228,228,222',a:age<3?.85:.7,vy:-2.2,vx:3}); }
     if(u.blossom&&Math.random()<dt*1.5) puff(p[0]+(Math.random()-.5)*tw,p[1]-tw*.3,{r:1.5,grow:0,life:2.5,col:'245,200,215',a:.9,vy:4}); }
   for(const t of trees) if(t.blossom&&Math.random()<dt*1.5){ const p=iso(t.x+(Math.random()-.5),t.y+(Math.random()-.5)); puff(p[0],p[1]-tw*.3,{r:1.5,grow:0,life:2.5,col:'245,200,215',a:.9,vy:4}); }
   if(tracer){ tracer.t+=dt; const k=Math.min(1,tracer.t/.18), a=tracer.a, b=tracer.b(); cx.strokeStyle=`rgba(255,240,200,${Math.max(0,1-tracer.t*3)})`; cx.lineWidth=2; cx.beginPath(); cx.moveTo(a[0],a[1]); cx.lineTo(a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k); cx.stroke(); if(tracer.t>.35) tracer=null; }
   if(missile){ missile.t+=dt; const k=Math.min(1,missile.t/1.6), a=missile.a, b=iso(...missile.to); const x=a[0]+(b[0]-a[0])*k, y=a[1]+(b[1]-a[1])*k-Math.sin(k*Math.PI)*tw*.4;
     puff(x,y,{r:1.5,grow:4,life:1.2,col:'235,235,235',a:.7,vy:0}); cx.fillStyle='#ffd27a'; cx.beginPath(); cx.arc(x,y,2.5,0,7); cx.fill(); if(k>=1) missile=null; }
-  for(let i=fx.length-1;i>=0;i--){ const p=fx[i]; p.t+=dt; if(p.t>p.life){fx.splice(i,1);continue;} const k=p.t/p.life, r=Math.max(1,p.r+p.grow*k); cx.fillStyle=`rgba(${p.col},${p.a*(1-k)})`; cx.beginPath(); cx.arc(p.x,p.y+p.vy*p.t*3,r,0,7); cx.fill(); }
+  for(let i=fx.length-1;i>=0;i--){ const p=fx[i]; p.t+=dt; if(p.t>p.life){fx.splice(i,1);continue;} const k=p.t/p.life, r=Math.max(1,p.r+p.grow*k); cx.fillStyle=`rgba(${p.col},${p.a*(1-k)})`; cx.beginPath(); cx.arc(p.x+p.vx*p.t*3,p.y+p.vy*p.t*3,r,0,7); cx.fill(); }
   if(night>.01){ cx.fillStyle=`rgba(12,22,52,${.62*night})`; cx.fillRect(0,0,W,H); }
   if(canAct()){ const seen={}; for(const p of core.nearProps()){ const u=p.unit&&unitById(p.unit); let pos=p.at||(u&&[u.x,u.y]); if(!pos) continue; const key=pos.map(v=>v.toFixed(1)).join(); const k=seen[key]=(seen[key]||0)+1; pos=[pos[0]+(k-1)*.45,pos[1]-(k-1)*.45]; const [sx,sy]=iso(...pos);
     const pulse=1+Math.sin(now/300)*.12, r=Math.max(9,tw*.14)*pulse; cx.fillStyle='rgba(253,247,228,.92)'; cx.strokeStyle='#e3a33a'; cx.lineWidth=2;
