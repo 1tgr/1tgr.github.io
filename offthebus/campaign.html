@@ -56,7 +56,9 @@ canvas{display:block;width:100%;height:100%}
 .head .s{font-size:12px;color:var(--muted)}
 
 /* thread */
-.thread{flex:1 1 auto;overflow-y:auto;padding:10px 12px 6px;display:flex;flex-direction:column;gap:3px;overscroll-behavior:contain}
+/* the net traffic, the look-at chips and the replies scroll together */
+.feed{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column}
+.thread{flex:1 0 auto;padding:10px 12px 6px;display:flex;flex-direction:column;gap:3px}
 .stamp{align-self:center;text-align:center;color:var(--muted);font-size:11.5px;margin:10px 0 4px;max-width:88%;line-height:1.35}
 .stamp b{font-weight:600}
 .scroll{align-self:center;text-align:center;color:var(--muted);font-size:12.5px;font-style:italic;margin:6px 0;max-width:86%;line-height:1.4}
@@ -199,9 +201,11 @@ canvas{display:block;width:100%;height:100%}
     <div class="title" id="end"><div><div class="big" id="endBig"></div><div class="sub" id="endSub"></div></div></div>
   </div>
   <div class="head"><div class="avatar" id="av"></div><div><div class="n" id="hn"></div><div class="s" id="hs"></div></div></div>
-  <div class="thread" id="thread" aria-live="polite"></div>
-  <div class="props" id="props"></div>
-  <div class="replies" id="replies"></div>
+  <div class="feed" id="feed">
+    <div class="thread" id="thread" aria-live="polite"></div>
+    <div class="props" id="props"></div>
+    <div class="replies" id="replies"></div>
+  </div>
   <button class="reopen" id="acReopen" hidden></button>
   <div class="pop" id="pop" hidden></div>
   <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
@@ -4287,7 +4291,12 @@ function applyChrome(){
 const thread=$('thread'), replies=$('replies');
 let lastFrom=null, lastDelivered=null, skip=false, speaking=false;
 thread.addEventListener('click',()=>{ if(speaking) skip=true; });
-const scrollDown=()=>{ thread.scrollTop=thread.scrollHeight; };
+const feed=$('feed');
+/* scroll to the bottom, but never so far that the latest entry goes off the top: a long list of replies is scrolled to, not over the line before it */
+function lastEntry(){ let e=thread.lastElementChild; if(e&&e.classList.contains('delivered')) e=e.previousElementSibling; if(e&&e.previousElementSibling&&e.previousElementSibling.classList.contains('from')) e=e.previousElementSibling; return e; }
+const scrollDown=()=>{ const max=feed.scrollHeight-feed.clientHeight, e=lastEntry(); let t=max;
+  if(e){ const top=e.getBoundingClientRect().top-feed.getBoundingClientRect().top+feed.scrollTop-8; t=Math.min(max,Math.max(0,top)); }
+  feed.scrollTop=t; };
 function el(cls,txt,html){ const d=document.createElement('div'); d.className=cls; if(html!=null) d.innerHTML=html; else d.textContent=txt; return d; }
 function add(e){ thread.appendChild(e); scrollDown(); return e; }
 const NET_WPM=380, IC_WPM=250;
