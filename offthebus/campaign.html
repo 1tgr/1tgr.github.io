@@ -227,7 +227,7 @@ choose One One, One Two, One Zero. Line ahead. One Two lead. Out.
 to b 11,7.5 a 9.6,7.5 p 8.2,7.5 speed=0.8 stagger=0.3
 cam 8,7.1,6.4
 wait 1800
-radio Baxter’s tank leads, then Hollis, then you. The road bends right around a stand of pines.
+radio The road bends right around a stand of pines.
 if $sawmerc=1
 stamp A grey Mercedes with H plates, across the road ahead. You have seen it before: the farm track, two days ago.
 end
@@ -238,7 +238,6 @@ radio Round the bend, the road is blocked. A Mercedes has nudged the rear corner
 hear Mercedes driver: Sind Sie blind?
 gloss “Are you blind?”
 hear Trabant driver: Nein. Nein.
-radio Two men argue in the road. A woman and a little girl stand on the verge by the Trabant. A suitcase has burst on the grass.
 wait 1200
 net One One: One Zero, One One. Hold on a minute. Take a look.
 wait 1600
@@ -271,7 +270,10 @@ to b 14,7.5 a 12.6,7.5 p 11.2,7.5 speed=0.5
 waitmove b,a,p
 radio The troop stops seventy metres short.
 wait 1600
-radio The father lifts a hand to the side of his head, as if to brush away a fly. In the pines behind him, something moves that is not a branch.
+radio The father lifts a hand to the side of his head, as if to brush away a fly.
+set mg hidden=0
+wait 700
+set mg hidden=1
 net One One: One Zero, One One. Movement, treeline right. Not wind.
 choose One One, One Two, One Zero. Treeline right. Engage. Out. || One One, One Two, One Zero. Reverse. Now. Out. || hint: Keep watching
 if $choice=0
@@ -298,18 +300,18 @@ set rpg hidden=0
 missile rpg 17.6,8.4
 wait 1200
 burst 17.6,8.4 shake
-radio From the pines, a flash and a streak of smoke into One Two’s side, behind the turret.
 net One One: One Zero, One One. Contact. Treeline, north. One Two’s been hit.
+do contact
 do immediate
 do sniper
 do grenades
 do reaction
-radio The Mercedes driver has a rifle out from under his coat. Hollis’s coax finds him before he can use it.
+radio The Mercedes driver has a rifle out from under his coat.
+fire a at mdriver light
 set mdriver down=1
 var driverkia=1
 move father 21.5,5.6 22.5,4 speed=1.2
 move mother 21.6,6 22.6,4.4 speed=0.9
-radio The father and the mother run for the pines. They are gone before anyone can turn a gun on them.
 wait 1600
 set father,mother hidden=1
 net One Two: One Two. Watts. Commander’s dead. Loader and driver hit. Wait out.
@@ -340,15 +342,15 @@ missile rpg 15.2,7.6
 wait 1200
 burst 15.2,7.6 shake
 radio An RPG from the pines bursts against One Two’s front. The armour holds.
+do contact
 do immediate
 do sniper
 do reaction
-radio The Mercedes driver is caught in the road by Hollis’s coax.
+fire a at mdriver light
 set mdriver down=1
 var driverkia=1
 move father 21.5,5.6 22.5,4 speed=1.2
 move mother 21.6,6 22.6,4.4 speed=0.9
-radio The father and the mother run for the pines and are gone.
 wait 1600
 set father,mother hidden=1
 net One Two: One Two. Watts. Commander and loader down. They’re not moving. Wait out.
@@ -367,17 +369,17 @@ missile rpg 14.2,7.4
 wait 1200
 burst 14.2,7.4 shake
 radio An RPG from the pines bursts on One Two’s front plate. The tank rocks. The armour holds.
+do contact
 do immediate
 do sniper
 do grenades
 var iqwia=1
 do reaction
-radio The Mercedes driver is cut down in the road by Hollis’s coax.
+fire a at mdriver light
 set mdriver down=1
 var driverkia=1
 move father 21.5,5.6 22.5,4 speed=1.2
 move mother 21.6,6 22.6,4.4 speed=0.9
-radio The father and the mother run for the pines and are gone.
 wait 1600
 set father,mother hidden=1
 net One Two: One Two. Loader hit, not bad. Still in action. Out.
@@ -400,14 +402,14 @@ wait 300
 fire b at 25.5,4.6
 burst 25.5,4.6
 set rpg,mg,snp,flank hidden=0
-radio Coax and HESH into the pines. Splinters and smoke where the trees meet the road. Figures that were not there a moment ago are moving in them.
-radio The Mercedes driver pulls a rifle from under his coat. Hollis’s coax cuts him down.
+do contact
+radio The Mercedes driver pulls a rifle from under his coat.
+fire a at mdriver light
 set mdriver down=1
 var driverkia=1
 missile rpg 16.5,9.5
 wait 1200
 burst 16.5,9.5
-radio An RPG streaks out of the pines and bursts in the field behind One Two.
 radio The father has something in his hand and is pressing it. Nothing happens.
 if $out=5
 do sniper
@@ -418,9 +420,10 @@ fire a at 21.2,7.6 light
 radio A burst of coax goes across the road at the father as he runs. He goes down, still moving. The burst goes on past him.
 set father down=1
 var fathercap=1
-set rpg,mg,snp,flank hidden=1
+move rpg,mg,snp,flank 25,1 speed=1.3
 set sp1,sp2,sp3 hidden=0
-radio The rest are gone, north, at a run.
+wait 1600
+set rpg,mg,snp,flank hidden=1
 var spk=3
 wait 1600
 radio When the firing stops, the mother is lying beside the Trabant, and so is the child. Neither of them is moving.
@@ -432,10 +435,13 @@ end
 end
 end
 
+if $out!=3
+do sitrep
+end
+
 # 3 · Reverse and call it in
 if $out=3
 set sm2,sm3,sm4 hidden=0
-radio Smoke grenades from all three turrets. A white wall goes up between the road and the pines, and the troop reverses behind it, back round the bend, and stops two hundred metres short.
 to b 6,7.5 a 4.6,7.5 p 3.2,7.5 speed=0.7
 cam 9,7.1,6.4
 waitmove b,a,p
@@ -449,13 +455,12 @@ move mg 24.2,2 speed=0.7
 move snp 25.8,1.8 speed=0.7
 move flank 27.4,2.2 speed=0.7
 set sm2,sm3,sm4 hidden=1
-radio The smoke thins. Through the gap at the bend: men in the pines, more than you thought, moving north and away from the road. They aren’t hurrying.
+radio The smoke thins. Through the gap at the bend: men in the pines, moving north, away from the road. They aren’t hurrying.
 move mdriver 21,5 22,3 speed=0.9
 move father 21.5,5.6 22.5,3 speed=0.9
-radio The Mercedes driver and the father walk, then run, into the trees.
 wait 2400
 set rpg,mg,snp,flank,mdriver,father hidden=1
-radio The woman sits down on the verge with the child. She does not try to go anywhere.
+set mother,child sit=1
 var childok=1
 var mumcap=1
 end
@@ -468,7 +473,6 @@ set sm1,sm2,sm3,sm4 hidden=1
 cam 19,8.8,9
 set lynx1 hidden=0
 move lynx1 15.5,12.5 speed=1.4
-radio A Lynx comes in low over the trees and puts down in the field.
 waitmove lynx1
 set lynx1 alt=0
 set fj1,fj2,pol hidden=0
@@ -612,12 +616,52 @@ end
 end
 enddef
 
+def contact
+choose Zero, One Zero. Contact, wait out.
+net Zero: Zero.
+enddef
+
+def sitrep
+str sre=Enemy in civilian clothes, gone north on foot.
+if $spk=1
+str sre=Enemy in civilian clothes, one dead, the rest gone north on foot.
+end
+if $spk=2
+str sre=Enemy in civilian clothes, two dead, the rest gone north on foot.
+end
+if $spk=3
+str sre=Enemy in civilian clothes, three dead and one wounded prisoner, the rest gone north on foot.
+end
+str sro=No casualties.
+str srr=Request the Feldjäger.
+if $iqwia=1
+str sro=One wounded.
+str srr=Request casevac and the Feldjäger.
+end
+if $out=1
+str sro=One Two hit and immobilised. One dead, two wounded.
+end
+if $out=4
+str sro=Two dead from One Two.
+str srr=Request casevac and the Feldjäger.
+end
+str src=One child dead.
+if $mumkia=1
+str src=A woman and a child dead.
+end
+choose Zero, One Zero. Ambush, Sibbesse road, at the bend three kilometres short of the village. {$sre} {$sro} {$src} {$srr} Over.
+if $out=6
+net Zero: Zero. Lynx on its way. Reaction force and Feldjäger on their way. Hold where you are. Out.
+else
+net Zero: Zero. Lynx on its way for your casualties. Reaction force and Feldjäger on their way. Hold where you are. Out.
+end
+enddef
+
 def immediate
 choose ic: Smoke! || hint: Get fire down first
 if $choice=0
 var smoked=1
 set sm1,sm2,sm3,sm4 hidden=0
-radio The dischargers on all three turrets fire together. In three seconds there is a white wall between the troop and the pines.
 end
 enddef
 
@@ -649,7 +693,6 @@ end
 if $spk>1
 set sp2 hidden=0
 end
-radio Figures go back through the pines, north, and are gone.
 enddef
 
 ---props
@@ -3837,7 +3880,7 @@ function createCore({scenes, campaign, io}){
       case 'gloss': await emit({k:'gloss',text:a}); break;
       case 'net': case 'ic': case 'hear': { const [n,t]=nameText(a); await emit({k:SPEECH[cmd],who:n,text:cmd==='net'?interp(t):t}); hook.printed&&hook.printed(); break; }
       case 'me': case 'icme': await emit({k:SPEECH[cmd],text:a}); hook.printed&&hook.printed(); break;
-      case 'choose': { state.pemSpoke=false; const opts=parseOpts(a); const i=await io.choose(opts,{}); hook.choice&&hook.choice(i); vars.choice=i; await chooseEffect(opts[i]); hook.printed&&hook.printed(); break; }
+      case 'choose': { state.pemSpoke=false; const opts=parseOpts(interp(a)); const i=await io.choose(opts,{}); hook.choice&&hook.choice(i); vars.choice=i; await chooseEffect(opts[i]); hook.printed&&hook.printed(); break; }
       case 'say': { const [n,t]=nameText(a); const [txt,gl]=interp(t).split(' | '); const me=S().head.player||'Pemberton';
         if(n===me && !inVerb && state.ac.show && txt!=='…' && !/^[“"]/.test(txt) && !state.lastAsked && !state.pemSpoke){ await io.ask([{text:txt}]); }   // a line that opens a conversation was already chosen
         if(n===me){ state.lastAsked=false; state.pemSpoke=true; } else state.pemSpoke=false;
@@ -3917,7 +3960,7 @@ function createCore({scenes, campaign, io}){
     const d=f.done;
     if(ins.cmd==='say'){ if(!d.printed) return run1('say',ins.arg); await io.tap(); return; }
     if(SPEECH[ins.cmd]) return;
-    if(ins.cmd==='choose'){ const o=parseOpts(ins.arg)[d.chosen]; state.vars.choice=d.chosen; if(!d.printed){ await chooseEffect(o); f.done.printed=1; save(); } return; }
+    if(ins.cmd==='choose'){ const o=parseOpts(interp(ins.arg))[d.chosen]; state.vars.choice=d.chosen; if(!d.printed){ await chooseEffect(o); f.done.printed=1; save(); } return; }
     if(ins.cmd==='ask'){ state.vars.choice=d.chosen; state.lastAsked=true; return; }
     if(ins.cmd==='tap'||ins.cmd==='cards'){ state.vars.choice=d.chosen; return; }
     if(ins.cmd==='pick'){ setPicked(state.vars,parsePick(ins.arg).items,d.chosen); state.lastAsked=true; return; }
