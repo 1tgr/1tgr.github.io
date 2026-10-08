@@ -997,7 +997,7 @@ gloss “Are you blind?”
 hear Mercedes driver: Versicherung — haben Sie Versicherung?
 gloss “Insurance — do you have insurance?”
 hear Trabant driver: Nein.
-gloss “No.” Their East German state insurance means nothing on a West German road. They are from the other side.
+gloss “No.”
 net Zero: One Zero, Zero. Sitrep your location, over.
 choose Zero, One Zero. Civilian RTA blocking the road. No casualties. No way through. Over.
 gloss RTA — road traffic accident.
@@ -1024,7 +1024,7 @@ radio The mother pulls the child closer as the tanks come off the road.
 wait 1400
 radio Both drivers stop arguing and watch. The Trabant driver glances at the tanks, once.
 wait 1600
-radio As the tanks pass, the child waves. Once. You can’t tell whether it’s hope, or fear, or neither.
+radio As the tanks pass, the child waves. Once. Her other hand stays fisted in her mother’s coat.
 radio In One Two’s cupola, Baxter looks towards the family for a moment, then looks ahead again.
 waitmove a,p,b
 set a,p,b trail=0
@@ -1050,7 +1050,7 @@ kit: yes
 icon: 📓
 verb: Write in
 look: radio Your notebook. Under the range day: “1730 depart Sennelager for Detmold.”
-use: radio You write: “RTA on B-road, civilian, no cas. Bypassed through field.” It looks smaller written down.
+use: radio You write: “RTA on B-road, civilian, no cas. Bypassed through field.” Two lines. You leave the rest of the page blank.
 @traffic the traffic across the fields
 at: 6,1.5
 icon: 🚗
@@ -1058,7 +1058,7 @@ look: radio Cars on the parallel road, heading west: a Golf with a roof box, a w
 @merc the Mercedes
 unit: merc
 icon: 🚘
-look: radio A cream Mercedes saloon, West German plates, a dent in the front wing. Its driver is in a dark suit and very angry.
+look: radio A cream Mercedes saloon, West German plates, a dent in the front wing. Its driver, in a dark suit, is jabbing a finger at the Trabant’s bumper.
 @trabant the Trabant
 unit: trabant
 icon: 🚙
@@ -1066,7 +1066,7 @@ look: radio A Trabant 601, pale green, roof rack piled with suitcases and a roll
 @plate the number plate
 at: 16.2,8.1
 icon: 🔍
-look: radio Black on white, an oval “DDR” sticker beside it. Another country, until very recently. Possibly still.
+look: radio Black on white, an oval “DDR” sticker beside it.
 @suitcase the suitcase
 at: 14.6,8.4
 icon: 🧳
@@ -1086,7 +1086,7 @@ look: radio Rapeseed in full bloom, bright yellow, waist high. Somebody’s crop
 @tracks the tracks
 at: 15.6,11.6
 icon: 🔍
-look: radio Three pairs of brown tracks through the yellow, in a wedge. Anyone driving this road tomorrow will see them.
+look: radio Three pairs of brown tracks through the yellow, in a wedge, the stalks flattened and smeared into the earth.
 @gaps the hedge gaps
 at: 19.2,9.0
 icon: 🔍
@@ -1239,7 +1239,7 @@ look: radio The Detmold Schloss, behind its moat. The tanks fill the street outs
 @quarters the married quarters
 at: 50,5.9
 icon: 🏠
-look: radio The families flew home on Saturday. Somebody has left the milk-bottle carrier out, empty.
+look: radio Curtains drawn. Somebody has left the milk-bottle carrier out, empty.
 @bike the bike
 at: 52,5.9
 icon: 🚲
@@ -1278,12 +1278,12 @@ if $bxkia=0
 net One Two: …
 gloss One Two pressed his pressel, the press-to-talk switch, and said nothing.
 end
-radio The waiting begins.
+radio The net goes quiet but for the carrier hiss.
 wait 1400
 stamp 0900
 hud 0900
 net One One: One One.
-radio Nothing else. Hollis is letting you know he is there.
+radio Nothing else. In the next hide, Hollis’s head and shoulders in his cupola, turned your way.
 choose One Zero.
 wait 1500
 
@@ -1336,12 +1336,12 @@ hud 0930
 set sm6,sm7,sm8 hidden=1
 set t80,bmp1,bmp2,bmp3,bmp4 hidden=0
 move t80 12.6,7.0 speed=0.55
-radio A whine carries before the dust: a gas turbine. A T-80 crests the rise at fourteen hundred metres. It is on the move and has not seen you.
+radio A whine carries before the dust: a gas turbine. A T-80 crests the rise at fourteen hundred metres. It is on the move, turret pointed along the track, away from the wood.
 gloss T-80 — Soviet main battle tank, gas-turbine engine. Engage with FIN.
 if $obs>39
-radio You had it identified before anyone called it. A fortnight of looking at fields has taught your eyes what belongs in them.
+radio Low turret, long gun, that whine: T-80. Nobody else has called it yet.
 else
-radio For a long second you aren’t sure it isn’t one of ours. Then the low turret, the long gun: a T-80.
+radio For a long second it is only a shape in the dust. Then the low turret, the long gun: a T-80.
 end
 wait 1800
 choose Engage. || hint: Wait.
@@ -1404,8 +1404,9 @@ else
 missile bmp4 3.6,5.8
 wait 1700
 burst 3.6,5.8 shake
+radio It goes into the ground thirty metres to your left.
 net One One: One Zero, One One. That was close.
-gloss AT-5 Spandrel — a wire-guided anti-tank missile. The operator rushed it; it passed thirty metres wide.
+gloss AT-5 Spandrel — a wire-guided anti-tank missile. The operator steers it all the way in, and has to see both the missile and his target.
 fire b at bmp4
 set bmp4 smoke=1
 move bmp4 15.8,9.8
@@ -1514,11 +1515,11 @@ icon: ☕
 verb: Brew up with
 look: radio The boiling vessel, the BV, built into the turret: hot water for tea and boil-in-the-bag food without leaving the tank.
 use: radio The water takes four minutes. You make three teas and pass two down. Your loader says it is the best tea he has ever had. He says that every time.
-use: gloss Brew-up — a brew of tea. Also a tank catching fire, as the T-80 did. Nobody in the turret mentions it.
+use: gloss Brew-up — a brew of tea. Also army slang for a tank catching fire.
 @cigarette Hollis’s cigarette
 unit: a
 icon: 🚬
-look: radio Hollis in his cupola, cigarette in his hand, looking east at the smoke over the rise. It is the first time you have seen him smoke.
+look: radio Hollis in his cupola, a cigarette burning down between his fingers, looking east at the smoke over the rise.
 </script>
 <script type="text/plain" class="scene" data-name="holley">title: Off the Bus — Captain Holley's briefing
 hud: 1630 | 25 April 1990
@@ -1540,11 +1541,11 @@ cam 5,6,7.5
 waitmove a,p,b
 radio REME are waiting. They take over the moment the hatches open: track tension, fuel, ammunition, periscopes. Compressors, ratchets, a shout in broad Yorkshire.
 near chalkmap,rover,reme
-radio In the yard, a Land Rover with “44” on the door, parked at an angle. A captain in a green beret stands by the bonnet, looking down at a chalk drawing on the tarmac at his feet. He sees you coming and doesn’t move. He lets you walk the distance.
+radio In the yard, a Land Rover with “44” on the door, parked at an angle. A captain in a green beret stands by the bonnet, looking down at a chalk drawing on the tarmac at his feet. He sees you coming and doesn’t move. His eyes stay on the chalk until you halt.
 cam 7.6,8.4,7
 choose act: Salute
-radio You halt and salute. Sandhurst-clean, possibly slightly over-keen.
-say Capt Holley: Pemberton, is it? | He returns the salute, correctly but unhurried. Jungle-green camouflage, a green Commando beret, about fifty. Nobody explains any of it.
+radio You halt and salute. Longest way up, shortest way down, as taught.
+say Capt Holley: Pemberton, is it? | He returns the salute, correctly but unhurried. Jungle-green camouflage, a green Commando beret, about fifty.
 ask Say “Sir”
 say Pemberton: Sir.
 say Capt Holley: Right. Come round here. Mind the map. | A map drawn in chalk, about three metres square, smudged where he has walked across it. He points with the toe of his boot.
@@ -1554,7 +1555,7 @@ say Capt Holley: We are here. | His boot taps Detmold.
 say Capt Holley: Foreign Secretary in Stockholm, agreement within days.
 say Capt Holley: You’ll have noticed the squadron’s gone forward in a hurry, while the radio insists otherwise.
 say Capt Holley: Between you, me and Hermann, we don’t know. | His boot taps the little chalk figure on the peak.
-say Capt Holley: So we go forward. | Not a hard look. Just direct. The first time anyone in uniform has told you the radio is not the whole picture.
+say Capt Holley: So we go forward. | He looks up from the map and holds your eye for a moment, then looks down again.
 say Capt Holley: Third Shock Army opposite this sector.
 say Capt Holley: Tanks, motor rifle, the usual. Heavy.
 say Capt Holley: They’ve been mobilising for three weeks.
@@ -1570,7 +1571,7 @@ say Capt Holley: He’ll have your orders when you arrive. You’re his now.
 say Capt Holley: Mortar section will catch up with you on the road.
 say Capt Holley: Sergeant Coates and his lads.
 say Capt Holley: They’ll fall in behind your three tanks.
-say Capt Holley: Worth a brew when you meet him. | He says this warmly. Coates is someone he knows and likes.
+say Capt Holley: Worth a brew when you meet him. | Half a smile.
 say Capt Holley: Route is the B1.
 say Capt Holley: Call it sixty miles.
 say Capt Holley: Should take you the rest of today and part of tomorrow, depending on traffic. | His boot traces the dotted route.
@@ -1581,7 +1582,7 @@ say Capt Holley: Don’t get tangled in either.
 say Capt Holley: Stay on the road, keep your spacing, don’t dawdle.
 say Capt Holley: Hermann’s behind you once you’re out of town.
 say Capt Holley: Keep the Teutoburger Wald on your right as far as Horn.
-say Capt Holley: If the hills are on your left, you’ve gone wrong. | His boot finds the little stick figure with its sword raised. He drew it himself. A slight smile, the first.
+say Capt Holley: If the hills are on your left, you’ve gone wrong. | His boot finds the little stick figure with its sword raised. Chalk dust on his fingers. The corner of his mouth moves.
 say Capt Holley: Comms: regimental net, frequency one, through the rebro.
 say Capt Holley: You’ll lose it in the valleys.
 say Capt Holley: You’re Bravo One Zero on that net. Your OC’s Bravo Zero Alpha.
@@ -1591,7 +1592,7 @@ say Capt Holley: Break radio silence if you have a contact or a casualty.
 say Capt Holley: Otherwise nothing.
 say Capt Holley: On contact: report and break.
 say Capt Holley: Do not engage unless you have to.
-say Capt Holley: You are not the cavalry of song. Clear? | The paternal note surfaces for the first time.
+say Capt Holley: You are not the cavalry of song. Clear? | He looks up from the map, at you, and waits.
 ask Say “Sir”
 say Pemberton: Sir.
 say Capt Holley: Tanks are being topped up here.
@@ -1660,9 +1661,9 @@ if $hasked>0
 say Capt Holley: Good.
 end
 say Capt Holley: Right. On the bus, then. The road’s not getting any shorter.
-say Capt Holley: You’ll do well. | Said evenly, looking at you directly. Then he turns slightly towards the map, letting you go.
+say Capt Holley: You’ll do well. | Said evenly, looking at you directly. Then he turns back to the map.
 endtalk
-radio You salute. He returns it, more economically this time. As you walk back to the bay, a REME staff sergeant comes over to him with a clipboard and they begin a different conversation. Your briefing was one of many.
+radio You salute. He returns it, more economically this time. As you walk back to the bay, a REME staff sergeant comes over to him with a clipboard and they bend over a different page.
 hear Capt Holley: …keep an eye on him.
 radio If you look back, Holley is alone with his chalk map. The wind is already moving the dust across the dotted route.
 radio BBC World Service: talks in Stockholm resuming, sterling firm.
@@ -1672,7 +1673,7 @@ replay Play again
 @chalkmap the chalk map
 at: 8.2,9.2
 icon: 🗺️
-look: radio A map in chalk on the tarmac: Detmold marked “we are here”; a little peak with a stick figure on top, sword raised; the B1 east under a wavy line for the Teutoburger Wald; Hameln on the Weser; Hildesheim circled, “SQN”; a hard line for the border and “3 SA” beyond it. It has been redrawn at least once today.
+look: radio A map in chalk on the tarmac: Detmold marked “we are here”; a little peak with a stick figure on top, sword raised; the B1 east under a wavy line for the Teutoburger Wald; Hameln on the Weser; Hildesheim circled, “SQN”; a hard line for the border and “3 SA” beyond it. Older lines show faintly under the new ones.
 @rover the Land Rover
 unit: rover
 icon: 🚙
@@ -1680,7 +1681,7 @@ look: radio A Land Rover 110 in green-and-black, whip aerial up, “44” stenci
 @reme the REME crews
 at: 4.3,4.9
 icon: 🔧
-look: radio The REME fitters have your tanks before your crews are out of them: track tension, fuel caps, ammunition bins, periscope glass. Nobody asks your permission. Nobody needs to.
+look: radio The REME fitters have your tanks before your crews are out of them: track tension, fuel caps, ammunition bins, periscope glass. Nobody asks your permission.
 </script>
 <script type="text/plain" class="scene" data-name="lightgun">title: Off the Bus — Light Gun fire mission
 hud: 1015 | 25 April 1990
@@ -1730,7 +1731,7 @@ hear Gun 3, No. 3, layer: Three two zero… set!
 hear Gun 3, No. 1: Load!
 hear Gun 3, No. 4: Rammed!
 hear Gun 3, No. 2: Breech closed!
-gloss The detachment: No. 1 commands; No. 2 works the breech and fires; No. 3 lays the gun; No. 4 loads and rams; Nos. 5 and 6 prepare charges and fuzes. These calls are provisional until checked against a written drill.
+gloss The detachment: No. 1 commands; No. 2 works the breech and fires; No. 3 lays the gun; No. 4 loads and rams; Nos. 5 and 6 prepare charges and fuzes.
 ic Gun 3: Number three ready!
 choose ic: Fire!
 hear Gun 3, No. 1: Fire!
@@ -1820,7 +1821,7 @@ hear Gun 3, Bombardier: Right. Clean the breech, stack the cases.
 hear Gun 3, layer: Then a brew?
 hear Gun 3, Bombardier: Then a stewed brew.
 wait 900
-stamp Six guns, ten rounds, and nobody on the gun line saw where any of them landed.
+stamp Six guns, twenty rounds, and nobody on the gun line saw where any of them landed.
 wait 1400
 title
 replay Play again
@@ -1832,7 +1833,7 @@ look: radio The artillery board: a gridded sheet under perspex, pins for the gun
 @face FACE
 unit: cp
 icon: 🖥️
-look: radio FACE: a grey military computer in a steel case, a keypad and a strip of red digits. It does in seconds what used to take a technical assistant and a slide rule a minute.
+look: radio FACE: a grey military computer in a steel case, a keypad and a strip of red digits. Numbers come up in red seconds after the grid goes in. A slide rule sits in a tin beside it, unused.
 @tannoy the tannoy handset
 unit: cp
 icon: 📢
@@ -1844,7 +1845,7 @@ kit: yes
 icon: ☕
 verb: Drink
 look: radio A mug of tea gone the colour of the Plain.
-use: radio Stewed. Sweet. Hot. Exactly as described.
+use: radio Stewed. Sweet. Hot. A skin on the top.
 @cases the cartridge cases
 unit: g3
 icon: 🔩
@@ -1888,7 +1889,7 @@ if $choice=0
 net One Two: One Two. Roger. … Sorry.
 xp obs 5 Knew the deer
 else
-radio A long minute. Then a white rump bounding away across the field, and {$bx}’s voice, embarrassed, on the net: “One Two. Deer. Out.”
+radio A long minute. Then a white rump bounding away across the field, and {$bx}’s voice on the net, quieter than before: “One Two. Deer. Out.”
 end
 gloss Roe deer bark when alarmed: a hoarse cough in the dark that has startled a great many sentries.
 move lr1 14,8.5 speed=0.5
@@ -1945,14 +1946,14 @@ use: radio You write: 2340, farmer on lane, calving cow. Not a threat.
 at: 19,13.6
 icon: 🔍
 verb: Note
-look: radio Cigarette ends in the verge at the crossroads, a dozen of them, not old. Somebody waited here a long time.
+look: radio Cigarette ends in the verge at the crossroads, a dozen of them, not old, all trodden into the same yard of mud.
 use: radio You pick one up in your handkerchief. The brand is printed in Cyrillic.
 use: xp obs 5 Read the ground
 @tyres the tyre tracks
 at: 20.4,13.2
 icon: 🔍
 verb: Follow
-look: radio Tyre tracks off the lane into the trees, a few days old. A heavy vehicle, driven in carefully.
+look: radio Tyre tracks off the lane into the trees, a few days old. Deep, even ruts.
 use: radio You follow them in. Twenty metres into the trees, under cut branches: a white van.
 use: set van hidden=0
 use: var foundvan=1
@@ -1990,10 +1991,10 @@ tap pos1=The knoll || pos2=The hedge corner || pos3=The bank by the track
 tutorial
 var pick=$choice
 if $pick=0
-say Sgt Hollis: You’ll be skylined there, sir. | The knoll stands up against the sky. A tank on it is a target for anyone east.
+say Sgt Hollis: You’ll be skylined there, sir. | The knoll stands up bare against the grey sky, nothing behind it for miles.
 end
 if $pick=2
-say Sgt Hollis: Can’t see past the hedge from there, sir. | The bank hides you, and hides everything else too.
+say Sgt Hollis: Can’t see past the hedge from there, sir. | From the bank, the hedge fills the whole view, a yard away.
 end
 if $pick=1
 say Sgt Hollis: Hedge corner. That’s the one, sir. | Hull-down behind the bank, turret clear of the hedge, the whole field in front.
@@ -2006,7 +2007,7 @@ say Pemberton: Hedge corner, then.
 var posgood=1
 else
 say Pemberton: We’ll keep it.
-say Sgt Hollis: Sir. | He writes it down, carefully, so that it is clear whose choice it was.
+say Sgt Hollis: Sir. | He writes it down, carefully, and puts your name beside it.
 end
 end
 endtalk
@@ -2030,7 +2031,7 @@ if $sawmerc=1
 choose Zero, One Zero. Grey Mercedes, H plates, two men with binoculars, farm track north-east of the wood. Over. || hint: Leave it for the O Group
 if $choice=0
 net Zero: One Zero, Zero. Roger. Probably the liaison mission again. Noted. Out.
-radio Probably.
+radio Hollis looks back at the empty farm track.
 end
 end
 choose Zero, One Zero. Fire positions recced. Range card done. Returning. Over.
@@ -2049,7 +2050,7 @@ use: radio You write the time and the weather. Rain, all afternoon.
 unit: merc
 icon: 🚘
 verb: Note
-look: radio A grey Mercedes saloon on the farm track, engine off. Two men beside it with binoculars, looking this way more than at any birds.
+look: radio A grey Mercedes saloon on the farm track, engine off. Two men beside it with binoculars, binoculars on the wood, not the sky.
 use: radio You write down the plate: H, for Hannover. A minute later the men get back in the car and leave, without hurrying.
 use: var sawmerc=1
 use: xp obs 10 Logged the Mercedes
@@ -2072,7 +2073,7 @@ unit: deer1
 icon: 🦌
 verb: Note
 look: radio Two roe deer at the wood edge, watching you for exactly as long as you watch them.
-use: radio You note them: deer at the wood edge, so nobody else is there.
+use: radio You note them: two roe deer at the wood edge, heads down, grazing.
 use: xp obs 5 Read the deer
 </script>
 <script type="text/plain" class="scene" data-name="patrol-tracks">title: Off the Bus — the tracks out
@@ -2105,7 +2106,7 @@ radio Ahead the track rises to a crest between the beeches. You can’t see what
 choose act: Stop short of the crest and walk up || act: Drive over the top
 if $choice=1
 radio You crest it at speed. A forestry tractor coming the other way stops dead, its driver open-mouthed.
-radio Hollis says nothing, which is worse. Had it been a BRDM, you would both be dead.
+radio Hollis says nothing. He watches the tractor until it has squeezed past, then folds the map.
 else
 radio You stop below the crest and walk up the last twenty metres. Nothing over the top but more track, and a clearing.
 net One One: One One. That’s the way, sir.
@@ -2181,14 +2182,14 @@ unit: highseat
 icon: 🪜
 verb: Note
 look: radio A hunter’s high seat at the edge of the clearing: a wooden box on four legs, a ladder, a view down two tracks at once.
-use: radio You mark it on the map. A ready-made observation post, and somebody else’s.
+use: radio You mark it on the map with a small triangle. The ladder rungs are worn pale.
 use: xp obs 5 Noted an observation post
 @jay the jay
 at: 17,1.6
 icon: 🐦
 verb: Listen to
 look: radio A jay, screeching somewhere ahead along the track. Then another.
-use: radio You keep still and listen. Jays shout when something moves through the wood. Something is coming.
+use: radio You keep still and listen. The screeching comes closer along the track, tree by tree.
 use: xp obs 5 Heard the jays
 </script>
 <script type="text/plain" class="scene" data-name="road-east">title: Off the Bus — the road east
@@ -2262,7 +2263,7 @@ move q2 50.5,7.5 50.5,13.6 51.3,13.6 speed=0.6 delay=1
 move q3 50.5,7.5 50.5,12.4 speed=0.6 delay=2
 near mortars,notebook
 waitmove q1,q2,q3
-radio Stag rota on the turret, sleeping bags on the engine decks. Nobody sleeps much the first night out.
+radio Stag rota on the turret, sleeping bags on the engine decks. Every hour someone climbs down and someone else climbs up.
 wait 1400
 night 0.15
 hud 0545 | 26 April 1990
@@ -2361,7 +2362,7 @@ look: radio Hermann, on his hill behind you, getting smaller.
 @traffic the traffic across the fields
 at: 22,1.5
 icon: 🚗
-look: radio Cars on the parallel road, all heading west: estates with roof boxes, a Trabant with a mattress tied on, a Mercedes towing a caravan. Driving carefully. Windows up.
+look: radio Cars on the parallel road, all heading west: estates with roof boxes, a Trabant with a mattress tied on, a Mercedes towing a caravan. Windows up.
 @gepard the anti-aircraft tanks
 unit: g1
 icon: 📡
@@ -2381,7 +2382,7 @@ look: radio A green-and-white Polizei car across the side road, its blue light t
 @fuchs the armoured cars
 unit: f1
 icon: 🧪
-look: radio Six big wheels, a hull shaped like a boat, black-and-white crosses on the sides. Every hatch is shut. Whoever is inside is sealed in.
+look: radio Six big wheels, a hull shaped like a boat, black-and-white crosses on the sides. Every hatch is shut.
 @harbour the squadron’s hides
 at: 138,15
 icon: 🌲
@@ -2480,7 +2481,7 @@ set a,p,b open=0
 net One One: One One. Closed down.
 net One Two: One Two. Closed down.
 else
-radio Eight seconds. Seven for One Two, who has been practising in his sleep.
+radio Eight seconds. Seven for One Two, whose respirator haversack was already unbuttoned.
 net One One: One One. Respirators on. Closed down.
 net One Two: One Two. Respirators on. Closed down.
 end
@@ -2574,7 +2575,7 @@ say Pemberton: I did.
 end
 if $choice=1
 say Pemberton: Who asked for it?
-say Cpl Baxter: Wasn’t me, sir. | It was him.
+say Cpl Baxter: Wasn’t me, sir. | He is grinning.
 end
 end
 if $brew=3
@@ -2697,7 +2698,7 @@ say Maj Calloway: That’s all I have for now.
 end
 if $hmissed>2
 if $cnoted=0
-say Maj Calloway: I see a lot of Sergeant Hollis at stand-to, Pemberton. | Said lightly, and once. A troop leader is expected at stand-to.
+say Maj Calloway: I see a lot of Sergeant Hollis at stand-to, Pemberton. | Said lightly, and once. He doesn’t look up from the map.
 var cnoted=1
 end
 end
@@ -2707,11 +2708,11 @@ if $day=4
 if $ourroute=1
 say Maj Calloway: Route cards.
 say Maj Calloway: 1st Troop’s is the one we’ll use: bridge class, the ford, the junction at Sibbesse.
-say Maj Calloway: If Corps sends us south, we go your way, Pemberton. | Calloway’s plan for a move south now follows your route. Unlogged routes would have meant a slower, safer road.
+say Maj Calloway: If Corps sends us south, we go your way, Pemberton. | He traces your route on his map in chinagraph: the bridge, the ford, the junction.
 end
 if $ourroute=0
 say Maj Calloway: Route cards. 1st Troop’s is thin, Pemberton.
-say Maj Calloway: 3rd Troop’s route goes further round, but it’s fully logged, so that’s the one we’ll use. | An incomplete route card can’t be planned on. Calloway picks the longer road that someone did log.
+say Maj Calloway: 3rd Troop’s route goes further round, but it’s fully logged, so that’s the one we’ll use. | He puts your card aside, half its boxes blank, and traces 3rd Troop’s route in chinagraph.
 end
 end
 if $day=9
@@ -2725,7 +2726,7 @@ if $day=11
 if $foundvan=1
 say Maj Calloway: 1st Troop found a van in the woods last night.
 say Maj Calloway: The Feldjäger say it was the ambush party’s.
-say Maj Calloway: Well done, Pemberton. | Said once, flatly, and then he moves on. From Calloway, that is a lot.
+say Maj Calloway: Well done, Pemberton. | Said once, flatly, and then he moves on. Two of the troop leaders look up from their notebooks.
 end
 end
 say Maj Calloway: Questions?
@@ -2835,7 +2836,7 @@ end
 end
 if $alert=1
 if $tpairs=0
-say Sgt Hollis: And the pairs, sir? Weapons loaded, no route twice? | Hollis was at the last orders too, in his way. He doesn’t miss much.
+say Sgt Hollis: And the pairs, sir? Weapons loaded, no route twice? | He has it written on the back of his hand in biro.
 end
 end
 endtalk
@@ -2873,7 +2874,7 @@ if $alert=1
 radio Since the ambush on the Sibbesse road: moves in pairs, weapons loaded, and never the same route twice.
 end
 if $fatigue>0
-radio You slept badly. Everything this morning takes a beat longer than it should.
+radio Four hours’ sleep. You read the first line of the stand-to sheet twice.
 var fatigue=0
 end
 choose hint: Play everything || hint: Hollis takes the routine
@@ -2920,7 +2921,7 @@ end
 choose act: First parade done
 if $checks<3
 var debt+=1
-radio You sign off first parade with half of it unchecked. Somewhere in the engine decks, something will remember.
+radio You sign off first parade with half of it unchecked. Your driver looks at the sheet, then at the engine decks.
 end
 stamp Breakfast
 near bv,notebook,hollis
@@ -3073,7 +3074,7 @@ if $choice=0
 if $tcw=0
 net One Two: One Two. Say again codeword? Over.
 net One One: One Two, One One. Frequency two. Now.
-radio One Two was never told the codeword. Two minutes of jammed net while Hollis sorts it out.
+radio Two minutes of hiss on the old frequency, Baxter’s voice coming and going, before Hollis gets One Two across.
 end
 gloss WINDMILL — the codeword from this morning’s O Group: every station changes to frequency two.
 xp contact 5 Net drill under jamming
@@ -3114,7 +3115,7 @@ say The farmer: Here — and here.
 ask Apologise || Deny it || Say “Fill in the form”
 if $choice=0
 say Pemberton: I’m sorry. We’ll make it right.
-say The farmer: Gut. | He seems surprised. He writes something on the clipboard and underlines it.
+say The farmer: Gut. | He looks at you for a moment, then writes something on the clipboard and underlines it.
 end
 if $choice=1
 say Pemberton: That wasn’t this troop.
@@ -3208,7 +3209,7 @@ use: radio Through the periscope: the wood edge, the field, the farm track, the 
 icon: ⛓️
 verb: Check
 look: radio Your driver is lying under the front of the tank with a torch, looking at the track where it sags between the road wheels.
-use: radio You check the sag with him: about the width of a hand. Good. He looks pleased that you knew to ask.
+use: radio You check the sag with him: about the width of a hand. Good. He grins and wipes his hands on his overalls.
 use: var checks+=1
 @oils the engine oils
 icon: 🛢️
@@ -3233,12 +3234,12 @@ use: var checks+=1
 icon: 📦
 verb: Check
 look: radio Projectiles in their racks, bagged charges in the water-jacketed bins. FIN, HESH, smoke.
-use: radio You count them with your loader: the full load, stowed right. He has done this so often he counts in his sleep.
+use: radio You count them with your loader: the full load, stowed right. He counts aloud without looking, touching each round as he goes.
 use: var checks+=1
 @tracks the tracks in the wheat
 at: 9.5,9
 icon: 🔍
-look: radio Two pairs of tank tracks across the corner of a field of green winter wheat. They might be yours. They might be anyone’s.
+look: radio Two pairs of tank tracks across the corner of a field of green winter wheat. No way of telling whose.
 @hollis Hollis
 person: Sgt Hollis
 unit: a
@@ -3251,7 +3252,7 @@ ask about the war: say Sgt Hollis: We sit, we wait, we drink tea. Until we don�
 kit: yes
 icon: 📰
 look: radio The Daily Telegraph, four days old. Stockholm on the front page, cricket on the back.
-use: radio You read it cover to cover, including the crossword clues you can’t do. It is the most normal thing you have done all week.
+use: radio You read it cover to cover, including the crossword clues you can’t do. You fill in two in biro. One of them is wrong.
 
 ---days
 # One row per day of the week, in order. Every routine day is the same template; the row says which variation it carries.
@@ -3424,7 +3425,7 @@ say Capt Davies: Captain Holley’s expecting you. He’ll have your orders.
 say Capt Davies: Crews all right? | He taps the roof. The Lance Corporal starts the engine.
 say Pemberton: All present, sir.
 move rover 2.5,7.45 2.5,18 speed=2.2
-say Capt Davies: Right then. On the bus. Don’t dally. | On the bus, off the bus — army slang for order and counter-order: told to get on the bus, told to get off it, and nothing happens. Today, the bus is going somewhere.
+say Capt Davies: Right then. On the bus. Don’t dally. | On the bus, off the bus — army slang for order and counter-order: told to get on the bus, told to get off it, and nothing happens.
 endtalk
 near notebook,tea,bins
 wait 1200
@@ -3623,7 +3624,7 @@ end
 stamp The SPAR, Sibbesse
 radio Bell over the door. Fresh Brötchen. NDR playing low behind the counter. Two elderly customers turn to look.
 say Frau Müller: Ah! Die Briten. Guten Tag. | “Ah! The British. Good afternoon.”
-say Sgt Hollis: Guten Tag, Frau Müller. | She is mildly surprised that he knows her name. She doesn’t ask.
+say Sgt Hollis: Guten Tag, Frau Müller. | Her eyebrows go up. She doesn’t ask.
 say Frau Müller: You are buying bread?
 say Sgt Hollis: Bread please. And some cold meat.
 say Sgt Hollis: And six bottles of Jever if you have it.
@@ -3633,7 +3634,7 @@ ask Say “Same as the radio” || Read it
 if $choice=1
 say Pemberton: Let’s have a look.
 say Pemberton: “Heseltine berichtet von Fortschritt in Stockholm.”
-say Pemberton: “Bundeswehr auf normaler Bereitschaft.” | Heseltine reports progress in Stockholm. Bundeswehr on normal readiness. Nothing the radio hasn’t said.
+say Pemberton: “Bundeswehr auf normaler Bereitschaft.” | Heseltine reports progress in Stockholm. Bundeswehr on normal readiness.
 else
 say Pemberton: Same as the radio, I expect.
 say Cpl Baxter: Bet it is, sir.
@@ -3717,7 +3718,7 @@ kit: yes
 icon: 📓
 verb: Write in
 look: radio Your notebook, open at a page headed “Route recce — south through Sibbesse”. So far, the heading.
-use: radio You sketch the route as you go: road, brook, bridge, the bend, the village, the junction. You are surprised how much of it you have already forgotten.
+use: radio You sketch the route as you go: road, brook, bridge, the bend, the village, the junction. You draw the bend twice, in two different places, and rub out the first.
 @disc the bridge disc
 at: 4.6,6.6
 icon: 🟡
@@ -3725,7 +3726,7 @@ look: radio A yellow disc on a post: “70”. Military Load Class seventy. Unde
 @brook the brook
 at: 5.5,4.5
 icon: 💧
-look: radio A brook under the bridge, a metre deep and fast with spring rain. Nothing a Challenger couldn’t ford in a hurry. You write that down too.
+look: radio A brook under the bridge, a metre deep and fast with spring rain. You write that down too.
 @sign the village sign
 at: 9.6,6.6
 icon: 🪧
@@ -3737,7 +3738,7 @@ look: radio A Lutheran church, steep slate roof, the clock four minutes slow. Th
 @boy the boy on the bicycle
 unit: boy
 icon: 🚲
-look: radio About ten, on a red bicycle too big for him. He is looking at the tanks the way you looked at tanks at ten.
+look: radio About ten, on a red bicycle too big for him. One foot still on a pedal. He hasn’t moved since the first tank came round the bend.
 @spar the SPAR
 at: 16.4,5.4
 icon: 🏪
@@ -3751,7 +3752,7 @@ icon: 📰
 verb: Read
 look: radio The Hildesheimer Allgemeine Zeitung, folded on the rack. The front page leads on Stockholm.
 use: say Pemberton: “Heseltine berichtet von Fortschritt in Stockholm.”
-use: say Pemberton: “Bundeswehr auf normaler Bereitschaft.” | Heseltine reports progress in Stockholm. Bundeswehr on normal readiness. Nothing the radio hasn’t said.
+use: say Pemberton: “Bundeswehr auf normaler Bereitschaft.” | Heseltine reports progress in Stockholm. Bundeswehr on normal readiness.
 @bread the bread
 icon: 🥖
 verb: Take
@@ -3773,7 +3774,7 @@ kit: yes
 icon: 🥖
 verb: Eat a Brötchen from
 look: radio A paper bag of Brötchen, still warm, going soft at the bottom.
-use: radio You eat one. Crisp outside, soft inside, still faintly warm. The best thing you have eaten since you arrived in Germany.
+use: radio You eat one. Crisp outside, soft inside, still faintly warm. You eat it standing up, then the crumbs off your smock.
 </script>
 <script type="text/plain" class="scene" data-name="tour-ogroup">title: Off the Bus — the first O Group
 hud: 1610 | 26 April 1990
@@ -3801,7 +3802,7 @@ say Capt Davies: Nets up before dark, or the Boss will have kittens. | The Boss:
 ask Say “Thank you” || Ask “Crusher?”
 if $choice=1
 say Pemberton: Crusher?
-say Capt Davies: Lost in the mists of time. | He looks pleased you asked.
+say Capt Davies: Lost in the mists of time. | He smooths the front of his smock.
 else
 say Pemberton: Thank you.
 end
@@ -3840,7 +3841,7 @@ say Maj Calloway: 1st Troop, the south-east edge, by the field.
 say Maj Calloway: 2nd Troop, the north edge. 3rd Troop, the west.
 say Maj Calloway: On Monday, 1st Troop recces the route south through Sibbesse.
 say Maj Calloway: 3rd Troop recces the long way round.
-say Maj Calloway: Route cards to me on Tuesday. | Your first task with your name on it. You write it down.
+say Maj Calloway: Route cards to me on Tuesday. | You write it down.
 say Maj Calloway: Service support. Replen at 1700, daily.
 say Maj Calloway: Mail when it comes. It will come.
 say Maj Calloway: Command and signal. Squadron net from now on.
@@ -3893,7 +3894,7 @@ say Hptm Weber: We will see each other often.
 ask Say “Sir” || Ask “Do you know this ground?”
 if $choice=1
 say Pemberton: Do you know this ground, sir?
-say Hptm Weber: I was born in Salzgitter. Yes, I know this ground. | He says it as a statement of fact, not a boast.
+say Hptm Weber: I was born in Salzgitter. Yes, I know this ground.
 else
 say Pemberton: Sir.
 say Hptm Weber: … | A small nod. He walks back to his Iltis.
