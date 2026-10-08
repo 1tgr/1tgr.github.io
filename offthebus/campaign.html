@@ -1156,6 +1156,23 @@ net Zero Alpha: Zero Alpha, out.
 gloss JEMIMA — stand down to combat watch: two crews up, one resting.
 to a 2.6,3.8 p 2.4,7 b 2.8,10.2 speed=0.9
 set a,p,b open=1
+cards Combat watch | Two crews up, one resting. Who rests first? :: One Zero rests | Your crew sleeps first. | you take the afternoon || One One rests | Hollis’s crew sleeps first. | Hollis takes the morning || One Two rests | One Two sleeps first. | the youngest crew
+if $choice=0
+say Sgt Hollis: Right, sir. We’ll wake you for the brew.
+end
+if $choice=1
+say Sgt Hollis: My lot can go second, sir.
+say Pemberton: Your crew first, Sergeant.
+say Sgt Hollis: Sir. | He gets down into the turret.
+end
+if $choice=2
+if $bxkia=1
+say Sgt Hollis: Good. Watts hasn’t slept since Friday, sir.
+else
+say Sgt Hollis: Good. Baxter’s lot were up half the night, sir.
+end
+end
+endtalk
 
 hud 0930
 stamp 0930 · First parade
@@ -1211,6 +1228,16 @@ if $bxkia=1
 radio On One Two’s back decks, Watts is folding a jumper into a bag. The name tape says BAXTER.
 else
 radio On One Two’s back decks, Baxter is writing, the pad on his knee. Three envelopes are already addressed beside him.
+say Cpl Baxter: Will the post still go, sir?
+ask It’ll go || I don’t know
+if $choice=0
+say Pemberton: It’ll go, Corporal.
+say Cpl Baxter: Right, sir. | He licks the next envelope.
+else
+say Pemberton: I don’t know.
+say Cpl Baxter: Best write them anyway, then. | He goes back to the pad.
+end
+endtalk
 end
 hud 1530
 radio BBC World Service, the House of Commons. Mr Patten: “Mr Speaker. At three o’clock this morning, British time, Soviet and Warsaw Pact forces crossed the inner German border in strength.”
@@ -1250,6 +1277,12 @@ str m=B Squadron holds its hides as corps reserve, at thirty minutes’ notice t
 str x=Combat watch: two crews up, one resting. Stand-to at first and last light. Civilians: identify, or bypass. Tomorrow, 1st Troop proves the route to its alternative position south of the wood, by tank, from 0900.
 str ss=Replen at 1700. No mail.
 orders O Group · Wednesday 9 May 1990 · 2045 :: Ground | {$g} || Situation | {$sit} || Mission | {$m} || Execution | {$x} || Service support | {$ss} || Command and signal | {$cs}
+say Maj Calloway: Questions?
+ask Ask “Mail?” || Say nothing
+if $choice=0
+say Pemberton: When will the mail come, sir?
+say Maj Calloway: When it comes. It will come.
+end
 say Maj Calloway: Good. Time check. The time is now 2058. That’s all.
 endtalk
 
@@ -1263,9 +1296,16 @@ endtalk
 
 hud 2300
 night 1
-radio Hollis has done the stag rota, and put himself on two till four.
+cards The night | Stag rota and radio watch, until first light. :: Even split | Everyone does two hours, you included. | fair || Officer first | You take the first stag, so the crews sleep. | you’ll be tired || Hollis sorts it | He will put himself on the worst hours. | Hollis will be tired
+if $choice=1
+var fatigue+=1
+radio You take the first stag. The crews are asleep within minutes.
+end
+if $choice=2
+radio Hollis puts himself on two till four.
+end
 radio BBC World Service: “The Ministry of Defence regrets to announce that British servicemen have been killed in Germany today. Their next of kin are being informed.”
-if $fatigue=1
+if $fatigue>0
 radio On your stag you catch yourself asleep against the cupola rim, twice.
 end
 radio To the east, the sky flickers all night.
