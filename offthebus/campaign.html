@@ -235,10 +235,16 @@ stamp <b>Friday 4 May 1990</b> · 1650<br>The Sibbesse road
 tell A courier run: the week’s int summaries to a Bundeswehr Panzergrenadier company in the next valley, and back to the hides by stand-to. Nine days of routine.
 tell Hatches open, heads out, the sun low behind the pines.
 near notebook
+```
+
+```scene
 choose One One, One Two, One Zero. Line ahead. One Two lead. Out.
 to b 11,7.5 a 9.6,7.5 p 8.2,7.5 speed=0.8 stagger=0.3
 cam 8,7.1,6.4
 wait 1800
+```
+
+```scene
 tell The road bends right around a stand of pines.
 if $sawmerc=1
 stamp A grey Mercedes with H plates, across the road ahead.
@@ -257,6 +263,9 @@ hear Mercedes driver: Sind Sie blind?
 gloss “Are you blind?”
 hear Trabant driver: Nein. Nein.
 wait 1200
+```
+
+```scene
 net One One: One Zero, One One. Hold on a minute. Take a look.
 wait 1600
 net One One: That’s the same as outside Detmold. Same cars. Same family. Tenner says it isn’t.
@@ -274,6 +283,9 @@ str ldr=Two men between the cars. Through the glass you can’t hear them.
 end
 tell Eighty metres. The tanks are still rolling.
 choose One Two, One Zero. Bypass right, over the verge, as before. Out. || One One, One Two, One Zero. Halt. Observe. Out. || One One, One Two, One Zero. Reverse, back round the bend. Out. || One Two, One Zero. Dismount and check it, on foot. Out. || One One, One Two, One Zero. Treeline right. Coax. Fire. Out.
+```
+
+```scene
 var dec=$choice
 if $dec=0
 var out=1
@@ -288,6 +300,9 @@ if $dec=4
 var out=5
 end
 
+```
+
+```scene
 # Halt and observe: a second decision
 if $dec=1
 to b 14,7.5 a 12.6,7.5 p 11.2,7.5 speed=0.5
@@ -310,6 +325,9 @@ var out=7
 end
 end
 
+```
+
+```scene
 # 1 · Bypass over the verge, as on 24 April
 if $out=1
 set b trail=1
@@ -352,6 +370,9 @@ tell When the firing stops, the child is lying on the verge by the Trabant. She 
 set child down=1
 end
 
+```
+
+```scene
 # 4 · Dismount and check it on foot
 if $out=4
 to b 15,7.5 a 13.6,7.5 p 12.2,7.5 speed=0.5
@@ -391,6 +412,9 @@ tell When the firing stops, the child is lying on the verge by the Trabant. She 
 set child down=1
 end
 
+```
+
+```scene
 # 7 · Kept watching: the trap is sprung at range
 if $out=7
 wait 1200
@@ -424,6 +448,9 @@ tell When the firing stops, the child is lying on the verge by the Trabant. She 
 set child down=1
 end
 
+```
+
+```scene
 # 5 and 6 · Engage the treeline first
 if $out=5
 to b 14,7.5 a 12.6,7.5 p 11.2,7.5 speed=0.7
@@ -482,6 +509,9 @@ if $out!=3
 do sitrep
 end
 
+```
+
+```scene
 # 3 · Reverse and call it in
 if $out=3
 set sm1,sm2,sm3,sm4 hidden=0
@@ -508,6 +538,9 @@ var childok=1
 var mumcap=1
 end
 
+```
+
+```scene
 # The response: casualties out first, then hold as the cordon, clear, and only then go in
 set pol hidden=0
 move pol 35,7.6 speed=1.2
@@ -602,6 +635,9 @@ tell A Land Rover comes up behind them and stops on the verge, well short of the
 waitmove atop
 wait 1600
 
+```
+
+```scene
 # Aftermath: the map holds, and the player looks
 wait 1200
 stamp 1900
@@ -724,6 +760,9 @@ say Sgt Hollis: Tenner, sir. When you’ve got it. | He doesn’t smile. You don
 endtalk
 end
 
+```
+
+```scene
 stamp 2000 · The hides
 hud 2000
 night 0.4
@@ -762,6 +801,9 @@ choose Zero, One Zero. Contact, wait out.
 net Zero: Zero.
 enddef
 
+```
+
+```scene
 def sitrep
 str sre=Enemy in civilian clothes, gone north on foot.
 if $spk=1
@@ -823,6 +865,9 @@ tell Grenades from the pines, small and flat, bursting between the tanks. One dr
 end
 enddef
 
+```
+
+```scene
 def reaction
 choose One One, One Two, One Zero. Contact. Treeline right. Coax. Fire. Out.
 fire a,p at 23.5,5.2 light
@@ -993,11 +1038,20 @@ cam 8,7.1,6.4
 move golf -12,1.5 speed=1.4
 move van -12,1.5 speed=1.2 delay=3
 wait 2000
+```
+
+```scene
 tell Across the fields, on the parallel road, civilian traffic. All of it heading west.
+```
+
+```scene
 radio BBC World Service: “…Federal Border Police report increased traffic from the German Democratic Republic this week. The Interior Ministry has urged calm and asks West German citizens to extend the usual hospitalities to recent arrivals…”
 waitmove a,p,b
 cam 13,7.4,5.6
 near merc,trabant,plate,suitcase,family,hedge,field,notebook
+```
+
+```scene
 tell Round the bend, the road is blocked. A Mercedes has nudged the rear corner of a Trabant. Both cars are at an angle across the road. Nobody is hurt.
 choose Zero, One Zero. Possible obstacle. Wait, out.
 set a,p,b open=1
@@ -1012,6 +1066,9 @@ gloss “No.”
 net Zero: One Zero, Zero. Sitrep your location, over.
 choose Zero, One Zero. Civilian RTA blocking the road. No casualties. No way through. Over.
 gloss RTA — road traffic accident.
+```
+
+```scene
 net Zero: Bypass it. Don’t get drawn in. Holley’s been on the net — don’t keep him. Out.
 
 tutorial Switch to wedge, then tap the field beyond the crash
@@ -1024,6 +1081,9 @@ tap wp1|wp2=Through the field
 tutorial
 choose One One, One Two, One Zero. Move now. Through the field. Out.
 set a,p,b trail=1
+```
+
+```scene
 move p 12.3,8.3 13.4,9.3 15.6,11.6 18.4,9.3 19.6,8.1 21.6,7.5 speed=0.75
 move a 13.3,8.2 14.4,9.4 16.6,11 19.2,9.3 20.4,8.1 22.8,7.5 speed=0.75 delay=0.4
 move b 11.3,8.3 12.4,9.3 14.6,12.2 17.6,9.3 18.8,8.1 20.4,7.5 speed=0.75 delay=0.8
@@ -1033,11 +1093,17 @@ tell The lead tank crests the verge and goes through the hawthorn. Branches snap
 move mother 16.8,8.0 speed=0.5
 tell The mother pulls the child closer as the tanks come off the road.
 tell Both drivers stop arguing and watch. The Trabant driver glances at the tanks, once.
+```
+
+```scene
 tell As the tanks pass, the child waves. Once. Her other hand stays fisted in her mother’s coat.
 tell In One Two’s cupola, Baxter looks towards the family for a moment, then looks ahead again.
 waitmove a,p,b
 set a,p,b trail=0
 near tracks,gaps,notebook,family
+```
+
+```scene
 stamp Through. Two gaps in the hedge, three pairs of tracks in the yellow.
 tutorial Back to line ahead for the road
 choose One One, One Two, One Zero. Line ahead. Out.
@@ -1046,6 +1112,9 @@ to a 26,7.5 p 24.8,7.5 b 23.6,7.5 speed=0.9 stagger=0.3
 cam 22,7.2,6.4
 wait 2500
 net One One: That little ’un waving.
+```
+
+```scene
 net One Two: Easterners. Came over recently.
 net One One: Yeah.
 tell Both go quiet.
@@ -1591,18 +1660,30 @@ tell On combat watch since D-day. The artillery to the east has been continuous 
 tell 2nd Troop is out in front on the ridge, as the squadron’s screen.
 near notebook,rangecard,periscope,telegraph,bv
 wait 900
+```
+
+```scene
 net Zero Alpha: Hello all stations, this is Zero Alpha. Enemy reported at PUDDLEDUCK. TIGGYWINKLE, I say again, TIGGYWINKLE. Acknowledge, over.
 choose One Zero, wilco.
 net Two Zero: Two Zero, wilco.
 net Three Zero: Three Zero, wilco.
 net Zero Alpha: Zero Alpha, out.
 gloss PUDDLEDUCK and TIGGYWINKLE, from the orders of 26 April: a report line five kilometres east of the wood; contact within the hour, engines warm, mortars on call.
+```
+
+```scene
 if $bxkia=0
 net One Two: …
 gloss One Two pressed his pressel, the press-to-talk switch, and said nothing.
 end
+```
+
+```scene
 radio The net goes quiet but for the carrier hiss.
 wait 1400
+```
+
+```scene
 stamp 0900
 hud 0900
 net One One: One One.
@@ -1610,12 +1691,18 @@ tell Nothing else. In the next hide, Hollis’s head and shoulders in his cupola
 choose One Zero.
 wait 1500
 
+```
+
+```scene
 stamp 0915
 hud 0915
 net Two Zero: Hello Zero, this is Two Zero. Contact, wait out.
 cam 9.3,5.2,13
 wait 700
 net Two Zero: Zero, Two Zero. Contact. Two BRDM, one thousand, moving west. Engaging. Out.
+```
+
+```scene
 near togs,periscope,rangecard
 net One One: One One. Stand by.
 fire s0 at 18,2
@@ -1629,7 +1716,13 @@ burst 19.5,4.8
 wait 500
 fire s3 at 19,6
 burst 19.5,6
+```
+
+```scene
 tell A flat, heavy thump to the east, and the chatter of coax. Heavier machine-gun fire answers.
+```
+
+```scene
 net Two Zero: Zero, Two Zero. Two BRDM stopped. Larger element behind. T-80 and BMP, count six plus. Pulling back to bound. Out.
 
 stamp 0925 · 2nd Troop bounds back
@@ -1641,12 +1734,21 @@ move s0 8,-6.4 speed=0.8
 move s1 9,-5.6 speed=0.8 delay=0.3
 move s2 10,-4.8 speed=0.8 delay=0.6
 move s3 11,-4 speed=0.8 delay=0.9
+```
+
+```scene
 tell Smoke blooms in front of 2nd Troop. Behind it, their Challengers reverse off the crest to fire positions on the back of the high ground, still looking over the field.
 tell One is trailing smoke from the engine decks.
 net Two Zero: One Zero, Two Zero. They’re four minutes behind us. T-80 leading. Out.
 net Zero: Two Zero, Zero. Roger. Out.
 gloss Bound — a move from one fire position to the next.
+```
+
+```scene
 tell 2nd Troop is now on your left, covering the same field from the flank.
+```
+
+```scene
 net One One: One One. Range markers confirmed.
 if $posrange=1
 tell Your range card from the high seat is taped inside the cupola: the farm track at eight hundred, the lone bush at eleven hundred, the rise at fourteen hundred.
@@ -1660,6 +1762,9 @@ hud 0930
 set sm6,sm7,sm8 hidden=1
 set t80,bmp1,bmp2,bmp3,bmp4 hidden=0
 move t80 12.6,7.0 speed=0.55
+```
+
+```scene
 tell A whine carries before the dust: a gas turbine. A T-80 crests the rise at fourteen hundred metres. It is on the move, turret pointed along the track, away from the wood. | T-80 — Soviet main battle tank, gas-turbine engine. Engage with FIN.
 if $obs>39
 tell Low turret, long gun, that whine: T-80. Nobody else has called it yet.
@@ -1667,6 +1772,9 @@ else
 tell For a long second it is only a shape in the dust. Then the low turret, the long gun: a T-80.
 end
 wait 1800
+```
+
+```scene
 choose Engage. || hint: Wait.
 if $choice=1
 tell You let it come. Six hundred metres of open field between it and the wood.
@@ -1677,9 +1785,15 @@ ic Gunner: On.
 ic Loader: Loaded.
 choose ic: Fire.
 ic Gunner: Lasing… firing now.
+```
+
+```scene
 fire p,a,b at t80
 set t80 smoke=1
 move t80 12.6,7.0
+```
+
+```scene
 ic Gunner: Target.
 ic Gunner: Target stop.
 tell The T-80 brews up. A column of black smoke stands over the rise.
@@ -1709,6 +1823,9 @@ fire s1,s2 at bmp3 light
 net Two Zero: Two Zero. BMP back over the rise. Engaging. Out.
 wait 600
 tell A flash at the fourth BMP. A missile, trailing smoke, coming straight at you.
+```
+
+```scene
 choose ic: Smoke! || hint: Hold steady
 if $choice=0
 set sp1,sp2 hidden=0
@@ -1725,6 +1842,9 @@ missile bmp4 3.6,5.8
 wait 1700
 burst 3.6,5.8 shake
 tell It goes into the ground thirty metres to your left.
+```
+
+```scene
 net One One: One Zero, One One. That was close.
 gloss AT-5 Spandrel — a wire-guided anti-tank missile. The operator steers it all the way in, and has to see both the missile and his target.
 fire b at bmp4
@@ -1734,8 +1854,14 @@ net One Two: One Two. Target stop.
 end
 stamp 0934 · Contact broken. The rest pull back east.
 
+```
+
+```scene
 net Zero: One Zero, Zero. Good engagement. Hold position. Expect artillery soon. Over.
 choose One Zero. Wilco, out.
+```
+
+```scene
 choose One One, One Two, One Zero. Smoke. Alternative positions, move now. Out. || hint: Stay in the hides
 if $choice=0
 var altpos=1
@@ -1749,6 +1875,9 @@ tell The troop reverses out of the hides behind the smoke and moves north along 
 waitmove a,p,b
 end
 wait 1800
+```
+
+```scene
 stamp 0938 · Incoming
 set sp1,sp2 hidden=1
 if $altpos=1
@@ -1775,6 +1904,9 @@ burst 5.5,11
 wait 650
 burst 3.9,7.8 shake
 tell A round lands thirty metres from your tank. It rocks. Splinters ring off the armour.
+```
+
+```scene
 net One One: One One. That’s normal. Closer than ideal. Not aimed.
 burst 1.5,3
 wait 900
@@ -1783,6 +1915,9 @@ wait 900
 burst 2.5,12
 end
 wait 2500
+```
+
+```scene
 stamp 0948 · The lift
 hud 0948
 set sm3,sm4,sm5 hidden=1
@@ -1790,11 +1925,20 @@ near cigarette,notebook,telegraph,bv
 tell Three minutes of silence. Hatches come open, carefully.
 set a,p,b open=1
 wait 1500
+```
+
+```scene
 tell Hollis lights a cigarette, standing in his cupola, headset pushed back, looking east. He says nothing.
 choose One Zero. Well done, all. Out.
 wait 2000
+```
+
+```scene
 net Two One: Zero, Two One. Two killed. Continuing task. Out.
 tell 2nd Troop’s sergeant. The troop on your left.
+```
+
+```scene
 title
 replay Play again
 ```
@@ -1877,11 +2021,20 @@ say Capt Holley: Pemberton, is it? | He returns the salute, correctly but unhurr
 ask Say “Sir”
 say Pemberton: Sir.
 say Capt Holley: Right. Come round here. Mind the map. | A map drawn in chalk, about three metres square, smudged where he has walked across it. He points with the toe of his boot.
+```
+
+```scene
 say Capt Holley: You’ve come from Sennelager. Davies has spoken to you.
+```
+
+```scene
 say Capt Holley: He’s gone ahead. Left me his Rover and the stragglers.
 say Capt Holley: We are here. | His boot taps Detmold.
 say Capt Holley: Foreign Secretary going to Stockholm, agreement within days.
 say Capt Holley: You’ll have noticed the squadron’s gone forward in a hurry, while the radio insists otherwise.
+```
+
+```scene
 say Capt Holley: Between you, me and Hermann, we don’t know. | His boot taps the little chalk figure on the peak.
 say Capt Holley: So we go forward. | He looks up from the map and holds your eye for a moment, then looks down again.
 say Capt Holley: Third Shock Army opposite this sector.
@@ -1896,6 +2049,9 @@ say Capt Holley: Covering force goes forward, the forward divisions dig in, and 
 say Capt Holley: Your mission is to get there.
 say Capt Holley: Meet your squadron leader, Major Calloway, by eighteen hundred tomorrow.
 say Capt Holley: He’ll have your orders when you arrive. You’re his now.
+```
+
+```scene
 say Capt Holley: Mortar section will catch up with you on the road.
 say Capt Holley: Sergeant Coates and his lads.
 say Capt Holley: They’ll fall in behind your three tanks.
@@ -1927,6 +2083,9 @@ say Capt Holley: Tanks are being topped up here.
 say Capt Holley: Fuel for the move and combat load.
 say Capt Holley: Rations and water for seventy-two hours.
 say Capt Holley: Your sergeant should check stowage before you move.
+```
+
+```scene
 say Capt Holley: Questions?
 while $hdone=0
 ask {$hq1=0} Ask “Comms?” || {$hq2=0} Ask “Civilians?” || {$hq3=0} Ask “The Bundeswehr?” || {$hq4=0} Ask “Trouble on the route?” || {$hq5=0} Ask “Air?” || {$hasked=0} Say “No questions, sir” || {$hasked>0} Say nothing
@@ -1941,6 +2100,9 @@ if $choice=1
 say Pemberton: What about the civilians, sir?
 say Capt Holley: If a German Polizei vehicle wants you to stop, stop.
 say Capt Holley: Otherwise, drive on.
+```
+
+```scene
 say Capt Holley: If you think you’re seeing a threat, identify first.
 say Capt Holley: We are not in the business of shooting refugees, and you do not want to be the officer who finds out he was. | He looks at you more directly than he has so far.
 var hq2=1
@@ -1959,6 +2121,9 @@ say Capt Holley: Spetsnaz are reported to be operating ahead of any crossing.
 say Capt Holley: We’ve had nothing solid in this sector.
 say Capt Holley: But you’ll want your hatches manned and your commanders alert.
 say Capt Holley: Use cover where the road allows. | A brief pause first.
+```
+
+```scene
 say Capt Holley: When you site your OPs forward, put them where you’d walk if you were them.
 say Capt Holley: The other side doesn’t always think like a textbook. | Low, almost an aside, looking down at the map.
 say Capt Holley: You’ll work it out.
@@ -1973,6 +2138,9 @@ say Capt Holley: Looks aggressive, isn’t.
 var hq5=1
 end
 if $choice=5
+```
+
+```scene
 say Pemberton: Sir, no questions.
 say Capt Holley: Good lad. | A small nod.
 var hdone=1
@@ -1989,12 +2157,24 @@ if $hasked>0
 say Capt Holley: Good.
 end
 say Capt Holley: Right. On the bus, then. The road’s not getting any shorter.
+```
+
+```scene
 say Capt Holley: You’ll do well. | Said evenly, looking at you directly. Then he turns back to the map.
 endtalk
 tell You salute. He returns it, more economically this time.
+```
+
+```scene
 tell As you walk back to the bay, a REME staff sergeant comes over to him with a clipboard and they bend over a different page.
+```
+
+```scene
 hear Capt Holley: …keep an eye on him.
 tell If you look back, Holley is alone with his chalk map. The wind is already moving the dust across the dotted route.
+```
+
+```scene
 radio BBC World Service: talks in Stockholm resuming, sterling firm.
 title
 replay Play again
@@ -2263,6 +2443,9 @@ move lr2 18,8.5 18,11.4 speed=0.5 delay=1
 cam 19,12,6.5
 waitmove lr1,lr2
 tell The crossroads two kilometres north of the Sibbesse road. Hollis switches off and sits. “Smell that, sir? Somebody’s been smoking here.”
+```
+
+```scene
 choose act: Search with the torch || hint: Drive on
 if $choice=0
 near tyres,butts,notebook
@@ -2572,6 +2755,9 @@ people: Maj Calloway=#6a7f9a:calloway, Pemberton=#5aa7e0:pemberton
 
 ```scene
 stamp <b>Wednesday 25 April 1990</b> · 1800<br>The road east: Detmold to the Hildesheimer Wald
+```
+
+```scene
 tell Out through the Hobart gate, the troop turns east for Horn and the B1. Sixty miles to the squadron.
 near hermann,notebook
 tell Behind you, once you’re out of town, Hermann on his hill, small against the last of the light. The Teutoburger Wald runs along on your right.
@@ -2595,6 +2781,9 @@ move c0 -14,1.5 speed=1.1
 move c1 -14,1.5 speed=1 delay=2
 move c2 -14,1.5 speed=1.1 delay=4
 move c3 -14,1.5 speed=1 delay=6
+```
+
+```scene
 tell The B1 is a main supply route now, and the eastbound side is yours. Across the fields, on the parallel road, headlights move west in a steady line. | Main supply route: a road kept clear for military traffic.
 near traffic,notebook
 to a 40,7.5 p 38.7,7.5 b 37.4,7.5 speed=0.6 stagger=0.3
@@ -2609,6 +2798,9 @@ teleport a 46,7.5 p 44.7,7.5 b 43.4,7.5
 night 0.6
 hud 2130
 cam 53,10,7
+```
+
+```scene
 tell Dark by twenty-one hundred. The route card says a lay-up field west of Hameln, and there it is: a farm gate standing open.
 move a 50.5,7.5 52,10.4 55.5,10.4 speed=0.6
 move p 50.5,7.5 51.5,11.6 54.5,11.6 speed=0.6 delay=1.2
@@ -2634,6 +2826,9 @@ stamp <b>Thursday 26 April 1990</b> · 0545<br>Hameln
 teleport a 72.5,7.5 p 71.2,7.5 b 69.9,7.5 q1 68.6,7.5 q2 67.4,7.5 q3 66.2,7.5
 set a,p,b open=1
 cam 79,10,7
+```
+
+```scene
 tell The column comes down into Hameln in the grey light, and out over the Weser.
 to a 88,7.5 p 86.7,7.5 b 85.4,7.5 q1 84.1,7.5 q2 82.9,7.5 q3 81.7,7.5 speed=0.5 stagger=0.2
 wait 2400
@@ -2649,6 +2844,9 @@ move e1 106,7.5 106,-4 speed=0.7
 move e2 106,7.5 106,-4 speed=0.7 delay=3
 move e3 106,7.5 106,-4 speed=0.7 delay=6
 to a 103.4,7.5 p 102.1,7.5 b 100.8,7.5 q1 99.5,7.5 q2 98.3,7.5 q3 97.1,7.5 speed=0.55 stagger=0.2
+```
+
+```scene
 tell At a junction outside Elze, a green-and-white Polizei car is pulled across the side road. A policeman is turning every civilian car off the B1.
 near polizei,notebook
 waitmove a,p,b
@@ -2670,6 +2868,9 @@ tell The policeman waves you on.
 teleport a 121,7.5 p 119.7,7.5 b 118.4,7.5 q1 117.1,7.5 q2 115.9,7.5 q3 114.7,7.5
 hud 1600
 cam 128,9,7
+```
+
+```scene
 radio BBC World Service: “The Foreign Secretary, Mr Heseltine, has arrived in Stockholm this morning for further talks with the Soviet delegation…”
 to a 130,7.5 p 128.7,7.5 b 127.4,7.5 q1 126.1,7.5 q2 124.9,7.5 q3 123.7,7.5 speed=0.6 stagger=0.2
 wait 1800
@@ -3726,12 +3927,18 @@ tell You are 2Lt David Pemberton, 1st/5th Dragoon Guards, in command of 1st Troo
 tell Other troops have been firing all day. Yours has not. The slot has slipped four times.
 near tea,notebook,bins,binoculars
 wait 1400
+```
+
+```scene
 net One One: Range control says we’re next. They’ve said that twice.
 net One Two: Third time pays for all, sergeant.
 net One One: Yeah. We’ll see.
 wait 900
 
 # Step 1: sitrep and the move to the firing positions
+```
+
+```scene
 net Zero: One Zero, Zero. Apologies for the wait. Sitrep when ready, over.
 gloss Sitrep — situation report.
 choose Zero, One Zero. Crews mounted. Ready, over.
@@ -3764,6 +3971,9 @@ gloss T-54 — older Soviet tank. The larger hulk.
 set bmp,t54 tagged=1
 tutorial Tap a hulk to choose your target
 tell Your loader has a practice FIN round loaded. | FIN — the armour-piercing tank-killer round (APFSDS). Old Chieftain hands still call it “sabot”.
+```
+
+```scene
 tap bmp=Target the BMP || t54=Target the T-54
 var target=0
 if $choice=1
@@ -3835,6 +4045,9 @@ ic Gunner: Weapon safe.
 stamp Certification complete
 
 # Step 5: the quiet
+```
+
+```scene
 cam 4.6,6.8,6.2
 set a,p,b open=1
 wait 1200
@@ -3842,39 +4055,66 @@ radio Engines idle. Birds resettle in the treeline. The radio is quiet for the f
 wait 3800
 
 # Step 6: Davies
+```
+
+```scene
 set rover hidden=0
 move rover 2.5,7.45 6.7,7.45 speed=2.2
 tell A diesel, somewhere back along the forest road.
 waitmove rover
 near rover,davies,bins
 wait 600
+```
+
+```scene
 tell Captain Davies, rear-party commander, leans on the open door of the Land Rover. He doesn’t get out.
+```
+
+```scene
 say Capt Davies: Hello there. How’d you get on, then?
 ask Report the shoot
 say Pemberton: Two clean hits. One short.
 say Capt Davies: Mm. Tell your corporal he’s drinking on his own coin tonight. | Drinking on his own coin: paying for his own drinks.
 say Capt Davies: … | He glances into your open hatch, at the ammunition bins. Nearly full.
+```
+
+```scene
 say Capt Davies: Bins still full. Hmm. Well — happens.
 say Capt Davies: Actually, lucky. Plans have changed. You’re being moved on.
+```
+
+```scene
 say Capt Davies: You’ll be glad of the rounds.
 say Capt Davies: Squadron’s deploying ahead of schedule.
+```
+
+```scene
 say Capt Davies: Square your lot away, then bring them to the workshop at Detmold.
 say Capt Davies: Captain Holley’s expecting you. He’ll have your orders.
 say Capt Davies: Crews all right? | He taps the roof. The Lance Corporal starts the engine.
 say Pemberton: All present, sir.
 move rover 2.5,7.45 2.5,18 speed=2.2
+```
+
+```scene
 say Capt Davies: Right then. On the bus. Don’t dally. | On the bus, off the bus — army slang for order and counter-order: told to get on the bus, told to get off it, and nothing happens.
 endtalk
 near notebook,tea,bins
 wait 1200
 
 # Step 8
+```
+
+```scene
 net One One: Workshop?
 net One Two: Means we’re moving forward.
 net One One: Brew first, though.
 net One Two: Wouldn’t dream of denying you.
 set rover hidden=1
 wait 800
+```
+
+```scene
 stamp Pemberton’s notebook updated · 8 new entries
 wait 1500
 title
@@ -3945,11 +4185,17 @@ stamp <b>Monday 30 April 1990</b> · 1500<br>The hides, Hildesheimer Wald
 tell Five days in reserve. As corps reserve, the squadron’s work while it waits is learning the ground it may have to counter-attack across.
 tell Calloway has given each troop a stretch of route to recce.
 near mapcase,hollis,notebook
+```
+
+```scene
 tell Hollis walks over from his tank with the map case.
 say Sgt Hollis: Sir. Route recce.
 say Sgt Hollis: Squadron’s given us the stretch south through the Wald.
 say Sgt Hollis: Got a minute?
 say Pemberton: Sergeant.
+```
+
+```scene
 say Sgt Hollis: Bridge here — need the classification.
 say Sgt Hollis: Bend here, tight for a Challenger. Then through Sibbesse.
 say Sgt Hollis: Narrow street, junction in the middle.
@@ -4008,6 +4254,9 @@ say Sgt Hollis: Sir. | He is already walking back to his tank, and he is very ne
 end
 endtalk
 
+```
+
+```scene
 net One Two: One Zero, One Two. Where are we off to?
 net One One: Route recce, One Two. Bridge classification, clearances, and a key junction in Sibbesse.
 net One Two: …the junction with the shop on it?
@@ -4016,6 +4265,9 @@ net One Two: The shop. We’re recceing the shop.
 net One One: We are recceing the junction, One Two. The shop is on it. Mount up.
 tell The whole squadron net heard that. Nobody comments.
 near notebook
+```
+
+```scene
 choose One One, One Two, One Zero. Move now. Out.
 to a 4.0,7.5 p 2.75,7.5 b 1.5,7.5 speed=0.9 stagger=0.25
 cam 3,7.1,6.4
@@ -4045,9 +4297,15 @@ to a 12.0,7.5 p 10.75,7.5 b 9.5,7.5 speed=0.6 stagger=0.25
 cam 10.8,7.1,6.4
 waitmove a,p,b
 near boy,notebook
+```
+
+```scene
 tell A boy of about ten on a bicycle has stopped in the middle of the road, mouth open. His mother calls him sharply. He doesn’t move.
 net One Two: One One, One Two. That kid’s not going anywhere.
 net One One: Seen.
+```
+
+```scene
 tell Hollis raises a hand and waves, slowly. The boy waves back, suddenly grinning. His mother drags him to the side of the road.
 move boy 12.4,9.0 speed=1.2
 wait 1200
@@ -4062,9 +4320,18 @@ var logjunction=1
 tell You write it in your notebook: “Sibbesse junction, outside the SPAR. One go for a Challenger if the parked cars are gone.” | Route recce — the notes become the route card the squadron will plan with.
 end
 
+```
+
+```scene
 stamp The SPAR, Sibbesse
+```
+
+```scene
 tell Bell over the door. Fresh Brötchen. NDR playing low behind the counter. Two elderly customers turn to look.
 say Frau Müller: Ah! Die Briten. Guten Tag. | “Ah! The British. Good afternoon.”
+```
+
+```scene
 say Sgt Hollis: Guten Tag, Frau Müller. | Her eyebrows go up. She doesn’t ask.
 say Frau Müller: You are buying bread?
 say Sgt Hollis: Bread please. And some cold meat.
@@ -4080,19 +4347,34 @@ else
 say Pemberton: Same as the radio, I expect.
 say Cpl Baxter: Bet it is, sir.
 end
+```
+
+```scene
 say Herr Müller: Sie sind aus Detmold? | “You are from Detmold?” He glances at the British soldiers, then back to his till.
 say Sgt Hollis: 1st/5th Dragoon Guards, sir. We are forward of Detmold.
 say Herr Müller: My boy is in the Bundeswehr. He is with his unit also.
 say Herr Müller: Near Wolfsburg.
 say Sgt Hollis: He’ll be all right, sir.
+```
+
+```scene
 say Frau Müller: Are you here long?
 say Sgt Hollis: As long as needed.
+```
+
+```scene
 ask Thank her
 say Pemberton: Thank you, Frau Müller.
+```
+
+```scene
 say Frau Müller: Pass auf dich auf, junger Mann. | “Take care of yourself, young man.” She has caught his sleeve. Hollis pauses. Nods. Says nothing.
 endtalk
 
 near bag,boy,cherry
+```
+
+```scene
 tell Back at the tanks. The Jever goes into the turret bins for later — sergeant’s rule: nobody drinks on the move.
 say Cpl Baxter: Productive recce, sir?
 ask Say “Most informative”
@@ -4102,11 +4384,17 @@ endtalk
 set a,p,b open=0
 tell The boy on the bicycle is back across the road. He waves. Baxter waves back from his cupola, with a piece of Brötchen.
 choose One One, One Two, One Zero. Back to the hides. Out.
+```
+
+```scene
 to a 0,7.5 p -1.3,7.5 b -2.6,7.5 speed=1.1
 cam 1,7.1,6.4
 waitmove a,p,b
 set a,p,b open=1
 
+```
+
+```scene
 stamp The hides
 near notebook,bag,hollis
 say Sgt Hollis: Worth the trip, sir.
@@ -4116,6 +4404,9 @@ say Sgt Hollis: Frau Müller. Said pass auf dich auf. To me.
 say Sgt Hollis: Not to you, sir, no disrespect intended.
 say Sgt Hollis: That’s the first time in this country anyone’s said that to me on this tour.
 say Sgt Hollis: They know, sir. The locals. They know what’s coming.
+```
+
+```scene
 say Sgt Hollis: Crews are happy. I’ll get the routine sorted for tomorrow. | He walks off. You are left standing by your tank, holding half a Brötchen.
 endtalk
 str card=
@@ -4269,6 +4560,9 @@ cam 4.5,15,6
 near ogmap,iltis,notebook
 tell Seventeen hundred at the command post: Calloway, Davies, the other two troop leaders, the sergeant major with a clipboard.
 tell And a Bundeswehr captain, standing a little apart, his Iltis on the track.
+```
+
+```scene
 say Maj Calloway: Ground. | His finger moves over a map pinned to the side of the command vehicle.
 say Maj Calloway: The Hildesheimer Wald. Wooded hills, south of the town.
 say Maj Calloway: North and east of Hildesheim, open farmland.
@@ -4289,6 +4583,9 @@ say Maj Calloway: My intent: when Corps calls, we are ready, we are hidden, and 
 say Maj Calloway: For the next forty-eight hours, cam up, dig shell scrapes, and learn every track out of this wood. | Shell scrape: a shallow trench beside the tank, to sleep in or lie in under shellfire.
 say Maj Calloway: 1st Troop, the south-east edge, by the field.
 say Maj Calloway: 2nd Troop, the north edge. 3rd Troop, the west.
+```
+
+```scene
 say Maj Calloway: On Monday, 1st Troop recces the route south through Sibbesse.
 say Maj Calloway: 3rd Troop recces the long way round.
 say Maj Calloway: Route cards to me on Tuesday. | You write it down.
@@ -4304,10 +4601,16 @@ say Capt Davies: TIGGYWINKLE: contact within the hour, engines warm, mortars on 
 say Capt Davies: JEMIMA: stand down to combat watch. Two crews up, one resting.
 say Maj Calloway: Thank you.
 say Maj Calloway: I’m at the command post. Captain Davies is Zero Bravo.
+```
+
+```scene
 # the page these orders make in Pemberton's notebook: the first morning O Group in the hides is compared against it
 orders quiet O Group · Thursday 26 April 1990 · 1700 :: Ground | The Hildesheimer Wald. 1st Troop on the south-east edge, by the field. || Situation | Enemy: Third Shock Army mobilised, forward elements in assembly areas. Friendly: 1 and 4 Divisions in front; 3 Division the corps reserve. || Mission | {$m} || Execution | Cam up, dig shell scrapes, learn every track out of the wood. Monday: route recces south through Sibbesse. Route cards to the Squadron Leader on Tuesday. || Service support | Replen at 1700. || Command and signal | Squadron net. Minimise in the hides: essential traffic only. Report line PUDDLEDUCK: five kilometres east of the wood. Codewords: Stand-To-Charlie, hold present locations, closed down, hold fire unless fired on or ordered; TIGGYWINKLE, contact within the hour, engines warm, mortars on call; JEMIMA, stand down to combat watch, two crews up, one resting.
 gloss O Group: orders group, always in the same order: ground, situation, mission (said twice), execution, service support, command and signal.
 var ogseen=1
+```
+
+```scene
 say Maj Calloway: Questions?
 while $tdone=0
 ask {$tq1=0} Ask “Stand-to times?” || {$tq2=0} Ask “Captain Holley?” || {$tq3=0} Ask “A fourth tank?” || {$tasked=0} Say “No questions, sir” || {$tasked>0} Say nothing
@@ -4377,6 +4680,9 @@ hud 2030
 stamp 2030 · Stand-to
 tell The first night in the hides. Stand-to at dusk: every man at his tank, weapons manned, nobody talking, until the light has gone.
 net Zero: Hello all stations, this is Zero. Stand down. Out.
+```
+
+```scene
 radio BBC World Service: “Mr Heseltine emerged from the morning session describing the talks as ‘constructive’ and ‘thorough’…”
 wait 1200
 title
