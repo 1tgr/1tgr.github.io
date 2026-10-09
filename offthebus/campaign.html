@@ -1129,7 +1129,7 @@ night 0.2
 near periscope,notebook,north,east
 radio BBC World Service. At three o’clock this morning, British time, Soviet and other Warsaw Pact forces crossed the inner German border in strength at several points along its length. The Foreign Office has not yet issued a statement. We will bring you further details as we have them.
 tell The east is smoke now, in columns.
-tell Two Tornados come back west, high.
+tell Two Tornados go over, heading west, high.
 
 hud 0630
 near periscope,notebook,north,east,road
@@ -4906,7 +4906,8 @@ let acTap=null;
 AC.addEventListener('click',()=>acTap&&acTap());
 AC.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&acTap){ e.preventDefault(); acTap(); } });
 let autoCollapsed=false;                             // put away by narration, not by the player: the next balloon line brings it back
-function setCollapsed(c,auto){ autoCollapsed=c&&!!auto; AC.classList.toggle('collapsed',c); const r=$('acReopen'); r.hidden=!c; if(c) r.textContent='💬 Back to '+(acTag.textContent==='Pemberton'?'the conversation':acTag.textContent); }
+function setCollapsed(c,auto){ autoCollapsed=c&&!!auto; AC.classList.toggle('collapsed',c); const r=$('acReopen'); r.hidden=!c; if(c){ const ac=ST().ac, who=acTag.textContent;   // narration has no name: back to the narration, or to the conversation it is part of
+    r.textContent=!ac.name?(ac.talk?'💬 Back to the conversation':'Back to the narration'):'💬 Back to '+(who==='Pemberton'?'the conversation':who); } }
 $('acHide').addEventListener('click',e=>{ e.stopPropagation(); setCollapsed(true); });
 $('acReopen').addEventListener('click',()=>setCollapsed(false));
 function showBalloon(ac,full){                       // draw the balloon from the core's state
