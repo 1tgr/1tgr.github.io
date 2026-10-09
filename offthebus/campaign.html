@@ -4311,6 +4311,7 @@ gloss Sitrep — situation report.
 choose Zero, One Zero. Crews mounted. Ready, over.
 net Zero: Move to firing positions, line abreast. Send when in position. Out.
 gloss Line abreast — side by side, facing forward. Out — “I’m done; no reply needed.”
+checkpoint road
 tutorial Tap a firing position to move the troop
 tap pad1|pad2|pad3=Firing positions, line abreast
 tutorial
@@ -4318,6 +4319,7 @@ me One One, One Two, One Zero. Firing positions, line abreast. Out.
 to a 30.4,33.6 p 32,32 b 33.6,30.4 speed=0.9 stagger=0.2
 net One One: One One. Wilco, out.
 waitmove a,p,b
+checkpoint pads
 choose Zero, One Zero. In position. Out.
 net Zero: Targets: armoured hulks your front, one thousand metres. One round each. Free target choice. Cleared to engage. Out.
 gloss Cleared to engage — permission to fire on the targets given.
@@ -4328,6 +4330,7 @@ zoomgate Zoom out to see the range
 tutorial
 frame a,p,b,bmp,t54
 near tea,notebook,bins,binoculars,hulks
+checkpoint range
 wait 1300
 net One One: One One ready. My target the BMP.
 gloss BMP — Soviet infantry fighting vehicle. The smaller hulk.
@@ -4430,6 +4433,7 @@ move rover 35.1,33.5 31.7,30.1 speed=2.2
 tell A diesel, somewhere back along the forest road.
 waitmove rover
 near rover,davies,bins
+checkpoint davies
 wait 600
 ```
 
@@ -5342,6 +5346,7 @@ function createCore({scenes, campaign, io, world}){
       const fs=state.frames, f=fs[fs.length-1], c=code(f.scene,f.code);
       if(f.pc>=c.length){ fs.pop(); if(f.nested){ state.nestDepth--; loadScene(f.caller); state.world.badge=f.badge; state.world.near=f.near; io.update(); } continue; }
       const ins=c[f.pc];
+      if(io.step){ const r=io.step(ins); if(r) await r; }   // the page's breakpoints (&stop=)
       switch(ins.cmd){
         case 'if': case 'while': f.pc=cond(ins.arg)?f.pc+1:ins.jump; continue;
         case 'else': f.pc=ins.jump; continue;
@@ -5416,8 +5421,14 @@ const CAMPAIGN = (()=>{ const q=new URLSearchParams(location.search), c=JSON.par
 const PORTRAITS = JSON.parse($('portraits').textContent);
 const WORLD = JSON.parse(($('world')||{}).textContent||'{"places":{},"sheets":{}}');
 const QS = new URLSearchParams(location.search);
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const sleep = ms => new Promise(r=>setTimeout(r, reduce?Math.min(ms,150):ms));
+/* debug flags: ?fast plays without waiting (no delays, auto taps, instant moves, no saving); &choices=1,0,2 picks
+   each choice with more than one option in turn (default the first); &stop=a,b halts at `checkpoint a` (or, if no
+   checkpoint has that name, the first line containing the text), sets window.__stop, and waits for window.__resume(). Used by shots.py and uitest.py. */
+const FAST = QS.has('fast');
+const CHOICES = (QS.get('choices')||'').split(',').filter(x=>x!=='').map(Number);
+const STOPS = (QS.get('stop')||'').split(',').map(x=>x.trim()).filter(Boolean);
+const reduce = FAST || matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep = ms => new Promise(r=>setTimeout(r, FAST?0:reduce?Math.min(ms,150):ms));
 let core;
 const ST = () => core.state, SC = () => core.scene();
 const VIS = {}; const V = u => VIS[u.id]||(VIS[u.id]={});          // what the page draws but the game doesn't need: muzzle, recoil
@@ -5818,18 +5829,33 @@ const io={
   persist(json){ try{ localStorage.setItem(SAVEKEY,JSON.stringify({build:BUILD,state:json})); }catch(e){} },
   end(){ return waitFor(chips([{kind:'hint',text:'Start the campaign again'}])).then(()=>{ clearSave(); thread.innerHTML=''; lastFrom=null; lastDelivered=null; return 0; }); },
 };
+if(FAST){   // ?fast: every wait answers itself on the next turn of the event loop
+  let ci=0; const next=n=>n>1?Math.max(0,Math.min(n-1,CHOICES[ci++]||0)):0, soon=v=>sleep(0).then(()=>v);
+  Object.assign(io,{
+    choose:(opts,o)=>soon(o.replay?null:next(opts.length)), ask:opts=>soon(next(opts.length)), cards:(t,s,items)=>soon(next(items.length)),
+    tap:()=>soon(), orders:()=>soon(), zoom:()=>soon(), wait:()=>soon(), pick:(t,s,items)=>soon(items.map(()=>1)),
+    waitMoves:()=>{ core.finishMoves(); return soon(); }, persist(){}, end:()=>soon(null) });
+}
+if(STOPS.length){   // &stop=: breakpoints
+  const left=[...STOPS]; window.__stops=0;
+  const named=new Set(Object.values(SCENES).flatMap(t=>[...t.matchAll(/^checkpoint +(.+?) *$/gm)].map(m=>m[1])));   // a stop naming a checkpoint stops only there
+  io.step=ins=>{ const line=ins.cmd+' '+(ins.arg||'');
+    const k=left.findIndex(s=>named.has(s)?ins.cmd==='checkpoint'&&ins.arg.trim()===s:line.includes(s)); if(k<0) return null;
+    const name=left.splice(k,1)[0]; core.finishMoves(); io.update();
+    return new Promise(res=>{ window.__resume=()=>{ window.__stop=null; res(); }; window.__stop={name,line,n:++window.__stops}; }); };
+}
 
 /* ================= the map loop ================= */
 let last=performance.now(), shownScene=null;
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000); last=now;
   if(!core){ requestAnimationFrame(frame); return; }
-  core.tick(dt); for(const id in VIS) VIS[id].recoil=Math.max(0,(VIS[id].recoil||0)-dt*2.2);
+  if(FAST) core.finishMoves(); core.tick(dt); for(const id in VIS) VIS[id].recoil=Math.max(0,(VIS[id].recoil||0)-dt*2.2);
   const st=ST(), w=st.world, sc=SC();
   if(shownScene!==st.scene){ shownScene=st.scene; cam.fx=w.cam[0]; cam.fy=w.cam[1]; cam.z=w.cam[2]; night=w.night; }
   cam.tfx=w.cam[0]; cam.tfy=w.cam[1]; cam.tz=w.cam[2]; if(w.frame) frameUnits(w.frame); nightT=w.night;
-  for(const k of ['fx','fy','z']) cam[k]+=(cam['t'+k]-cam[k])*Math.min(1,dt*2.2);
-  night+=(nightT-night)*Math.min(1,dt*1.5);
+  for(const k of ['fx','fy','z']) cam[k]+=(cam['t'+k]-cam[k])*(FAST?1:Math.min(1,dt*2.2));
+  night+=(nightT-night)*(FAST?1:Math.min(1,dt*1.5));
   if(WM.open){ resizeIf(); if(WM.dirty){ WM.dirty=false; drawWorldMap(); } requestAnimationFrame(frame); return; }
   resizeIf(); setCam(); if(shake>0){ shake-=dt; ox+=(Math.random()-.5)*6; oy+=(Math.random()-.5)*4; }
   cx.fillStyle=sc.map.bg||'#8a9a5a'; cx.fillRect(0,0,W,H); drawGround();
@@ -5932,7 +5958,7 @@ async function start(){
   if(QS.has('reset')){ clearSave(); QS.delete('reset'); history.replaceState(null,'',location.pathname+(QS.toString()?'?'+QS.toString():'')); }
   core=OTBCore.createCore({scenes:SCENES, campaign:CAMPAIGN, io, world:WORLD});
   window.__core=core;
-  let saved=null; try{ saved=JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){}
+  let saved=null; if(!FAST) try{ saved=JSON.parse(localStorage.getItem(SAVEKEY)); }catch(e){}
   const sn=saved&&saved.state?JSON.parse(saved.state):null;
   if(sn&&sn.v===3&&saved.build===BUILD){ redrawPending=true; return core.resume(sn); }
   if(sn&&sn.v===3){ redrawPending=true; return core.restartScene(sn,'<b>The game was updated.</b> Picking up at the start of this scene.'); }
