@@ -2498,7 +2498,7 @@ use: xp obs 5 Heard the jays
 hud: 1800 | 25 April 1990
 endcard: Off the Bus | Next: the squadron
 net: Regimental net | Sunray is the Colonel · you are Bravo One Zero | 0
-maplabel: Isometric view of the B1 east from Detmold: the troop in line ahead past the Teutoburger Wald, German anti-aircraft tanks at Blomberg, the Weser at Hameln with bridging rigs in the water, a Polizei roadblock at Elze, and the forest at Hildesheim
+maplabel: Isometric view of the B1 east from Detmold: the troop in line ahead past the Teutoburger Wald, Bundeswehr Gepards at Blomberg, the Weser at Hameln with bridging rigs in the water, a Polizei roadblock at Elze, and the forest at Hildesheim
 camera: -6,11,8.5
 callsigns: Zero=0, Bravo One One=11, Bravo One Two=12
 crew: Gunner=G, Loader=L, Driver=D
@@ -2535,8 +2535,8 @@ gloss Main supply route: a road kept clear for military traffic.
 near traffic,notebook
 to a 40,7.5 p 38.7,7.5 b 37.4,7.5 speed=0.6 stagger=0.3
 wait 2200
-tell In a lay-by outside Blomberg, two German anti-aircraft tanks with their engines running. On each turret a radar dish turns, round and round.
-gloss Flakpanzer Gepard: the Bundeswehr’s anti-aircraft tank. Twin 35mm cannon, with its own radar.
+tell In a lay-by outside Blomberg, two Bundeswehr Gepards, engines running. On each turret a radar dish turns, round and round.
+gloss Gepard: the Bundeswehr’s self-propelled anti-aircraft gun. Twin 35mm cannon and its own radar, on a Leopard chassis.
 near gepard,traffic,notebook
 waitmove a,p,b
 net Bravo One Two: Radars are turning. Who’re they looking for?
@@ -2662,7 +2662,7 @@ look: tell Hermann, on his hill behind you, getting smaller.
 at: 22,1.5
 icon: 🚗
 look: tell Cars on the parallel road, all heading west: estates with roof boxes, a Trabant with a mattress tied on, a Mercedes towing a caravan. Windows up.
-@gepard the anti-aircraft tanks
+@gepard the Gepards
 unit: g1
 icon: 📡
 look: tell A tank chassis with a turret of guns and dishes: two long cannon either side, a radar turning on top and another on the front.
@@ -4729,7 +4729,7 @@ const DRAW={
     poly([r(-l,w,h),r(l,w,h),r(l,0,ridge),r(-l,0,ridge)],shade(roof)); poly([r(-l,-w,h),r(l,-w,h),r(l,0,ridge),r(-l,0,ridge)],roof); poly([r(l,-w,h),r(l,w,h),r(l,0,ridge)],shade(wall));
     if(u.sign){ const p=r(l,0,h*.55); cx.fillStyle='#d62828'; rr(p[0]-tw*.18,p[1]-tw*.07,tw*.36,tw*.14,3); cx.fill(); cx.fillStyle='#fff'; cx.font=`700 ${Math.max(8,tw*.1)}px system-ui`; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(u.sign,p[0],p[1]); }
     if(u.spire){ const p=r(-l*.6,0,ridge); poly([[p[0]-tw*.08,p[1]],[p[0]+tw*.08,p[1]],[p[0],p[1]-tw*.9]],'#4a4a52'); } },
-  // the Bundeswehr's anti-aircraft tank: twin cannon either side of the turret, a search radar turning on top
+  // the Gepard, the Bundeswehr's self-propelled anti-aircraft gun: twin cannon either side of the turret, a search radar turning on top
   gepard(u){ const s=tw*.36,h=s*.42; shadow(u,s); const c=box(u,.62,.36,h,['#4d5638','#414a2e','#626d47']);
     poly([c(-.2,-.1,h),c(0,-.14,h),c(.04,.04,h),c(-.16,.1,h)],'#2b2a1e'); const tz=h*.95, tc=box({x:u.x-.04,y:u.y},.32,.3,tz,['#4d5638','#3a4229','#66724a'],h);
     cx.strokeStyle='#23281a'; cx.lineWidth=Math.max(1.5,s*.07); cx.lineCap='round';
