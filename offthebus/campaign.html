@@ -593,8 +593,7 @@ move atolr -2,8.3 2.4,8.3 speed=1
 waitmove atolr
 set atop hidden=0
 move atop 6,7.9 16.6,7.9 speed=1.1
-tell A Land Rover comes up behind them and stops on the verge, well short of the gateway. One man gets out and walks forward to the cars, alone.
-gloss ATO — Ammunition Technical Officer: the Army’s bomb-disposal officer.
+tell A Land Rover comes up behind them and stops on the verge, well short of the gateway. One man gets out and walks forward to the cars, alone. | ATO — Ammunition Technical Officer: the Army’s bomb-disposal officer.
 waitmove atop
 wait 1600
 
@@ -1630,8 +1629,7 @@ hud 0930
 set sm6,sm7,sm8 hidden=1
 set t80,bmp1,bmp2,bmp3,bmp4 hidden=0
 move t80 12.6,7.0 speed=0.55
-tell A whine carries before the dust: a gas turbine. A T-80 crests the rise at fourteen hundred metres. It is on the move, turret pointed along the track, away from the wood.
-gloss T-80 — Soviet main battle tank, gas-turbine engine. Engage with FIN.
+tell A whine carries before the dust: a gas turbine. A T-80 crests the rise at fourteen hundred metres. It is on the move, turret pointed along the track, away from the wood. | T-80 — Soviet main battle tank, gas-turbine engine. Engage with FIN.
 if $obs>39
 tell Low turret, long gun, that whine: T-80. Nobody else has called it yet.
 else
@@ -1687,8 +1685,7 @@ wait 1200
 missile bmp4 6.4,10.4
 wait 1700
 burst 6.4,10.4
-tell The missile comes out of the smoke low and wide, and goes into the field.
-gloss AT-5 Spandrel — a wire-guided anti-tank missile. The operator steers it all the way in, and has to see both the missile and his target.
+tell The missile comes out of the smoke low and wide, and goes into the field. | AT-5 Spandrel — a wire-guided anti-tank missile. The operator steers it all the way in, and has to see both the missile and his target.
 net One Two: One Two. Lost the BMP in your smoke.
 move bmp4 21,10.4 speed=0.6
 tell The fourth BMP backs over the rise and is gone.
@@ -1795,8 +1792,7 @@ unit: p
 icon: 🌡️
 verb: Look through
 look: tell TOGS — the Thermal Observation and Gunnery Sight. The gunner’s picture, repeated for you.
-use: tell In the thermal picture the field is grey and cold. Beyond the rise, too far for the eye, small white shapes are moving: engines, warm and getting warmer.
-use: gloss TOGS sees heat, not light.
+use: tell In the thermal picture the field is grey and cold. Beyond the rise, too far for the eye, small white shapes are moving: engines, warm and getting warmer. | TOGS sees heat, not light.
 @telegraph the Telegraph
 kit: yes
 icon: 📰
@@ -1807,8 +1803,7 @@ unit: p
 icon: ☕
 verb: Brew up with
 look: tell The boiling vessel, the BV, built into the turret: hot water for tea and boil-in-the-bag food without leaving the tank.
-use: tell The water takes four minutes. You make three teas and pass two down. Your loader says it is the best tea he has ever had.
-use: gloss Brew-up — a brew of tea. Also army slang for a tank catching fire.
+use: tell The water takes four minutes. You make three teas and pass two down. Your loader says it is the best tea he has ever had. | Brew-up — a brew of tea. Also army slang for a tank catching fire.
 @cigarette Hollis’s cigarette
 unit: a
 icon: 🚬
@@ -2010,8 +2005,7 @@ net Four Three: Grid zero nine seven four five two. Direction four eight zero ze
 gloss Grid — the target’s map reference. Direction — the FOO’s bearing to the target, in mils (6,400 to the circle). Adjust fire — range one gun onto the target before the battery fires.
 choose Grid zero nine seven four five two. Direction four eight zero zero. Infantry in the open. Adjust fire. Out.
 near board,face,tannoy
-tell The command post’s computer, FACE, works out the data for the guns: bearing one six four zero, elevation three two zero, charge four.
-gloss FACE — Field Artillery Computer Equipment.
+tell The command post’s computer, FACE, works out the data for the guns: bearing one six four zero, elevation three two zero, charge four. | FACE — Field Artillery Computer Equipment.
 choose ic: Fire mission battery!
 ic Gun 3: Number three!
 choose ic: HE, charge four, fuze quick. Bearing one six four zero. Elevation three two zero.
@@ -2317,10 +2311,9 @@ tell At the wood edge, a hunter’s high seat looks out over the whole of the gr
 choose act: Climb the high seat || hint: Stay below
 if $choice=0
 cam 14,10,8
-tell From the top, the fields are a map. You fill in the range card: church tower 2100, farm 1400, track junction 900, field gate 600.
+tell From the top, the fields are a map. You fill in the range card: church tower 2100, farm 1400, track junction 900, field gate 600. | Range card: a sketch of the arc in front of a fire position, with the ranges to landmarks, so the crew can engage without working it out under fire.
 var posrange=1
 xp obs 10 Range card
-gloss Range card: a sketch of the arc in front of a fire position, with the ranges to landmarks, so the crew can engage without working it out under fire.
 stamp From the high seat
 near merc,pickers,stall,deer,notebook
 tutorial Look around: tap what you see, and note anything worth noting
@@ -2368,8 +2361,7 @@ unit: stallwoman
 icon: 🥬
 verb: Visit
 look: tell A table at the field gate under an umbrella. SPARGEL, chalked on a board. A woman is selling white asparagus by the pound.
-use: tell Hollis buys two bundles for the cook. “Can’t fight a war on compo, sir.”
-use: gloss Spargelzeit: the white asparagus season, from spring until midsummer’s day.
+use: tell Hollis buys two bundles for the cook. “Can’t fight a war on compo, sir.” | Spargelzeit: the white asparagus season, from spring until midsummer’s day.
 @deer the deer
 unit: deer1
 icon: 🦌
@@ -2530,13 +2522,11 @@ move c0 -14,1.5 speed=1.1
 move c1 -14,1.5 speed=1 delay=2
 move c2 -14,1.5 speed=1.1 delay=4
 move c3 -14,1.5 speed=1 delay=6
-tell The B1 is a main supply route now, and the eastbound side is yours. Across the fields, on the parallel road, headlights move west in a steady line.
-gloss Main supply route: a road kept clear for military traffic.
+tell The B1 is a main supply route now, and the eastbound side is yours. Across the fields, on the parallel road, headlights move west in a steady line. | Main supply route: a road kept clear for military traffic.
 near traffic,notebook
 to a 40,7.5 p 38.7,7.5 b 37.4,7.5 speed=0.6 stagger=0.3
 wait 2200
-tell In a lay-by outside Blomberg, two Bundeswehr Gepards, engines running. On each turret a radar dish turns, round and round.
-gloss Gepard: the Bundeswehr’s self-propelled anti-aircraft gun. Twin 35mm cannon and its own radar, on a Leopard chassis.
+tell In a lay-by outside Blomberg, two Bundeswehr Gepards, engines running. On each turret a radar dish turns, round and round. | Gepard: the Bundeswehr’s self-propelled anti-aircraft gun. Twin 35mm cannon and its own radar, on a Leopard chassis.
 near gepard,traffic,notebook
 waitmove a,p,b
 net Bravo One Two: Radars are turning. Who’re they looking for?
@@ -2557,8 +2547,7 @@ night 0.7
 hud 2200
 set q1,q2,q3 hidden=0
 tell Towards twenty-two hundred, three FV432s come up the road behind you with their lights on and pull into the field: Sergeant Coates’s mortar section.
-tell From here they follow the troop.
-gloss FV432: the Army’s tracked armoured carrier. These carry 81mm mortars.
+tell From here they follow the troop. | FV432: the Army’s tracked armoured carrier. These carry 81mm mortars.
 # Placeholder: meeting Sgt Coates. Waits for his character file.
 move q1 50.5,7.5 50.5,13.6 52.5,13.6 speed=0.6
 move q2 50.5,7.5 50.5,13.6 51.3,13.6 speed=0.6 delay=1
@@ -2576,8 +2565,7 @@ tell The column comes down into Hameln in the grey light, and out over the Weser
 to a 88,7.5 p 86.7,7.5 b 85.4,7.5 q1 84.1,7.5 q2 82.9,7.5 q3 81.7,7.5 speed=0.5 stagger=0.2
 wait 2400
 night 0
-tell Below the bridge, the river is full of lorries. A line of M2 rigs, side floats folded out, bolted together by their ramps across the water.
-gloss M2 rigs: bridging lorries that swim, and join up into a bridge or a ferry.
+tell Below the bridge, the river is full of lorries. A line of M2 rigs, side floats folded out, bolted together by their ramps across the water. | M2 rigs: bridging lorries that swim, and join up into a bridge or a ferry.
 near rigs,notebook
 waitmove a,p,b,q1,q2,q3
 tell Below the bridge, the rigs hold their line across the river.
@@ -2601,8 +2589,7 @@ set f1,f2 hidden=0
 move f1 92,6.7 speed=0.8
 move f2 92,6.7 speed=0.8 delay=1.4
 cam 108,6,6.5
-tell Two six-wheeled armoured cars come the other way, boat-nosed, a tall aerial on each. Every hatch shut; nobody visible.
-gloss Spürpanzer Fuchs: a six-wheeled armoured car that samples the air and the ground for chemical agents.
+tell Two six-wheeled armoured cars come the other way, boat-nosed, a tall aerial on each. Every hatch shut; nobody visible. | Spürpanzer Fuchs: a six-wheeled armoured car that samples the air and the ground for chemical agents.
 near fuchs,polizei,notebook
 waitmove f1,f2
 set f1,f2 hidden=1
@@ -3436,8 +3423,7 @@ endtalk
 tell He nods, and drives on.
 end
 if $aft=4
-tell A car comes slowly along the far road: an olive Mercedes with odd number plates, two men in it, one with a camera. It stops by the field gate, then drives on.
-gloss The Soviet military liaison mission — Soviet officers allowed by treaty to travel in West Germany, watching.
+tell A car comes slowly along the far road: an olive Mercedes with odd number plates, two men in it, one with a camera. It stops by the field gate, then drives on. | The Soviet military liaison mission — Soviet officers allowed by treaty to travel in West Germany, watching.
 choose Zero, One Zero. Liaison car, two up, one camera, at the field gate, moving north. Over. || hint: Watch it go
 if $choice=0
 net Zero: One Zero, Zero. Roger. Good spot. Out.
@@ -3690,8 +3676,7 @@ gloss T-54 — older Soviet tank. The larger hulk.
 # Step 3: One Zero's gun drill, at the level chosen on replay
 set bmp,t54 tagged=1
 tutorial Tap a hulk to choose your target
-tell Your loader has a practice FIN round loaded.
-gloss FIN — the armour-piercing tank-killer round (APFSDS). Old Chieftain hands still call it “sabot”.
+tell Your loader has a practice FIN round loaded. | FIN — the armour-piercing tank-killer round (APFSDS). Old Chieftain hands still call it “sabot”.
 tap bmp=Target the BMP || t54=Target the T-54
 var target=0
 if $choice=1
@@ -3834,8 +3819,7 @@ use: tell Through the binoculars: two hulks on the thousand-metre line, a BMP an
 @hulks the hulks
 at: 14.3,6.7
 icon: 🎯
-look: tell Soviet armour, rust over old paint, holes welded over and holed again. The BMP has lost its gun. The T-54 still has its.
-look: gloss Hulks — knocked-out vehicles used as gunnery targets.
+look: tell Soviet armour, rust over old paint, holes welded over and holed again. The BMP has lost its gun. The T-54 still has its. | Hulks — knocked-out vehicles used as gunnery targets.
 @rover the Land Rover
 unit: rover
 icon: 🚙
@@ -3944,8 +3928,7 @@ to a 4.0,7.5 p 2.75,7.5 b 1.5,7.5 speed=0.9 stagger=0.25
 cam 3,7.1,6.4
 waitmove a,p,b
 near disc,notebook,brook
-tell At the bridge, a yellow Military Load Class disc. Seventy. A Challenger weighs about sixty-two tonnes.
-gloss Military Load Class — the weight a West German bridge is rated for, posted on a yellow disc.
+tell At the bridge, a yellow Military Load Class disc. Seventy. A Challenger weighs about sixty-two tonnes. | Military Load Class — the weight a West German bridge is rated for, posted on a yellow disc.
 choose act: 📝 Log it: bridge, class seventy || act: Carry on
 if $choice=0
 var logbridge=1
@@ -3983,8 +3966,7 @@ near spar,cherry,notebook
 choose act: 📝 Log it: junction, one go if the cars are gone || act: Carry on
 if $choice=0
 var logjunction=1
-tell You write it in your notebook: “Sibbesse junction, outside the SPAR. One go for a Challenger if the parked cars are gone.”
-gloss Route recce — the notes become the route card the squadron will plan with.
+tell You write it in your notebook: “Sibbesse junction, outside the SPAR. One go for a Challenger if the parked cars are gone.” | Route recce — the notes become the route card the squadron will plan with.
 end
 
 stamp The SPAR, Sibbesse
@@ -4261,8 +4243,7 @@ end
 end
 say Maj Calloway: Good. Time check. The time is now 1731. That’s all. | Watches checked. The troop leaders go back to their troops.
 endtalk
-tell As the group breaks up, the German captain comes over to you. Grey-green uniform, a beret, a careful handshake.
-gloss Hptm, Hauptmann: captain.
+tell As the group breaks up, the German captain comes over to you. Grey-green uniform, a beret, a careful handshake. | Hptm, Hauptmann: captain.
 say Hptm Weber: Lieutenant Pemberton. Klaus Weber.
 say Hptm Weber: I command the Heimatschutz company in your sector.
 say Hptm Weber: We will see each other often.
@@ -4457,9 +4438,9 @@ function createCore({scenes, campaign, io}){
 
   /* ---- thread ---- */
   async function emit(entry){ await io.print(entry); state.thread.push(entry); }
-  async function endTell(txt){                         // narration read: outside a conversation the box goes; the line is kept in the thread
+  async function endTell(txt,gl){                      // narration read: outside a conversation the box goes; the line, and its gloss, are kept in the thread
     if(!state.ac.talk){ state.ac={...state.ac,show:false}; io.update(); }
-    await emit({k:'told',text:txt}); }
+    await emit({k:'told',text:txt}); if(gl) await emit({k:'gloss',text:gl}); }
 
   /* ---- commands ---- */
   const H=()=>({printed:null,choice:null});
@@ -4480,9 +4461,9 @@ function createCore({scenes, campaign, io}){
         if(n===me && !inVerb && state.ac.show && txt!=='…' && !/^[“"]/.test(txt) && !state.lastAsked && !state.pemSpoke){ await io.ask([{text:txt}]); }   // a line that opens a conversation was already chosen
         if(n===me){ state.lastAsked=false; state.pemSpoke=true; } else state.pemSpoke=false;
         state.ac={show:true,name:n,text:txt,gloss:gl||'',collapsed:false}; await io.say(state.ac); hook.printed&&hook.printed(); await io.tap(); break; }
-      case 'tell': { const txt=interp(a), talk=!!(state.ac.show&&(state.ac.name||state.ac.talk));   // narration: the lower-third box with no speaker, tap to go on
-        state.ac={show:true,name:'',text:txt,gloss:'',collapsed:false,talk}; await io.say(state.ac); hook.printed&&hook.printed(); await io.tap();
-        await endTell(txt); break; }
+      case 'tell': { const [txt,gl]=interp(a).split(' | '), talk=!!(state.ac.show&&(state.ac.name||state.ac.talk));   // narration: the lower-third box with no speaker, tap to go on; ' | ' adds a gloss beneath
+        state.ac={show:true,name:'',text:txt,gloss:gl||'',collapsed:false,talk}; await io.say(state.ac); hook.printed&&hook.printed(); await io.tap();
+        await endTell(txt,gl); break; }
       case 'ask': { state.pemSpoke=false; const os=parseOpts(a); const shown=os.map((o,i)=>[o,i]).filter(([o])=>!o.when||cond(o.when)); const j=await io.ask(shown.map(([o])=>o)); const i=shown[j][1];
         hook.choice&&hook.choice(i); vars.choice=i; state.lastAsked=true; break; }
       case 'endtalk': state.ac={...state.ac,show:false}; io.update(); break;
@@ -4557,7 +4538,7 @@ function createCore({scenes, campaign, io}){
   async function resumeDone(f,ins){
     const d=f.done;
     if(ins.cmd==='say'){ if(!d.printed) return run1('say',ins.arg); await io.tap(); return; }
-    if(ins.cmd==='tell'){ if(!d.printed) return run1('tell',ins.arg); await io.tap(); await endTell(interp(ins.arg)); return; }
+    if(ins.cmd==='tell'){ if(!d.printed) return run1('tell',ins.arg); await io.tap(); const [txt,gl]=interp(ins.arg).split(' | '); await endTell(txt,gl); return; }
     if(SPEECH[ins.cmd]) return;
     if(ins.cmd==='choose'){ const o=parseOpts(interp(ins.arg))[d.chosen]; state.vars.choice=d.chosen; if(!d.printed){ await chooseEffect(o); f.done.printed=1; save(); } return; }
     if(ins.cmd==='ask'){ state.vars.choice=d.chosen; state.lastAsked=true; return; }
