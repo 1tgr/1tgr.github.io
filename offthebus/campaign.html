@@ -1077,7 +1077,7 @@ look: tell The mother holds a girl of about six close against her coat. The girl
 @hedge the hedge
 at: 13.4,8.8
 icon: 🌿
-look: tell Hawthorn, dense and fresh green, just starting to bud white. A Challenger will go through it as if it were not there.
+look: tell Hawthorn, dense and fresh green, just starting to bud white. The stems are no thicker than a thumb.
 @field the field
 at: 15.6,11.6
 icon: 🌼
@@ -1615,7 +1615,8 @@ tell Smoke blooms in front of 2nd Troop. Behind it, their Challengers reverse of
 tell One is trailing smoke from the engine decks.
 net Two Zero: One Zero, Two Zero. They’re four minutes behind us. T-80 leading. Out.
 net Zero: Two Zero, Zero. Roger. Out.
-gloss Bound — a move from one fire position to the next. 2nd Troop is now on your left, covering the same field from the flank.
+gloss Bound — a move from one fire position to the next.
+tell 2nd Troop is now on your left, covering the same field from the flank.
 net One One: One One. Range markers confirmed.
 if $posrange=1
 tell Your range card from the high seat is taped inside the cupola: the farm track at eight hundred, the lone bush at eleven hundred, the rise at fourteen hundred.
@@ -1781,7 +1782,7 @@ unit: p
 icon: 📏
 verb: Check
 look: tell Your range card: a sketch of the field from your hide, the farm track at eight hundred, the lone bush at eleven hundred, the rise at fourteen hundred.
-look: tell Hollis paced the first two himself.
+look: tell Beside the first two ranges, in Hollis’s hand: “paced”.
 use: tell You check the range card against the ground. Eight hundred, the track. Eleven hundred, the bush. Fourteen hundred, the rise. Nothing has moved but the light.
 @periscope the periscope
 unit: p
@@ -1800,13 +1801,13 @@ use: gloss TOGS sees heat, not light.
 kit: yes
 icon: 📰
 look: tell The Telegraph, four days old by the time it reached you. The deaths column runs to two pages.
-use: tell You read the deaths column. You don’t know any of the names. Then you do.
+use: tell You read the deaths column. Halfway down the second page, a name you know.
 @bv the boiling vessel
 unit: p
 icon: ☕
 verb: Brew up with
 look: tell The boiling vessel, the BV, built into the turret: hot water for tea and boil-in-the-bag food without leaving the tank.
-use: tell The water takes four minutes. You make three teas and pass two down. Your loader says it is the best tea he has ever had. He says that every time.
+use: tell The water takes four minutes. You make three teas and pass two down. Your loader says it is the best tea he has ever had.
 use: gloss Brew-up — a brew of tea. Also army slang for a tank catching fire.
 @cigarette Hollis’s cigarette
 unit: a
@@ -2119,7 +2120,7 @@ hear Gun 3, Bombardier: Right. Clean the breech, stack the cases.
 hear Gun 3, layer: Then a brew?
 hear Gun 3, Bombardier: Then a stewed brew.
 wait 900
-stamp Six guns, twenty rounds, and nobody on the gun line saw where any of them landed.
+stamp Six guns, twenty rounds. Empty cases by every gun.
 wait 1400
 title
 replay Play again
@@ -2210,7 +2211,7 @@ tell You drive up on him without lights. He jumps into the ditch. In the second 
 say The farmer: Mein Gott! Ich bin der Bauer! | “My God! I’m the farmer!”
 end
 endtalk
-tell The old man walks back to his barn. One light in the farmhouse, until long after you have gone.
+tell The old man walks back to his barn. One light in the farmhouse. It is still on at the bend.
 move lr1 18,8.5 18,13 speed=0.5
 move lr2 18,8.5 18,11.4 speed=0.5 delay=1
 cam 19,12,6.5
@@ -2360,7 +2361,7 @@ unit: pick2
 icon: 🌱
 verb: Note
 look: tell Pickers bent along the ridged rows in the rain, cutting the white spears before daylight can turn them green.
-use: tell You note them: three pickers and a tractor, the same every day this week, by the look of the rows.
+use: tell You note them: three pickers and a tractor. Behind them, cut rows run back to the far hedge.
 use: xp obs 5 Logged the pickers
 @stall the stall
 unit: stallwoman
@@ -2368,7 +2369,7 @@ icon: 🥬
 verb: Visit
 look: tell A table at the field gate under an umbrella. SPARGEL, chalked on a board. A woman is selling white asparagus by the pound.
 use: tell Hollis buys two bundles for the cook. “Can’t fight a war on compo, sir.”
-use: gloss Spargelzeit: the white asparagus season, from spring until midsummer’s day. All Germany eats it.
+use: gloss Spargelzeit: the white asparagus season, from spring until midsummer’s day.
 @deer the deer
 unit: deer1
 icon: 🦌
@@ -2446,7 +2447,7 @@ endtalk
 tell You write it down: north track, porridge in rain; south track, stone. Hollis nods.
 var knowtracks=1
 xp obs 10 Local knowledge
-gloss Förster: the forester, who manages the state forest and its hunting. He knows the wood better than any map.
+gloss Förster: the forester, who manages the state forest and its hunting.
 move forester 22,2.6 speed=0.4
 move lr 13,2.5 13,10.5 speed=0.7
 cam 14,10,6.5
@@ -2576,7 +2577,7 @@ to a 88,7.5 p 86.7,7.5 b 85.4,7.5 q1 84.1,7.5 q2 82.9,7.5 q3 81.7,7.5 speed=0.5 
 wait 2400
 night 0
 tell Below the bridge, the river is full of lorries. A line of M2 rigs, side floats folded out, bolted together by their ramps across the water.
-gloss M2 rigs: bridging lorries that swim, and join up into a bridge or a ferry. 28 Amphibious Engineer Regiment, the Rubber Ducks, are based in Hameln.
+gloss M2 rigs: bridging lorries that swim, and join up into a bridge or a ferry.
 near rigs,notebook
 waitmove a,p,b,q1,q2,q3
 tell Below the bridge, the rigs hold their line across the river.
@@ -3239,7 +3240,7 @@ gloss O Group — orders group, always in the same order: ground, situation, mis
 end
 end
 if $oc=1
-gloss Calloway will watch your training slot.
+tell Calloway says he will visit troops this morning.
 end
 if $og=2
 do gasdrill
@@ -3392,7 +3393,7 @@ if $aft=8
 play patrol-positions
 end
 if $aft=0
-radio A quiet afternoon. Kit, letters, the notebook. Somewhere east, artillery is practising.
+radio A quiet afternoon. Kit, letters, the notebook. Somewhere east, artillery, at intervals.
 end
 if $aft=1
 if $bxkia=1
@@ -3414,7 +3415,7 @@ if $aft=3
 do farmer
 end
 if $aft=5
-tell The squadron net is full of hiss and a wavering tone, then music, then hiss. Somebody east of the border is practising jamming.
+tell The squadron net is full of hiss and a wavering tone, then music, then hiss. It stops, starts again, stops.
 choose One One, One Two, One Zero. WINDMILL. Out. || hint: Ride it out
 if $choice=0
 if $tcw=0
@@ -3436,7 +3437,7 @@ tell He nods, and drives on.
 end
 if $aft=4
 tell A car comes slowly along the far road: an olive Mercedes with odd number plates, two men in it, one with a camera. It stops by the field gate, then drives on.
-gloss The Soviet military liaison mission — Soviet officers allowed by treaty to travel in West Germany, watching. They were to be reported, every time.
+gloss The Soviet military liaison mission — Soviet officers allowed by treaty to travel in West Germany, watching.
 choose Zero, One Zero. Liaison car, two up, one camera, at the field gate, moving north. Over. || hint: Watch it go
 if $choice=0
 net Zero: One Zero, Zero. Roger. Good spot. Out.
@@ -3471,7 +3472,7 @@ if $choice=2
 say Pemberton: Fill in the form, and we’ll pass it on.
 say The farmer: The form. Always the form. | He has already filled it in.
 end
-gloss Manöverschäden — manoeuvre damage. Farmers claimed for it every exercise season; the Army paid.
+gloss Manöverschäden — manoeuvre damage.
 endtalk
 enddef
 
@@ -3482,7 +3483,7 @@ if $bxkia=1
 str h12a=Watts is doing it, sir. Ask me again in a month.
 str h12b=Baxter would have been all right, sir. Given time.
 end
-tell Corps reserve, in hides in the Hildesheimer Wald since Thursday. A week of routine, until the SPAR route recce on Monday and whatever comes after.
+tell Corps reserve, in hides in the Hildesheimer Wald since Thursday. A week of routine, until the SPAR route recce on Monday.
 near notebook,bv,periscope
 while $day<12
 if $day=3
@@ -3538,12 +3539,12 @@ gloss Stand-To-Charlie — the alert state from the orders of 26 April: hold pre
 net One One: One One. That’s not exercise.
 wait 900
 if $crash<40
-stamp The crash move was still Raw. On the morning it mattered, the troop took nearly seven minutes, and One Two was last.
+stamp The crash move was still Raw. At stand-to on 9 May, the troop took nearly seven minutes, and One Two was last.
 else
 if $crash<100
-stamp The crash move was Practised. On the morning it mattered, the troop was in position in under four minutes.
+stamp The crash move was Practised. At stand-to on 9 May, the troop was in position in under four minutes.
 else
-stamp The crash move was Drilled. On the morning it mattered, the troop was in position in under two minutes.
+stamp The crash move was Drilled. At stand-to on 9 May, the troop was in position in under two minutes.
 end
 end
 stamp Gas {level:$gas} · gun {level:$gun} · contact {level:$contact}
@@ -3561,8 +3562,8 @@ use: tell You write the time the troop reported in position at stand-to, and nex
 unit: p
 icon: ☕
 verb: Brew up with
-look: tell The boiling vessel in the turret. It has been on more or less since you arrived.
-use: tell Tea for three. The loader says it is the best tea he has ever had. He says that every time.
+look: tell The boiling vessel in the turret. Steam from the vent.
+use: tell Tea for three. The loader says it is the best tea he has ever had.
 @periscope the periscope
 unit: p
 icon: 🔭
@@ -3779,7 +3780,7 @@ tell Captain Davies, rear-party commander, leans on the open door of the Land Ro
 say Capt Davies: Hello there. How’d you get on, then?
 ask Report the shoot
 say Pemberton: Two clean hits. One short.
-say Capt Davies: Mm. Tell your corporal he’s drinking on his own coin tonight. | Davies’s joke — the man who missed pays for his own drinks tonight.
+say Capt Davies: Mm. Tell your corporal he’s drinking on his own coin tonight. | Drinking on his own coin: paying for his own drinks.
 say Capt Davies: … | He glances into your open hatch, at the ammunition bins. Nearly full.
 say Capt Davies: Bins still full. Hmm. Well — happens.
 say Capt Davies: Actually, lucky. Plans have changed. You’re being moved on.
@@ -3828,17 +3829,17 @@ look: tell The racks and charge bins are nearly full: a full combat load for a d
 kit: yes
 icon: 🔭
 verb: Look through
-look: tell Army binoculars on a cord round your neck, the lens caps long since lost.
+look: tell Army binoculars on a cord round your neck, no lens caps, the eyepieces scratched.
 use: tell Through the binoculars: two hulks on the thousand-metre line, a BMP and a T-54, rust-brown, holed many times before today. Behind them, the red range flag hangs limp.
 @hulks the hulks
 at: 14.3,6.7
 icon: 🎯
-look: tell Old Soviet armour, bought or captured long ago, shot to pieces on ranges for twenty years. The BMP has lost its gun. The T-54 still has its.
+look: tell Soviet armour, rust over old paint, holes welded over and holed again. The BMP has lost its gun. The T-54 still has its.
 look: gloss Hulks — knocked-out vehicles used as gunnery targets.
 @rover the Land Rover
 unit: rover
 icon: 🚙
-look: tell A Land Rover 110 in green-and-black, “44” stencilled on the door, a jerry can strapped to the bonnet. The Lance Corporal driving it is studying the trees.
+look: tell A Land Rover 110 in green-and-black, “44” stencilled on the door, whip aerial up. The Lance Corporal driving it is studying the trees.
 @davies Captain Davies
 person: Capt Davies
 unit: rover
@@ -4004,7 +4005,7 @@ else
 say Pemberton: Same as the radio, I expect.
 say Cpl Baxter: Bet it is, sir.
 end
-say Herr Müller: Sie sind aus Detmold? | “You are from Detmold?” He looks at the British soldiers without surprise.
+say Herr Müller: Sie sind aus Detmold? | “You are from Detmold?” He glances at the British soldiers, then back to his till.
 say Sgt Hollis: 1st/5th Dragoon Guards, sir. We are forward of Detmold.
 say Herr Müller: My boy is in the Bundeswehr. He is with his unit also.
 say Herr Müller: Near Wolfsburg.
@@ -4155,7 +4156,7 @@ vars: ogseen=0, tq1=0, tq2=0, tq3=0, tasked=0, tdone=0
 {"bg": "#7a9a52", "ground": {"x": [-6, 22], "y": [-6, 22], "c": ["#97b45d", "#9dba62"], "rects": [{"x": [-6, 5], "y": [-6, 22], "c": ["#4f7334", "#557a37"]}, {"x": [10, 22], "y": [-6, 22], "c": ["#a9bf6d", "#afc472"]}, {"x": [8, 8], "y": [-6, 22], "c": ["#bfae84", "#c4b388"]}, {"x": [11, 11], "y": [1, 5], "c": ["#d8c844", "#dccd4a"]}]}, "trees": [{"x": [-6, 6.3], "y": [-5, 20], "n": 110, "seed": 7, "s": [0.7, 1.2]}], "keep": [[2.6, 3.8, 0.8], [2.4, 7, 0.8], [2.8, 10.2, 0.8], [6.3, 3.6, 0.8], [6.4, 7, 0.8], [6.3, 10.4, 0.8], [3.8, 15.4, 2.0]], "units": [{"id": "a", "type": "challenger", "x": 8.5, "y": -3, "label": "11", "me": 0, "open": 1}, {"id": "p", "type": "challenger", "x": 8.5, "y": -4.3, "label": "10", "me": 1, "open": 1}, {"id": "b", "type": "challenger", "x": 8.5, "y": -5.6, "label": "12", "me": 0, "open": 1}, {"id": "davies", "type": "person", "x": 7.1, "y": 2.2, "col": "#e59b3a"}, {"id": "cp", "type": "cp", "x": 3, "y": 15.2, "label": "SHQ"}, {"id": "calloway", "type": "person", "x": 4.3, "y": 15.9, "col": "#6a7f9a"}, {"id": "tl2", "type": "person", "x": 4.9, "y": 14.8, "col": "#4a5634"}, {"id": "tl3", "type": "person", "x": 3.9, "y": 16.8, "col": "#4a5634"}, {"id": "ssm", "type": "person", "x": 5.2, "y": 16.4, "col": "#3c4a2c"}, {"id": "weber", "type": "person", "x": 6.1, "y": 15.2, "col": "#5b6b4a"}, {"id": "iltis", "type": "car", "x": 8.6, "y": 15.6, "col": "#56603e"}]}
 ---script
 stamp <b>Thursday 26 April 1990</b> · 1610<br>The Hildesheimer Wald
-tell Calloway is back at the command post. A captain in a beautifully faded smock strolls up the track instead, hands in his pockets, as if waiting for a train.
+tell Calloway is back at the command post. A captain in a smock faded almost white at the elbows strolls up the track instead, hands in his pockets, as if waiting for a train.
 near notebook
 cam 7,1,6
 move a 8.5,3.8 2.6,3.8 speed=0.5
@@ -4200,7 +4201,7 @@ say Maj Calloway: This sector belongs to the Bundeswehr’s Heimatschutz. | He n
 gloss Heimatschutz: the Bundeswehr’s territorial troops, defending their own home ground.
 str m=B Squadron occupies hides in the Hildesheimer Wald as corps reserve, at one hour’s notice to move.
 say Maj Calloway: Mission. {$m}
-say Maj Calloway: Mission. {$m} | The mission, said twice: the one sentence nobody can mishear.
+say Maj Calloway: Mission. {$m} | The mission, said twice.
 say Maj Calloway: Execution.
 say Maj Calloway: My intent: when Corps calls, we are ready, we are hidden, and we know the ground.
 say Maj Calloway: For the next forty-eight hours, dig in, cam up, and learn every track out of this wood.
