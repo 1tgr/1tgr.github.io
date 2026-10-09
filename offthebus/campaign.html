@@ -3010,7 +3010,7 @@ endtalk
 if $bxkia=0
 net One Two: One Two. That’s a kid.
 end
-choose One One, One Two, One Zero. Halt. One One, dismount with me. Out. || One One, One Two, One Zero. Drive on. Out. || One One, One Zero. Engage the car. Co-ax. Out.
+choose One One, One Two, One Zero. Halt. One One, dismount with me. Out. || One One, One Two, One Zero. Drive on. Out. || One One, One Zero. Engage the car. Out.
 var dec=$choice
 ```
 
@@ -3130,6 +3130,7 @@ end
 if $dec=2
 var rta3=1
 net One One: One One.
+tell Hollis swings the GPMG on his cupola round. A long burst, then another.
 fire a at trabant light
 wait 900
 fire a at trabant light
