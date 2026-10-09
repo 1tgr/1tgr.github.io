@@ -31,14 +31,15 @@
   --sheet:#1c1c1e; --scrim:rgba(0,0,0,.55); --hl:rgba(190,195,40,.42);
 }
 *,*::before,*::after{box-sizing:inherit}
-html,body{height:100%;margin:0}
+html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}   /* the page never scrolls or pulls to refresh: only the feed and sheets scroll */
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-.app{height:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;position:relative;overflow:hidden;border-left:1px solid var(--hair);border-right:1px solid var(--hair)}
+.app{height:100%;height:100dvh;max-width:440px;margin:0 auto;display:flex;flex-direction:column;position:relative;overflow:hidden;border-left:1px solid var(--hair);border-right:1px solid var(--hair)}
 @media (max-width:440px){.app{border:0}}
 
 /* map */
-.map{position:relative;flex:0 0 40%;min-height:220px;background:#7a9a52;overflow:hidden}
+.map{position:relative;flex:0 0 40%;min-height:220px;background:#7a9a52;overflow:hidden;touch-action:none}
+.app.wmfull .map{position:fixed;inset:0;z-index:20;min-height:0}   /* your map, full screen */
 canvas{display:block;width:100%;height:100%}
 .hud{position:absolute;left:12px;top:10px;font-family:"Stardos Stencil","Impact","Arial Narrow",sans-serif;color:#f4efd8;text-shadow:0 1px 0 rgba(0,0,0,.45);line-height:1.05;pointer-events:none}
 .hud .t{font-size:30px;letter-spacing:.5px}
@@ -5456,7 +5457,7 @@ const cv=$('map'), cx=cv.getContext('2d');
 let W=0,H=0,DPR=1,tw=40,th=20,ox=0,oy=0, night=0, nightT=0, shake=0;
 const cam={fx:0,fy:0,z:6,tfx:0,tfy:0,tz:6};
 function resize(){ const r=cv.getBoundingClientRect(); DPR=Math.min(2,devicePixelRatio||1); W=r.width; H=r.height; cv.width=W*DPR; cv.height=H*DPR; cx.setTransform(DPR,0,0,DPR,0,0); }
-let lw=0,lh=0; function resizeIf(){ const r=cv.getBoundingClientRect(); if(r.width!==lw||r.height!==lh){lw=r.width;lh=r.height;resize();} }
+let lw=0,lh=0; function resizeIf(){ const r=cv.getBoundingClientRect(); if(r.width!==lw||r.height!==lh){lw=r.width;lh=r.height;resize();return true;} return false; }
 function setCam(){ tw=Math.max(12,W/cam.z); th=tw/2; ox=W/2-(cam.fx-cam.fy)*tw/2; oy=H*0.55-(cam.fx+cam.fy)*th/2; }
 let iso=(x,y)=>[ox+(x-y)*tw/2, oy+(x+y)*th/2];
 /* In a scene set on the world map, placement is to scale (50 m a tile) and vehicles and people are drawn larger when the camera
@@ -5793,7 +5794,7 @@ const io={
   async print(e){ await draw(e,true); },
   choose(opts,o){ if(o.targets) tapTargets=o.targets; return waitFor(chips(opts)).finally(()=>{ tapTargets=null; }); },
   ask(opts){ return waitFor(new Promise(res=>{ acOpts.innerHTML=''; acOpts.classList.add('show'); AC.classList.remove('ready'); acTap=null;
-    opts.forEach((o,i)=>{ const b=document.createElement('button'); b.textContent=o.text; b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus(),30); }); })); },
+    opts.forEach((o,i)=>{ const b=document.createElement('button'); b.textContent=o.text; b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus({preventScroll:true}),30); }); })); },
   async say(ac){ if(autoCollapsed) setCollapsed(false); showBalloon(ac,false); AC.classList.remove('ready'); acOpts.classList.remove('show'); acGl.textContent=''; acText.textContent='';
     let done=false; acTap=()=>{done=true;};
     for(let i=0;i<ac.text.length&&!done;i++){ acText.textContent=ac.text.slice(0,i+1); if(reduce) continue;
@@ -5803,7 +5804,7 @@ const io={
   cards(title,sub,items){ return waitFor(new Promise(res=>{ const sh=$('sheet'); sh.innerHTML=`<h2>${title}</h2><p>${sub}</p>`;
     items.forEach((it,i)=>{ const b=document.createElement('button'); b.className='card'; b.innerHTML=`<span class="lvl">${it.label}</span><div class="ct">${it.title}</div><div class="cs">${it.desc}</div>`;
       b.onclick=()=>{ $('scrim').classList.remove('show'); res(i); }; sh.appendChild(b); });
-    $('scrim').classList.add('show'); setTimeout(()=>sh.querySelector('.card')?.focus(),50); })); },
+    $('scrim').classList.add('show'); setTimeout(()=>sh.querySelector('.card')?.focus({preventScroll:true}),50); })); },
   orders(page,review){ return waitFor(new Promise(res=>{ const sh=$('sheet');   // the O Group as written in the notebook
     sh.innerHTML=`<h2>${page.title}</h2><p>${review?'Your notebook: the last orders you wrote down.':'Your notebook. Tap “No change” to see what you wrote last time.'}</p>`;
     for(const it of page.items){ const d=document.createElement(it.same?'button':'div'); d.className='oi'+(it.same?' same':'');
@@ -5820,7 +5821,7 @@ const io={
       b.onclick=()=>{ on[i]=on[i]?0:1; draw(); }; draw(); sh.appendChild(b); });
     const g=document.createElement('button'); g.className='card go'; g.innerHTML='<div class="ct">Give orders</div>';
     g.onclick=()=>{ $('scrim').classList.remove('show'); res(on); }; sh.appendChild(g);
-    $('scrim').classList.add('show'); sh.scrollTop=0; setTimeout(()=>sh.querySelector('.card')?.focus(),50); })); },
+    $('scrim').classList.add('show'); sh.scrollTop=0; setTimeout(()=>sh.querySelector('.card')?.focus({preventScroll:true}),50); })); },
   zoom(label){ return waitFor(new Promise(res=>{ replies.innerHTML=''; const b=document.createElement('button'); b.className='chip hint'; b.textContent=label;
     zoomWanted=()=>{ zoomWanted=null; replies.innerHTML=''; res(); }; b.onclick=()=>zoomWanted&&zoomWanted(); replies.appendChild(b); })); },
   wait(ms){ return sleep(ms); },
@@ -5874,7 +5875,7 @@ function frame(now){
   cam.tfx=w.cam[0]; cam.tfy=w.cam[1]; cam.tz=w.cam[2]; if(w.frame) frameUnits(w.frame); nightT=w.night;
   for(const k of ['fx','fy','z']) cam[k]+=(cam['t'+k]-cam[k])*(FAST?1:Math.min(1,dt*2.2));
   night+=(nightT-night)*(FAST?1:Math.min(1,dt*1.5));
-  if(WM.open){ resizeIf(); if(WM.dirty){ WM.dirty=false; drawWorldMap(); } requestAnimationFrame(frame); return; }
+  if(WM.open){ if(resizeIf()) WM.dirty=true; if(WM.dirty){ WM.dirty=false; drawWorldMap(); } requestAnimationFrame(frame); return; }
   resizeIf(); setCam(); if(shake>0){ shake-=dt; ox+=(Math.random()-.5)*6; oy+=(Math.random()-.5)*4; }
   cx.fillStyle=sc.map.bg||'#8a9a5a'; cx.fillRect(0,0,W,H); drawGround();
   for(roadPass=0;roadPass<2;roadPass++) for(const m of sc.map.marks||[]) if(m.type==='road') drawMark(m);
@@ -5928,8 +5929,8 @@ const curPlace=()=>{ const p=(SC().head.place||'').trim(); return WORLD.places[p
 function openWorldMap(){ const here=curPlace(), pl=here&&WORLD.places[here];
   WM.sheet=pl&&pl.pins.sector?'sector':pl&&pl.pins.band?'band':Object.keys(WORLD.sheets)[0];
   const sh=WORLD.sheets[WM.sheet], pin=pl&&pl.pins[WM.sheet]; WM.cam={fx:pin?pin[0]:sh.size[0]/2, fy:pin?pin[1]:sh.size[1]/2, z:WM.sheet==='sector'?36:60};
-  WM.open=true; WM.dirty=true; $('wmapbar').hidden=false; $('pouch').hidden=true; document.querySelector('.hud').style.visibility='hidden'; refreshWorldMapBar(); }
-function closeWorldMap(){ WM.open=false; $('wmapbar').hidden=true; document.querySelector('.hud').style.visibility=''; refreshWorld(); }
+  WM.open=true; WM.dirty=true; $('app').classList.add('wmfull'); $('wmapbar').hidden=false; $('pouch').hidden=true; document.querySelector('.hud').style.visibility='hidden'; refreshWorldMapBar(); }
+function closeWorldMap(){ WM.open=false; $('app').classList.remove('wmfull'); $('wmapbar').hidden=true; document.querySelector('.hud').style.visibility=''; refreshWorld(); }
 function refreshWorldMapBar(){ const sh=WORLD.sheets[WM.sheet], here=curPlace(), others=Object.keys(WORLD.sheets).filter(k=>k!==WM.sheet);
   $('wmapName').textContent=sh.name; $('wmapHere').textContent=here?' · You are here: '+WORLD.places[here].name:''; $('wmapSheet').textContent=others.length?WORLD.sheets[others[0]].name:''; $('wmapSheet').hidden=!others.length; }
 $('wmapClose').addEventListener('click',closeWorldMap);
