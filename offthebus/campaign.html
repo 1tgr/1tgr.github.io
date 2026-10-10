@@ -10,8 +10,7 @@
 <style>
 :root{
   box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
+  padding-top:env(safe-area-inset-top,0px);   /* no bottom padding: the net view runs to the screen's bottom edge, so Safari tints its toolbar to match */
   --bg:#ffffff; --fg:#000000; --muted:#8a8a8e; --hair:#d8d8dc;
   --in:#e9e9eb; --in-fg:#000; --out:#0a84ff; --out-fg:#fff;
   --chip:#f2f2f7; --chip-fg:#0a84ff; --bar:#f7f7f9;
@@ -34,7 +33,7 @@
 html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}   /* the page never scrolls or pulls to refresh: only the feed and sheets scroll */
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-.app{height:100%;height:100dvh;max-width:440px;margin:0 auto;display:flex;flex-direction:column;position:relative;overflow:hidden;border-left:1px solid var(--hair);border-right:1px solid var(--hair)}
+.app{height:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;position:relative;overflow:hidden;border-left:1px solid var(--hair);border-right:1px solid var(--hair)}
 @media (max-width:440px){.app{border:0}}
 
 /* map */
@@ -58,7 +57,7 @@ canvas{display:block;width:100%;height:100%}
 
 /* thread */
 /* the net traffic, the look-at chips and the replies scroll together */
-.feed{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column}
+.feed{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
 .thread{flex:1 0 auto;padding:10px 12px 6px;display:flex;flex-direction:column;gap:3px}
 .stamp{align-self:center;text-align:center;color:var(--muted);font-size:11.5px;margin:10px 0 4px;max-width:88%;line-height:1.35}
 .stamp b{font-weight:600}
