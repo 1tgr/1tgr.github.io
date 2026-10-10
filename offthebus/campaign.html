@@ -4618,42 +4618,6 @@ say Sgt Hollis: Bridge just past it — need the classification.
 say Sgt Hollis: We’ll want to stop and look at that junction properly, sir.
 say Pemberton: …the junction.
 say Sgt Hollis: The junction outside the SPAR, sir. Key node.
-say Sgt Hollis: Civilian movement patterns. Logistical reconnaissance.
-ask Ask “Bread?” || Ask “Reconnaissance?” || Say “Go on”
-if $choice=0
-say Pemberton: You want bread.
-say Sgt Hollis: I want to verify the route, sir. Check the clearances.
-say Sgt Hollis: Assess the operational readiness of local supply infrastructure.
-end
-if $choice=1
-say Pemberton: Logistical reconnaissance?
-say Sgt Hollis: Of the junction, sir. And its surroundings.
-say Sgt Hollis: Check the clearances.
-say Sgt Hollis: Assess the operational readiness of local supply infrastructure.
-end
-if $choice=2
-say Pemberton: Go on.
-say Sgt Hollis: Clearances, sir. Turning circle.
-say Sgt Hollis: And the operational readiness of local supply infrastructure.
-end
-ask Say “Bread” || Ask “Infrastructure?” || Say “Sergeant…”
-if $choice=0
-say Pemberton: You want bread.
-say Sgt Hollis: The men want bread, sir.
-say Sgt Hollis: I am merely concerned for their welfare.
-say Sgt Hollis: The junction is genuinely tight.
-end
-if $choice=1
-say Pemberton: Supply infrastructure.
-say Sgt Hollis: Bread, sir. For the men.
-say Sgt Hollis: I am merely concerned for their welfare.
-say Sgt Hollis: The junction is genuinely tight.
-end
-if $choice=2
-say Pemberton: Sergeant Hollis.
-say Sgt Hollis: The men want bread, sir. And the junction is genuinely tight.
-say Sgt Hollis: Both things are true.
-end
 ask Say “Mount up” || Say “Two minutes, not three” || Say “Fine”
 if $choice=0
 say Pemberton: Right. Mount up. Route recce, through Segeste.
@@ -4808,7 +4772,6 @@ near bag,boy,cherry
 say Cpl Baxter: Productive recce, sir?
 ask Say “Most informative”
 say Pemberton: Most informative.
-say Sgt Hollis: The local supply infrastructure remains fully operational. | Deadpan, lighting a cigarette.
 endtalk
 set a,p,b open=0
 tell The boy on the bicycle is back across the road. He waves. Baxter waves back from his cupola, with a piece of Brötchen.
