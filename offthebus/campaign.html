@@ -5844,7 +5844,7 @@ const io={
   ask(opts){ return waitFor(new Promise(res=>{ acOpts.innerHTML=''; acOpts.classList.add('show'); AC.classList.remove('ready'); acTap=null;
     opts.forEach((o,i)=>{ const b=document.createElement('button'); b.textContent=o.text; b.onclick=e=>{ e.stopPropagation(); acOpts.classList.remove('show'); res(i); }; acOpts.appendChild(b); if(i===0) setTimeout(()=>b.focus({preventScroll:true}),30); }); })); },
   async say(ac){ if(autoCollapsed) setCollapsed(false); showBalloon(ac,false); AC.classList.remove('ready'); acOpts.classList.remove('show'); acGl.textContent=''; acText.textContent='';
-    let done=false; acTap=()=>{done=true;};
+    let done=!ac.name; acTap=()=>{done=true;};        // narration appears at once; only a voice is typed out letter by letter
     for(let i=0;i<ac.text.length&&!done;i++){ acText.textContent=ac.text.slice(0,i+1); if(reduce) continue;
       const ch=ac.text[i]; let d=70; if(/[.!?…]/.test(ch)) d+=320; else if(/[,—–]/.test(ch)) d+=160; await new Promise(r=>setTimeout(r,d)); }
     acText.textContent=ac.text; acGl.textContent=ac.gloss||''; acTap=null; },
