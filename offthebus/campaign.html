@@ -253,7 +253,6 @@ vars: closed=0, smoked=0, dec=0, out=0, bxkia=0, iqwia=0, iqkia=0, pemwound=0, c
 ```scene
 on routine-week.courier | 1650 4 May 1990 | -
 stamp <b>Friday 4 May 1990</b> · 1650<br>The Segeste road
-tell A courier run: the week’s int summaries to a Bundeswehr Panzergrenadier company in the next valley, and back to the hides by stand-to. Nine days of routine.
 tell Hatches open, heads out, the sun low behind the pines.
 near notebook
 ```
@@ -784,17 +783,6 @@ end
 ```
 
 ```scene
-stamp 2000 · The hides
-hud 2000
-night 0.4
-radio BBC World Service: “…in Hanover, where a guard disturbed three men cutting through the perimeter fence of a British barracks. Shots were fired, and the men escaped. Police say they were carrying explosives…”
-wait 1400
-radio BBC World Service: “Reports are emerging of an incident involving British forces in Lower Saxony this afternoon. The Foreign Office has confirmed the incident but declined to give details. We will bring you more as we have it.”
-wait 1400
-radio AFN: “American officials say the incident in northern Germany this afternoon involved an apparent ambush of a British military patrol by what U.S. intelligence describes as Soviet special forces personnel operating in civilian disguise. The Pentagon declined to confirm or deny the reports.”
-wait 1400
-radio BBC World Service, later: “The Defence Secretary, Mr Patten, declined tonight to confirm reports of a ‘serious incident’ involving British forces in Germany. He will make a statement to the House tomorrow.”
-wait 1400
 title
 replay Play again
 
@@ -911,7 +899,7 @@ if $spk>1
 set sp2 hidden=0
 end
 enddef
-exit home | 2000 4 May 1990 | -
+exit home | 1900 4 May 1990 | -
 ```
 
 ```props
@@ -2794,13 +2782,52 @@ var knowtracks=1
 xp obs 10 Local knowledge
 gloss Förster: the forester, who manages the state forest and its hunting.
 move forester 23.2,29.0 speed=0.4
-teleport lr 45,21.5
+# from the clearing round to the top of the middle track
+move lr 19.86,32.4 20.93,30.89 21.69,29.52 23.19,28.72 speed=1
+cam 21.65,30.71,7
+waitmove lr
+move lr 24.48,28.04 26.44,25.12 26.9,24.87 speed=1
+cam 25.04,26.8,7
+waitmove lr
+move lr 28.92,23.75 31.2,21.52 speed=1
+cam 29.05,23.2,7
+waitmove lr
+move lr 34.75,18.07 35.13,17.67 speed=1
+cam 33.17,19.6,7
+waitmove lr
+move lr 37.36,15.35 39.05,16.88 speed=1
+cam 37.09,17.28,7
+waitmove lr
+move lr 43.12,20.58 speed=1
+cam 41.09,18.73,7
+waitmove lr
+move lr 44.64,21.95 45,21.5 speed=1
+cam 44.06,21.04,7
+waitmove lr
 move lr 41,21.2 36,21.6 31.5,21.9 speed=0.7
 cam 33.4,21.2,7
 checkpoint middle
 tell The middle track, back down to the B-road. Wild garlic along the verge, strong enough to taste through the open window.
 waitmove lr
-teleport lr 55,28
+# from the B-road round to the top of the south track
+move lr 31.11,21.62 34.65,18.06 speed=1
+cam 33.08,19.98,7
+waitmove lr
+move lr 37.36,15.35 38.6,16.46 speed=1
+cam 36.63,17.26,7
+waitmove lr
+move lr 42.69,20.14 speed=1
+cam 40.65,18.3,7
+waitmove lr
+move lr 45.84,22.96 46.89,23.69 speed=1
+cam 44.79,21.91,7
+waitmove lr
+move lr 47.41,24.05 48.4,25.22 49.24,26.51 51,26.85 speed=1
+cam 48.94,25.27,7
+waitmove lr
+move lr 51,26.85 53.53,28.25 55,28 speed=1
+cam 53,27.42,7
+waitmove lr
 cam 51,22,7.5
 set deer hidden=0
 move deer 49.6,20.8 48.6,19.4 speed=1.6
@@ -3707,6 +3734,14 @@ if $aft=8
 str x={$x} 1st Troop recces fire positions on the north edge of the wood this afternoon.
 str tp=This afternoon, a Land Rover recce of fire positions on the north edge of the wood.
 end
+if $aft=9
+str x={$x} 1st Troop recces its stretch of the route south this afternoon.
+str tp=This afternoon, a route recce in the tanks: through the Wald to Segeste.
+end
+if $aft=10
+str x={$x} 1st Troop takes the int summaries to the Panzergrenadier company this afternoon, back by stand-to.
+str tp=This afternoon, the courier run to the Panzergrenadier company in the tanks, back by stand-to.
+end
 if $night=2
 str x={$x} 1st Troop patrols the lanes south of the wood tonight.
 str tp=Tonight, a patrol in two Land Rovers, on the lanes south of the wood.
@@ -3900,7 +3935,7 @@ end
 endtalk
 enddef
 
-def routineday
+def morning
 hud 0525 | {date:$day}
 night 0.55
 stamp <b>{date:$day}</b> · 0525
@@ -4062,6 +4097,11 @@ end
 to troop hide speed=0.9
 set a,p,b open=1
 waitmove a,p,b
+enddef
+
+# a day in the hides: the morning, a task or nothing in the afternoon, the evening and the night
+def routineday
+do morning
 hud 1430
 stamp 1430
 do afternoon
@@ -4076,6 +4116,11 @@ radio Hollis takes last parade. Nothing to report.
 else
 choose act: Last parade done
 end
+do lastlight
+enddef
+
+# stand-to at last light, and the night
+def lastlight
 hud 2030
 night 0.6
 stamp 2030 · Stand-to
@@ -4280,6 +4325,7 @@ do dayend
 exit sat28apr
 
 on patrol-tracks.home | 1430 Friday 27 April 1990 | hide
+night 0
 var day=0
 do setup
 do evening
@@ -4303,10 +4349,89 @@ exit mon30apr
 on routine-week.mon30apr | 0525 Monday 30 April 1990 | hide
 var day=3
 do setup
-play spar as recce | 0525 Monday 30 April 1990 | hide
+do morning
+hud 1500
+night 0
+stamp 1500
+near mapcase,hollis,notebook
+tell The squadron’s work while it waits is rehearsing the move it will make if Corps commits it: out of the hides, through the wood, into the open as little as possible.
+near mapcase,hollis,notebook
+tell Hollis walks over from his tank with the map case.
+say Sgt Hollis: Got a minute, sir? Route recce.
+say Pemberton: Sergeant.
+say Sgt Hollis: Squadron’s given us the stretch south through the Wald.
+say Sgt Hollis: Tracks through the Wald, out at Petze.
+say Sgt Hollis: Bend here, tight for a Challenger. Then into Segeste.
+say Sgt Hollis: Narrow street, junction in the middle.
+say Sgt Hollis: Bridge just past it — need the classification.
+say Sgt Hollis: We’ll want to stop and look at that junction properly, sir.
+say Pemberton: …the junction.
+say Sgt Hollis: The junction outside the SPAR, sir. Key node.
+ask Say “Mount up” || Say “Two minutes, not three” || Say “Fine”
+if $choice=0
+say Pemberton: Right. Mount up. Route recce, through Segeste.
+say Pemberton: Two minutes at the junction. Out and back.
+say Sgt Hollis: Sir.
+end
+if $choice=1
+say Pemberton: Two minutes at the junction, Sergeant. Not three.
+say Sgt Hollis: Two minutes, sir. The junction won’t need longer.
+end
+if $choice=2
+say Pemberton: Fine. Get the crews mounted.
+say Sgt Hollis: Sir. | He is already walking back to his tank, and he is very nearly smiling.
+end
+endtalk
+tell Baxter climbs down off his tank and meets Hollis by your front decks.
+say Cpl Baxter: Where are we off to, Sergeant?
+say Sgt Hollis: Route recce.
+say Sgt Hollis: Bridge classification, clearances, and a key junction in Segeste.
+say Cpl Baxter: …the junction with the shop on it?
+say Sgt Hollis: The junction.
+say Cpl Baxter: The shop. We’re recceing the shop.
+say Sgt Hollis: We are recceing the junction, Corporal Baxter.
+say Sgt Hollis: The shop is on it. Mount up.
+tell Baxter climbs back up onto his tank. Hollis’s gunner, on the back decks, looks at the sky.
+endtalk
+near notebook
+choose One One, One Two, One Zero. Move now. Out.
+play spar as recce | 1500 Monday 30 April 1990 | hide
 
-on spar.home | 0525 Tuesday 1 May 1990 | hide
+on spar.home | 1830 Monday 30 April 1990 | hide
+night 0
 var day=3
+do setup
+stamp 1830 · The hides
+near notebook,bag,hollis
+say Sgt Hollis: Worth the trip, sir.
+ask Ask “Was it?”
+say Pemberton: Was it?
+say Sgt Hollis: Frau Müller. Said pass auf dich auf. To me.
+say Sgt Hollis: Not to you, sir, no disrespect intended.
+say Sgt Hollis: That’s the first time in this country anyone’s said that to me on this tour.
+say Sgt Hollis: They know, sir. The locals. They know what’s coming.
+say Sgt Hollis: Crews are happy. I’ll get the routine sorted for tomorrow. | He walks off. You are left standing by your tank, holding half a Brötchen.
+endtalk
+str card=
+if $logbridge=1
+str card=bridge MLC 70, fordable alongside
+end
+if $logjunction=1
+if $logbridge=1
+str card={$card} · junction turns in one go if the cars are gone
+else
+str card=junction turns in one go if the cars are gone
+end
+end
+if $logbridge=0
+if $logjunction=0
+str card=blank — nothing logged
+end
+end
+stamp Your route card: {$card}
+wait 1200
+do evening
+do dayend
 exit tue1may
 
 on routine-week.tue1may | 0525 Tuesday 1 May 1990 | hide
@@ -4324,6 +4449,7 @@ do dayend
 exit thu3may
 
 on patrol-positions.home | 1430 Wednesday 2 May 1990 | hide
+night 0
 var day=5
 do setup
 do evening
@@ -4340,17 +4466,36 @@ exit fri4may
 on routine-week.fri4may | 0525 Friday 4 May 1990 | hide
 var day=7
 do setup
-play ambush as courier | 0525 Friday 4 May 1990 | hide
+do morning
+hud 1400
+night 0
+stamp 1400
+tell A courier run: the week’s int summaries to a Bundeswehr Panzergrenadier company in the next valley, and back to the hides by stand-to. Nine days of routine.
+choose One One, One Two, One Zero. Move now. Out.
+play ambush as courier | 1400 Friday 4 May 1990 | hide
 
-on ambush.home | 0525 Saturday 5 May 1990 | hide
+on ambush.home | 2000 Friday 4 May 1990 | hide
 var day=7
 do setup
+stamp 2000 · The hides
+hud 2000
+night 0.4
+radio BBC World Service: “…in Hanover, where a guard disturbed three men cutting through the perimeter fence of a British barracks. Shots were fired, and the men escaped. Police say they were carrying explosives…”
+wait 1400
+radio BBC World Service: “Reports are emerging of an incident involving British forces in Lower Saxony this afternoon. The Foreign Office has confirmed the incident but declined to give details. We will bring you more as we have it.”
+wait 1400
+radio AFN: “American officials say the incident in northern Germany this afternoon involved an apparent ambush of a British military patrol by what U.S. intelligence describes as Soviet special forces personnel operating in civilian disguise. The Pentagon declined to confirm or deny the reports.”
+wait 1400
+radio BBC World Service, later: “The Defence Secretary, Mr Patten, declined tonight to confirm reports of a ‘serious incident’ involving British forces in Germany. He will make a statement to the House tomorrow.”
+wait 1400
+do lastlight
 if $bxkia=1
 stamp Overnight a replacement tank comes up for One Two from the regiment’s reserve, with new men from the echelon to make up the crew. Watts commands it.
 end
 if $drwia=1
 stamp Overnight One Two goes back to the workshops on a transporter. A replacement tank comes up from the regiment’s reserve, with a driver from the echelon. Baxter commands it.
 end
+do dayend
 exit sat5may
 
 on routine-week.sat5may | 0525 Saturday 5 May 1990 | hide
@@ -4375,6 +4520,7 @@ do dayend
 exit tue8may
 
 on patrol-night.home | 2300 Monday 7 May 1990 | hide
+night 1
 var day=10
 do setup
 do dayend
@@ -4488,6 +4634,16 @@ ask about One Two: say Sgt Hollis: {$h12a}
 ask about One Two: say Sgt Hollis: {$h12b}
 ask about the war: say Sgt Hollis: Same as the last war that didn’t happen, sir.
 ask about the war: say Sgt Hollis: We sit, we wait, we drink tea. Until we don’t.
+@mapcase Hollis’s map
+unit: a
+icon: 🗺️
+look: tell The 1:50,000 sheet in its case, the route in Hollis’s neat chinagraph: the tracks, the bend, Segeste, the bridge, and a very neat small circle at the junction.
+@bag the bag
+kit: yes
+icon: 🥖
+verb: Eat a Brötchen from
+look: tell A paper bag of Brötchen, still warm, going soft at the bottom.
+use: tell You eat one. Crisp outside, soft inside, still faintly warm. You eat it standing up, then the crumbs off your smock.
 @telegraph the Telegraph
 kit: yes
 icon: 📰
@@ -4497,15 +4653,15 @@ use: tell You read it cover to cover, including the crossword clues you can’t 
 
 ```days
 # One row per day of the week, in order. Every routine day is the same template; the row says which variation it carries.
-legend: weather dry=0 rain=1 | og choice=0 visit=1 gas=2 ambush=3 | brew tea=0 letters=1 bfbs=2 convoys=3 | aft quiet=0 mail=1 short=2 farmer=3 liaison=4 jamming=5 weber=6 tracks=7 positions=8 | night quiet=0 alarm=1 patrol=2 | eve none=0 davies=1 aftermath=2 | drift none=0 patten=1 adjourned=2 calm=3 stockholm=4 | alert no=0 yes=1
+legend: weather dry=0 rain=1 | og choice=0 visit=1 gas=2 ambush=3 | brew tea=0 letters=1 bfbs=2 convoys=3 | aft quiet=0 mail=1 short=2 farmer=3 liaison=4 jamming=5 weber=6 tracks=7 positions=8 recce=9 courier=10 | night quiet=0 alarm=1 patrol=2 | eve none=0 davies=1 aftermath=2 | drift none=0 patten=1 adjourned=2 calm=3 stockholm=4 | alert no=0 yes=1
 Fri 27 Apr: weather=dry og=choice brew=tea aft=tracks night=quiet
 Sat 28 Apr: weather=dry og=choice brew=letters aft=farmer night=quiet eve=davies
 Sun 29 Apr: weather=rain og=visit brew=bfbs aft=short night=quiet
-Mon 30 Apr: weather=dry og=choice brew=tea aft=quiet night=quiet
+Mon 30 Apr: weather=dry og=choice brew=tea aft=recce night=quiet
 Tue 1 May: weather=dry og=gas brew=convoys aft=mail night=quiet
 Wed 2 May: weather=rain og=choice brew=tea aft=positions night=alarm
 Thu 3 May: weather=dry og=visit brew=letters aft=liaison night=quiet
-Fri 4 May: weather=dry og=choice brew=tea aft=quiet night=quiet
+Fri 4 May: weather=dry og=choice brew=tea aft=courier night=quiet
 Sat 5 May: weather=dry og=ambush brew=convoys aft=quiet night=quiet eve=aftermath drift=patten alert=yes
 Sun 6 May: weather=rain og=choice brew=tea aft=mail night=alarm drift=adjourned alert=yes
 Mon 7 May: weather=dry og=gas brew=convoys aft=jamming night=patrol drift=calm
@@ -4797,63 +4953,6 @@ people: Sgt Hollis=#7d8f4e:hollis, Cpl Baxter=#c96f4a:baxter, Pemberton=#5aa7e0:
 
 ```scene
 on routine-week.recce | 1500 30 April 1990 | -
-stamp <b>Monday 30 April 1990</b> · 1500<br>The hides, Hildesheimer Wald
-tell Fifth day in the hides.
-tell The squadron’s work while it waits is rehearsing the move it will make if Corps commits it: out of the hides, through the wood, into the open as little as possible.
-tell Calloway has given each troop a stretch of route to recce.
-near mapcase,hollis,notebook
-```
-
-```scene
-tell Hollis walks over from his tank with the map case.
-say Sgt Hollis: Got a minute, sir? Route recce.
-say Pemberton: Sergeant.
-say Sgt Hollis: Squadron’s given us the stretch south through the Wald.
-```
-
-```scene
-say Sgt Hollis: Tracks through the Wald, out at Petze.
-say Sgt Hollis: Bend here, tight for a Challenger. Then into Segeste.
-say Sgt Hollis: Narrow street, junction in the middle.
-say Sgt Hollis: Bridge just past it — need the classification.
-say Sgt Hollis: We’ll want to stop and look at that junction properly, sir.
-say Pemberton: …the junction.
-say Sgt Hollis: The junction outside the SPAR, sir. Key node.
-ask Say “Mount up” || Say “Two minutes, not three” || Say “Fine”
-if $choice=0
-say Pemberton: Right. Mount up. Route recce, through Segeste.
-say Pemberton: Two minutes at the junction. Out and back.
-say Sgt Hollis: Sir.
-end
-if $choice=1
-say Pemberton: Two minutes at the junction, Sergeant. Not three.
-say Sgt Hollis: Two minutes, sir. The junction won’t need longer.
-end
-if $choice=2
-say Pemberton: Fine. Get the crews mounted.
-say Sgt Hollis: Sir. | He is already walking back to his tank, and he is very nearly smiling.
-end
-endtalk
-
-```
-
-```scene
-tell Baxter climbs down off his tank and meets Hollis by your front decks.
-say Cpl Baxter: Where are we off to, Sergeant?
-say Sgt Hollis: Route recce.
-say Sgt Hollis: Bridge classification, clearances, and a key junction in Segeste.
-say Cpl Baxter: …the junction with the shop on it?
-say Sgt Hollis: The junction.
-say Cpl Baxter: The shop. We’re recceing the shop.
-say Sgt Hollis: We are recceing the junction, Corporal Baxter.
-say Sgt Hollis: The shop is on it. Mount up.
-tell Baxter climbs back up onto his tank. Hollis’s gunner, on the back decks, looks at the sky.
-endtalk
-near notebook
-```
-
-```scene
-choose One One, One Two, One Zero. Move now. Out.
 tell Twenty minutes under the beeches on the stone track. Then out of the trees at Petze, and the road south in the open.
 move a 34.6,31.7 34.5,31.3 34.3,30.9 34,30.6 33.1,30.1 32.67,29.9 speed=0.9
 move p 34.6,31.7 34.5,31.3 34.3,30.9 34,30.6 33.78,30.48 speed=0.9 delay=0.25
@@ -5030,38 +5129,6 @@ set a,p,b open=1
 ```
 
 ```scene
-stamp The hides
-near notebook,bag,hollis
-say Sgt Hollis: Worth the trip, sir.
-ask Ask “Was it?”
-say Pemberton: Was it?
-say Sgt Hollis: Frau Müller. Said pass auf dich auf. To me.
-say Sgt Hollis: Not to you, sir, no disrespect intended.
-say Sgt Hollis: That’s the first time in this country anyone’s said that to me on this tour.
-say Sgt Hollis: They know, sir. The locals. They know what’s coming.
-```
-
-```scene
-say Sgt Hollis: Crews are happy. I’ll get the routine sorted for tomorrow. | He walks off. You are left standing by your tank, holding half a Brötchen.
-endtalk
-str card=
-if $logbridge=1
-str card=bridge MLC 70, fordable alongside
-end
-if $logjunction=1
-if $logbridge=1
-str card={$card} · junction turns in one go if the cars are gone
-else
-str card=junction turns in one go if the cars are gone
-end
-end
-if $logbridge=0
-if $logjunction=0
-str card=blank — nothing logged
-end
-end
-stamp Your route card: {$card}
-wait 1200
 title
 replay Play again
 exit home | 1500 30 April 1990 | -
