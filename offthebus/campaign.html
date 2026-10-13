@@ -5427,7 +5427,8 @@ look: tell A Bundeswehr Iltis, the German army’s small four-wheel-drive: canva
 
    io: print(entry) · choose(opts, {targets}) → i · ask(opts) → i · say(ac) · tap() · cards(title, sub, items) → i
        orders(page, review) · pick(title, sub, items) → [0|1, …]
-       zoom(label) · wait(ms) · waitMoves(ids) · effect(ev) · update() · persist(json) · end(kind)
+       zoom(label) · wait(ms) · waitMoves(ids) · effect(ev) · update() · persist(take) · end(kind)
+       persist is handed a function that returns the save as text: call it at once to keep the save (the state then), or not at all
        edge(e) (optional: every edge taken, for the continuity test)
    All io methods may return promises.
 
@@ -5774,12 +5775,12 @@ function createCore({scenes, campaign, io, world}){
   /* ---- saving ---- */
   const snapshot=()=>JSON.parse(JSON.stringify(state));
   let lastSave=null;
-  function save(){ lastSave=JSON.stringify(state); io.persist(lastSave); }
+  function save(){ lastSave=null; io.persist(()=>lastSave??(lastSave=JSON.stringify(state))); }   // the text is made only if asked for
   /* when the page goes: the last save, with the current age of each smoke volley written into it. Only the ages: a snapshot of the
      whole state taken between save points could catch a command halfway (XP given, the orders page noted) and repeat it on reload */
   function saveClock(){ if(!lastSave) return; const s=JSON.parse(lastSave); if(s.scene!==state.scene) return; let changed=false;
     for(const u of s.world.units){ const c=unit(u.id); if(u.type==='smoke'&&c&&!u.hidden&&!c.hidden&&c.age!==u.age){ u.age=c.age; changed=true; } }
-    if(changed){ lastSave=JSON.stringify(s); io.persist(lastSave); } }
+    if(changed){ lastSave=JSON.stringify(s); const t=lastSave; io.persist(()=>t); } }
   function restore(sn){ state=JSON.parse(JSON.stringify(sn)); lastSave=JSON.stringify(state); io.update(); }
 
   return {
@@ -6212,7 +6213,7 @@ const io={
     const b=$('badge'); b.hidden=!w.badge; if(w.badge) b.innerHTML=core.interp(w.badge);
     $('tip').textContent=w.tip||''; $('tip').hidden=!w.tip; $('end').classList.toggle('show',!!w.end);
     if(!ST().ac.show) showBalloon(ST().ac,false); refreshWorld(); },
-  persist(json){ try{ localStorage.setItem(SAVEKEY,JSON.stringify({build:BUILD,state:json})); }catch(e){} },
+  persist(take){ try{ localStorage.setItem(SAVEKEY,JSON.stringify({build:BUILD,state:take()})); }catch(e){} },
   end(){ return waitFor(chips([{kind:'hint',text:'Start the campaign again'}])).then(()=>{ clearSave(); thread.innerHTML=''; lastFrom=null; lastDelivered=null; return 0; }); },
 };
 if(FAST){   // ?fast: every wait answers itself on the next turn of the event loop
