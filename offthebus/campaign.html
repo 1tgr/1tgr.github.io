@@ -5593,9 +5593,17 @@ exit dawn | 0700 Saturday 12 May 1990 | battle
 
 ```scene
 def forward
-net Zero: One Zero, this is Zero. Your callsigns are in the open in front of the wood. I can see them from here. Over.
+net Zero: One Zero, this is Zero. Sunray to my location. Over.
 choose Zero, One Zero. Wilco, out.
+gloss Sunray — the commander of a callsign.
+tell You go across to Calloway’s tank. He is on the engine decks with his binoculars.
+say Maj Calloway: Your tanks were in the open. In daylight.
+say Maj Calloway: From here I could count them.
+tell He waits.
+say Maj Calloway: Don’t.
+endtalk
 var seen=1
+pass 20
 enddef
 
 def altrecce
@@ -5636,7 +5644,7 @@ end
 tell Last light. Every man at his tank, weapons manned, nobody talking until the light has gone.
 net Zero Alpha: Hello all stations, this is Zero Alpha. JEMIMA. Out.
 if $seen=1
-say Sgt Hollis: Zero didn’t sound pleased this morning, sir.
+say Sgt Hollis: Zero didn’t sound pleased, sir.
 endtalk
 end
 if $fatigue>0
@@ -6502,7 +6510,8 @@ function openPop(p,anchor){ const ps=Array.isArray(p)?p:[p], many=ps.length>1, v
   else { pop.style.left=((app.width-pop.offsetWidth)/2)+'px'; pop.style.top='30%'; } }
 function openPopAt(p,sx,sy){ openPop(p,{getBoundingClientRect:()=>{ const c=cv.getBoundingClientRect(); return {left:c.left+sx,top:c.top+sy,width:0,height:0}; }}); }
 function closePop(){ pop.hidden=true; pop.innerHTML=''; }
-document.addEventListener('click',e=>{ if(!pop.hidden&&!pop.contains(e.target)&&!e.target.closest('.ch-prop')&&e.target!==cv&&!e.target.closest('#acTag')&&!e.target.closest('#acPortrait')) closePop(); });
+/* with a popup open, the next tap anywhere outside it only closes it: on the map, the net, a chip or the bar, it does nothing else */
+document.addEventListener('click',e=>{ if(!pop.hidden&&!pop.contains(e.target)){ e.stopPropagation(); e.preventDefault(); closePop(); } },true);
 async function runVerb(v){ closePop(); const speaks=v.lines.some(l=>/^(say|tell)\s/.test(l)); const wasCollapsed=AC.classList.contains('collapsed'), wasAuto=autoCollapsed; if(speaks) setCollapsed(false);
   busy=true; refreshWorld(); const optsWas=acOpts.classList.contains('show'), readyWas=AC.classList.contains('ready'), tapWas=acTap;
   replies.style.visibility='hidden'; acOpts.classList.remove('show');
@@ -6703,7 +6712,8 @@ function drawRoutes(){ cx.save(); cx.setLineDash([6,5]); cx.lineWidth=2;
     cx.beginPath(); const a=iso(u.x,u.y); cx.moveTo(a[0],a[1]); for(const q of u.path){ const b=iso(q[0],q[1]); cx.lineTo(b[0],b[1]); } cx.stroke(); }
   cx.setLineDash([]); for(const id of sel||[]){ const u=unitById(id); if(!u) continue; const p=iso(u.x,u.y); cx.strokeStyle='#ffce3a'; cx.lineWidth=2.5; cx.beginPath(); cx.ellipse(p[0],p[1],Math.max(14,tw*.45),Math.max(7,tw*.22),0,0,7); cx.stroke(); }
   cx.restore(); }
-cv.addEventListener('pointerdown',e=>{ if(!ST().free||WM.open) return; drag={x:e.clientX,y:e.clientY,cam:[...ST().world.cam],moved:false}; });
+cv.addEventListener('pointerdown',e=>{ dragged=false;   /* a finger lifted after a pan makes no click: the flag belongs to this gesture only */
+  if(!ST().free||WM.open) return; drag={x:e.clientX,y:e.clientY,cam:[...ST().world.cam],moved:false}; });
 cv.addEventListener('pointermove',e=>{ if(!drag||!ST().free) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; if(!drag.moved&&Math.hypot(dx,dy)<8) return; drag.moved=true; follow=false;
   const a=dx/(tw/2), b=dy/(th/2); ST().world.cam=[drag.cam[0]-(a+b)/2,drag.cam[1]-(b-a)/2,ST().world.cam[2]]; ST().world.frame=null; });
 addEventListener('pointerup',()=>{ if(drag&&drag.moved) dragged=true; drag=null; });
