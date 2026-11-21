@@ -6669,8 +6669,8 @@ cv.addEventListener('click',e=>{ if(WM.open) return; const rc=cv.getBoundingClie
   if(!tapTargets||!mapPick) return;
   let best=-1,bd=1e9; tapTargets.forEach((list,i)=>{ for(const id of list){ const t=unitById(id)||(SC().map.marks||[]).find(m=>m.id===id); if(!t) continue; const p=iso(t.x,t.y), d=Math.hypot(p[0]-px,p[1]-py); if(d<bd){bd=d;best=i;} } });
   if(best>=0&&bd<tw*1.2) mapPick(best); });
-cv.addEventListener('wheel',e=>{ if(WM.open){ e.preventDefault(); wmZoom(e.deltaY>0?1.12:1/1.12); return; } if(ST().free){ e.preventDefault(); freeZoom(e.deltaY>0?1.12:1/1.12); return; } if(zoomWanted&&e.deltaY>0){ e.preventDefault(); zoomWanted(); } },{passive:false});
-cv.addEventListener('touchmove',e=>{ if(WM.open) return; if(ST().free&&e.touches.length===2){ e.preventDefault(); const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); if(pinch) freeZoom(pinch/d); pinch=d; return; } if(e.touches.length===2&&zoomWanted){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); if(pinch&&d<pinch-25) zoomWanted(); pinch=pinch||d; e.preventDefault(); } },{passive:false});
+cv.addEventListener('wheel',e=>{ if(WM.open){ e.preventDefault(); wmZoom(e.deltaY>0?1.12:1/1.12); return; } if(ST().free){ e.preventDefault(); const rc=cv.getBoundingClientRect(), p=[e.clientX-rc.left,e.clientY-rc.top]; freeZoom(e.deltaY>0?1.12:1/1.12,p,p); return; } if(zoomWanted&&e.deltaY>0){ e.preventDefault(); zoomWanted(); } },{passive:false});
+cv.addEventListener('touchmove',e=>{ if(WM.open) return; if(ST().free){ e.preventDefault(); return; } if(e.touches.length===2&&zoomWanted){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); if(pinch&&d<pinch-25) zoomWanted(); pinch=pinch||d; e.preventDefault(); } },{passive:false});
 cv.addEventListener('touchend',()=>pinch=null);
 
 /* ================= free play: the troop is the player's, and the clock runs ================= */
@@ -6706,17 +6706,30 @@ function freeTap(px,py){ const f=ST().free; let best=null,bd=1e9;
   if(!sel||!sel.length) return false;
   const [x,y]=unIso(px,py); if(core.route(sel,x,y)){ follow=true; ordered=true; puffAt(x,y); } drawFreebar(); return true; }
 function puffAt(x,y){ const p=iso(x,y); fx.push({x:p[0],y:p[1],r:4,grow:tw*.4,life:.6,t:0,col:'227,163,58',a:.9,vy:0,vx:0}); }
-function freeZoom(k){ const w=ST().world; w.cam=[w.cam[0],w.cam[1],Math.max(4,Math.min(140,w.cam[2]*k))]; }
+/* the camera under a finger moves at once, with no easing: the world point at screen point `from` (before) is put at screen point `to`
+   at the new zoom, so a pinch zooms about the fingers and follows them, and a scroll zooms about the cursor */
+function camAt(fx,fy,z,s){ const t=Math.max(12,W/z), a=(s[0]-W/2)/(t/2), b=(s[1]-H*0.55)/(t/4); return [fx+(a+b)/2, fy+(b-a)/2]; }   // the world point at screen point s
+function freeZoom(k,from,to){ const w=ST().world, z0=cam.z, z=Math.max(4,Math.min(140,z0*k)); from=from||[W/2,H*0.55]; to=to||from;
+  const [x,y]=camAt(cam.fx,cam.fy,z0,from), t=Math.max(12,W/z), a=(to[0]-W/2)/(t/2), b=(to[1]-H*0.55)/(t/4);
+  cam.fx=cam.tfx=x-(a+b)/2; cam.fy=cam.tfy=y-(b-a)/2; cam.z=cam.tz=z; w.cam=[cam.fx,cam.fy,z]; w.frame=null; follow=false; }
 function drawRoutes(){ cx.save(); cx.setLineDash([6,5]); cx.lineWidth=2;
   for(const u of ST().world.units){ if(!u.path.length) continue; const mine=sel&&sel.includes(u.id); cx.strokeStyle=mine?'rgba(227,163,58,.95)':'rgba(253,247,228,.6)';
     cx.beginPath(); const a=iso(u.x,u.y); cx.moveTo(a[0],a[1]); for(const q of u.path){ const b=iso(q[0],q[1]); cx.lineTo(b[0],b[1]); } cx.stroke(); }
   cx.setLineDash([]); for(const id of sel||[]){ const u=unitById(id); if(!u) continue; const p=iso(u.x,u.y); cx.strokeStyle='#ffce3a'; cx.lineWidth=2.5; cx.beginPath(); cx.ellipse(p[0],p[1],Math.max(14,tw*.45),Math.max(7,tw*.22),0,0,7); cx.stroke(); }
   cx.restore(); }
+const PTS=new Map(); let pinchAt=null;              // the fingers down on the map, and the last pinch (its midpoint and spread)
+const rel=e=>{ const rc=cv.getBoundingClientRect(); return [e.clientX-rc.left,e.clientY-rc.top]; };
+function pinchNow(){ const [a,b]=[...PTS.values()]; return {mid:[(a[0]+b[0])/2,(a[1]+b[1])/2], d:Math.hypot(a[0]-b[0],a[1]-b[1])||1}; }
 cv.addEventListener('pointerdown',e=>{ dragged=false;   /* a finger lifted after a pan makes no click: the flag belongs to this gesture only */
-  if(!ST().free||WM.open) return; drag={x:e.clientX,y:e.clientY,cam:[...ST().world.cam],moved:false}; });
-cv.addEventListener('pointermove',e=>{ if(!drag||!ST().free) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; if(!drag.moved&&Math.hypot(dx,dy)<8) return; drag.moved=true; follow=false;
-  const a=dx/(tw/2), b=dy/(th/2); ST().world.cam=[drag.cam[0]-(a+b)/2,drag.cam[1]-(b-a)/2,ST().world.cam[2]]; ST().world.frame=null; });
-addEventListener('pointerup',()=>{ if(drag&&drag.moved) dragged=true; drag=null; });
+  if(!ST().free||WM.open) return; PTS.set(e.pointerId,rel(e));
+  if(PTS.size===2){ drag=null; dragged=true; pinchAt=pinchNow(); return; }
+  if(PTS.size===1) drag={x:e.clientX,y:e.clientY,cam:[cam.fx,cam.fy],moved:false}; });
+cv.addEventListener('pointermove',e=>{ if(!ST().free||WM.open||!PTS.has(e.pointerId)) return; PTS.set(e.pointerId,rel(e));
+  if(PTS.size===2&&pinchAt){ const now=pinchNow(); freeZoom(pinchAt.d/now.d,pinchAt.mid,now.mid); pinchAt=now; return; }
+  if(!drag) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; if(!drag.moved&&Math.hypot(dx,dy)<8) return; drag.moved=true; follow=false;
+  const a=dx/(tw/2), b=dy/(th/2), w=ST().world; cam.fx=cam.tfx=drag.cam[0]-(a+b)/2; cam.fy=cam.tfy=drag.cam[1]-(b-a)/2; w.cam=[cam.fx,cam.fy,cam.z]; w.frame=null; });
+const lift=e=>{ PTS.delete(e.pointerId); if(PTS.size<2) pinchAt=null; if(drag&&drag.moved) dragged=true; drag=null; };
+addEventListener('pointerup',lift); addEventListener('pointercancel',lift);
 
 /* ================= the overview map: your map, from the pouch ================= */
 /* The world map's sheets, drawn north up in the same tiles as the scenes, with the places already played pinned and the current one
